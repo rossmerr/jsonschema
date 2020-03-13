@@ -1,0 +1,13 @@
+{{- define "number" -}}
+
+{{$key := index . "key" -}}
+{{$propertie := index . "propertie" -}}
+{{$required := index . "required" -}}
+{{$isRequired := isRequired $key $required -}}
+{{$space := " " -}}
+
+{{titleCase $key}} {{ if isNotRequired $key $required }}*{{end}}{{ $propertie.Type -}}
+{{ $space}}`json:"{{ titleCase $key -}}
+{{if isNotRequired $key $required }},omitempty{{end -}}"
+{{- template "validate" dict "required" $isRequired "lte" $propertie.Maximum "lt" $propertie.ExclusiveMaximum "gte" $propertie.Minimum "gt" $propertie.ExclusiveMinimum -}}`
+{{- end -}}

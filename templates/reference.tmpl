@@ -1,0 +1,11 @@
+{{- define "reference" -}}
+
+{{$key := index . "key" -}}
+{{$propertie := index . "propertie" -}}
+{{$required := index . "required" -}}
+{{$isRequired := isRequired $key $required -}}
+{{$definitions := index . "definitions" -}}
+{{$object := index $definitions.Documents $propertie.Ref -}}
+
+{{- titleCase $key }} {{ $object.Typename}} `json:"{{ titleCase $key}},omitempty"`
+{{- end -}}

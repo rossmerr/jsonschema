@@ -1,0 +1,5 @@
+package jsonschema
+
+const (
+	emptyString = ""
+)

@@ -1,0 +1,30 @@
+{{- define "document" -}}
+
+{{$document := index . "document" -}}
+{{$required := index . "required" -}}
+{{$definitions := index . "definitions" -}}
+
+{{if $document.Description -}}
+// {{ $document.Description}}
+{{end -}}
+
+type {{ typename $document.ID }} {{ $document.Type }} {
+    {{template "properties" dict "properties" $document.Properties "required" $required "definitions" $definitions}}
+}
+
+{{range $key, $propertie := $document.Properties -}}
+    {{- if isInterface $propertie.Type -}}
+       type {{ typename $key}} interface {
+            // You need to add the method '{{ mixedCase $key}}' to any struct you want to explicit implement '{{typename $key}}'
+            {{ mixedCase $key  }}()
+       }
+
+    {{- end -}}
+{{ end }}
+
+{{range $key, $definition := $document.Definitions -}}
+    type {{ typename $key }} struct {
+        {{template "properties" dict "properties" $definition.Properties "required" $required "definitions" $definitions}}
+    }
+{{ end }}
+{{- end -}}

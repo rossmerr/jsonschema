@@ -1,0 +1,27 @@
+{{- define "properties" -}}
+
+{{$properties := index . "properties" -}}
+{{$required := index . "required" -}}
+{{$definitions := index . "definitions" -}}
+
+{{range $key, $propertie := $properties -}}
+    {{if $propertie.Description -}}
+        // {{$propertie.Description}}
+    {{end -}}
+    {{- if isStruct $propertie.Type -}}
+        {{template "object" dict "key" $key "object" $propertie "definitions" $definitions -}}
+    {{- else if isArray $propertie.Type -}}
+        {{template "array" dict "key" $key "propertie" $propertie "required" $required -}}
+    {{- else if isString $propertie.Type -}}
+        {{template "string" dict "key" $key "propertie" $propertie "required" $required -}}
+    {{- else if isNumber $propertie.Type -}}
+        {{template "number" dict "key" $key "propertie" $propertie "required" $required -}}
+    {{- else if isPointer $propertie.Type -}}
+        {{template "reference" dict "key" $key "propertie" $propertie "required" $required "definitions" $definitions -}}
+    {{- else if isInterface $propertie.Type -}}
+        {{template "interface" dict "key" $key "propertie" $propertie "required" $required "definitions" $definitions -}}
+    {{- else -}}
+        {{titleCase $key }} {{ $propertie.Type }} `json:"{{ titleCase $key}},omitempty"`
+    {{- end}}
+{{end -}}
+{{- end -}}

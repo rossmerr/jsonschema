@@ -1,0 +1,10 @@
+ {{- define "string" -}}
+
+ {{$key := index . "key" -}}
+ {{$propertie := index . "propertie" -}}
+ {{$required := index . "required" -}}
+ {{$isRequired := isRequired $key $required -}}
+
+ {{- titleCase $key }} {{ $propertie.Type }} `json:"{{ titleCase $key}},omitempty"
+ {{- template "validate" dict "required" $isRequired "max" $propertie.MaxLength  "min" $propertie.MinLength -}}`
+ {{- end -}}

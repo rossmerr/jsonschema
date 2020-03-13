@@ -1,0 +1,9 @@
+{{- define "array" -}}
+
+{{$key := index . "key" -}}
+{{$propertie := index . "propertie" -}}
+{{$required := index . "required" -}}
+
+{{- titleCase $key }} []{{ $propertie.Items.Type }} `json:"{{ titleCase $key}},omitempty"`
+
+{{- end}}

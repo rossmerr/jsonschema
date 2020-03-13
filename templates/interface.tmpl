@@ -1,0 +1,10 @@
+{{- define "interface" -}}
+
+{{$key := index . "key" -}}
+{{$object := index . "object" -}}
+{{$required := $object.Required -}}
+{{$definitions := index . "definitions" -}}
+
+{{titleCase $key }} {{ typename $key }} `json:"{{ titleCase $key}},omitempty"`
+
+{{- end -}}
