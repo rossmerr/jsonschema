@@ -7,20 +7,18 @@ import (
 	"os/exec"
 	"text/template"
 
-	rice "github.com/GeertJohan/go.rice"
 	"github.com/RossMerr/jsonschema/functions"
-	"github.com/RossMerr/jsonschema/types"
 )
 
 type SchemaReferences struct {
-	Documents map[string]types.Document
+	Documents map[string]*Schema
 	Config    Config
 }
 
 func NewSchemaReferences(config Config) *SchemaReferences {
 	return &SchemaReferences{
 		Config:    config,
-		Documents: map[string]types.Document{},
+		Documents: map[string]*Schema{},
 	}
 }
 
@@ -32,76 +30,22 @@ func (s *SchemaReferences) Parse(files []string) error {
 			return err
 		}
 
-		var doc types.Document
-		json.Unmarshal(data, &doc)
+		var schema Schema
+		json.Unmarshal(data, &schema)
 
-		err = doc.ValidateSchema(s.Config.Schemaversion)
+		err = ValidateSchema(s.Config.Schemaversion, schema)
 		if err != nil {
 			return err
 		}
 
-		s.Documents[doc.ID] = doc
+		s.Documents[schema.ID] = &schema
 	}
+
 
 	return nil
 }
 
 func (s SchemaReferences) Generate() error {
-
-	templateBox, err := rice.FindBox("templates/")
-	if err != nil {
-		return err
-	}
-
-	schema, err := templateBox.String("schema.tmpl")
-	if err != nil {
-		return err
-	}
-
-	document, err := templateBox.String("document.tmpl")
-	if err != nil {
-		return err
-	}
-
-	object, err := templateBox.String("object.tmpl")
-	if err != nil {
-		return err
-	}
-
-	array, err := templateBox.String("array.tmpl")
-	if err != nil {
-		return err
-	}
-
-	string, err := templateBox.String("string.tmpl")
-	if err != nil {
-		return err
-	}
-
-	number, err := templateBox.String("number.tmpl")
-	if err != nil {
-		return err
-	}
-
-	validate, err := templateBox.String("validate.tmpl")
-	if err != nil {
-		return err
-	}
-
-	properties, err := templateBox.String("properties.tmpl")
-	if err != nil {
-		return err
-	}
-
-	reference, err := templateBox.String("reference.tmpl")
-	if err != nil {
-		return err
-	}
-
-	interfaces, err := templateBox.String("interface.tmpl")
-	if err != nil {
-		return err
-	}
 
 	for id, doc := range s.Documents {
 		tmpl, err := template.New("schema.tmpl").Funcs(template.FuncMap{
@@ -120,23 +64,23 @@ func (s SchemaReferences) Generate() error {
 			"isPointer":     functions.IsPointer,
 			"titleCase":     functions.TitleCase,
 			"mixedCase":     functions.MixedCase,
-		}).Parse(schema)
-
-		tmpl, err = tmpl.Parse(document)
-		tmpl, err = tmpl.Parse(object)
-		tmpl, err = tmpl.Parse(array)
-		tmpl, err = tmpl.Parse(string)
-		tmpl, err = tmpl.Parse(number)
-		tmpl, err = tmpl.Parse(validate)
-		tmpl, err = tmpl.Parse(properties)
-		tmpl, err = tmpl.Parse(reference)
-		tmpl, err = tmpl.Parse(interfaces)
-
+		}).ParseFiles(
+			"templates/schema.tmpl",
+			"templates/document.tmpl",
+			"templates/object.tmpl",
+			"templates/array.tmpl",
+			"templates/string.tmpl",
+			"templates/number.tmpl",
+			"templates/validate.tmpl",
+			"templates/properties.tmpl",
+			"templates/reference.tmpl",
+			"templates/interface.tmpl",
+		)
 		if err != nil {
 			return err
 		}
 
-		filename := s.Config.Output + doc.Filename() + ".go"
+		filename := s.Config.Output + functions.Filename(doc.ID) + ".go"
 		_, err = os.Stat(filename)
 		if !os.IsNotExist(err) {
 			err = os.Remove(filename)
@@ -150,7 +94,7 @@ func (s SchemaReferences) Generate() error {
 			return err
 		}
 
-		schema := Schema{
+		schema := Mapping{
 			ID:          id,
 			Document:    doc,
 			Config:      s.Config,

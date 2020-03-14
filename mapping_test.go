@@ -6,12 +6,11 @@ import (
 	"testing"
 
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/types"
 )
 
 func TestSchemas_Generate(t *testing.T) {
 	type fields struct {
-		documents map[string]types.Document
+		documents map[string]*jsonschema.Schema
 		config    jsonschema.Config
 	}
 	tests := []struct {
@@ -23,7 +22,7 @@ func TestSchemas_Generate(t *testing.T) {
 		// {
 		// 	name: "Basic",
 		// 	fields: fields{
-		// 		documents: map[string]types.Document{
+		// 		documents: map[string]*types.Schema{
 		// 			"id": loadRawSchema("samples/basicBasic.json"),
 		// 		},
 		// 		config: jsonschema.Config{
@@ -32,22 +31,22 @@ func TestSchemas_Generate(t *testing.T) {
 		// 		},
 		// 	},
 		// },
-		// {
-		// 	name: "Nesting data structures",
-		// 	fields: fields{
-		// 		documents: map[string]types.Document{
-		// 			"id": loadRawSchema("samples/productNesting.json"),
-		// 		},
-		// 		config: jsonschema.Config{
-		// 			Packagename: "main",
-		// 			Output: "output/",
-		// 		},
-		// 	},
-		// },
+		{
+			name: "Nesting data structures",
+			fields: fields{
+				documents: map[string]*jsonschema.Schema{
+					"id": loadRawSchema("samples/productNesting.json"),
+				},
+				config: jsonschema.Config{
+					Packagename: "main",
+					Output: "output/",
+				},
+			},
+		},
 		// {
 		// 	name: "References outside the schema",
 		// 	fields: fields{
-		// 		documents: map[string]types.Document{
+		// 		documents: map[string]*types.Schema{
 		// 			"https://example.com/geographical-location.schema.json": loadRawSchema("samples/geographical-location.schema.json"),
 		// 			"http://example.com/product.schema.json": loadRawSchema("samples/product.schema.json"),
 		//
@@ -58,18 +57,18 @@ func TestSchemas_Generate(t *testing.T) {
 		// 		},
 		// 	},
 		// },
-		{
-			name: "Oneof",
-			fields: fields{
-				documents: map[string]types.Document{
-					"http://example.com/entry-schema": loadRawSchema("samples/entry-schema.json"),
-				},
-				config: jsonschema.Config{
-					Packagename: "main",
-					Output:      "output/",
-				},
-			},
-		},
+		// {
+		// 	name: "Oneof",
+		// 	fields: fields{
+		// 		documents: map[string]types.Document{
+		// 			"http://example.com/entry-schema": loadRawSchema("samples/entry-schema.json"),
+		// 		},
+		// 		config: jsonschema.Config{
+		// 			Packagename: "main",
+		// 			Output:      "output/",
+		// 		},
+		// 	},
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -84,17 +83,17 @@ func TestSchemas_Generate(t *testing.T) {
 	}
 }
 
-func loadRawSchema(filename string) types.Document {
+func loadRawSchema(filename string) *jsonschema.Schema {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
 
-	var doc types.Document
+	var doc jsonschema.Schema
 	err = json.Unmarshal(data, &doc)
 	if err != nil {
 		panic(err)
 	}
 
-	return doc
+	return &doc
 }

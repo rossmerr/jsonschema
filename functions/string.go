@@ -27,6 +27,10 @@ func MixedCase(raw string) string {
 	return string(unicode.ToLower(rune(s[0]))) + s[1:]
 }
 
+func Filename(raw string) string {
+	filename := Typename(raw)
+	return string(unicode.ToLower(rune(filename[0]))) + filename[1:]
+}
 
 func Typename(raw string) string {
 	u, err := url.Parse(raw)
