@@ -1,17 +1,20 @@
 package jsonschema_test
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"testing"
 
 	"github.com/RossMerr/jsonschema"
+	"github.com/RossMerr/jsonschema/interpreter"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
 func TestSchemas_Generate(t *testing.T) {
 	type fields struct {
 		documents map[string]*jsonschema.Schema
-		config    jsonschema.Config
+		config    *jsonschema.Config
 	}
 	tests := []struct {
 		name    string
@@ -22,7 +25,7 @@ func TestSchemas_Generate(t *testing.T) {
 		// {
 		// 	name: "Basic",
 		// 	fields: fields{
-		// 		documents: map[string]*types.Schema{
+		// 		documents: map[string]*parser.Schema{
 		// 			"id": loadRawSchema("samples/basicBasic.json"),
 		// 		},
 		// 		config: jsonschema.Config{
@@ -37,21 +40,21 @@ func TestSchemas_Generate(t *testing.T) {
 				documents: map[string]*jsonschema.Schema{
 					"id": loadRawSchema("samples/productNesting.json"),
 				},
-				config: jsonschema.Config{
+				config: &jsonschema.Config{
 					Packagename: "main",
-					Output: "output/",
+					Output:      "output/",
 				},
 			},
 		},
 		// {
 		// 	name: "References outside the schema",
 		// 	fields: fields{
-		// 		documents: map[string]*types.Schema{
+		// 		documents: map[string]*jsonschema.Schema{
 		// 			"https://example.com/geographical-location.schema.json": loadRawSchema("samples/geographical-location.schema.json"),
 		// 			"http://example.com/product.schema.json": loadRawSchema("samples/product.schema.json"),
 		//
 		// 		},
-		// 		config: jsonschema.Config{
+		// 		config: &jsonschema.Config{
 		// 			Packagename: "main",
 		// 			Output: "output/",
 		// 		},
@@ -60,7 +63,7 @@ func TestSchemas_Generate(t *testing.T) {
 		// {
 		// 	name: "Oneof",
 		// 	fields: fields{
-		// 		documents: map[string]types.Document{
+		// 		documents: map[string]parser.Document{
 		// 			"http://example.com/entry-schema": loadRawSchema("samples/entry-schema.json"),
 		// 		},
 		// 		config: jsonschema.Config{
@@ -72,11 +75,12 @@ func TestSchemas_Generate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &jsonschema.SchemaReferences{
-				Documents: tt.fields.documents,
-				Config:    tt.fields.config,
-			}
-			if err := s.Generate(); (err != nil) != tt.wantErr {
+
+			p := parser.NewParser(context.Background(), tt.fields.config.Packagename)
+			parse := p.Parse(tt.fields.documents)
+			interpret := interpreter.NewInterpretDefaults(parse)
+
+			if err := interpret.ToFile(tt.fields.config.Output); (err != nil) != tt.wantErr {
 				t.Errorf("Schemas.Generate() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

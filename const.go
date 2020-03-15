@@ -1,5 +1,10 @@
 package jsonschema
 
 const (
-	emptyString = ""
+	EmptyString = ""
+	Object      = "object"
+	Array       = "array"
+	Integer     = "integer"
+	Number      = "number"
+	String      = "string"
 )

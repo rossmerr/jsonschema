@@ -3,10 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/RossMerr/jsonschema"
+	"github.com/RossMerr/jsonschema/interpreter"
 )
 
 var (
@@ -18,13 +20,11 @@ var (
 func main() {
 	flag.Parse()
 
-	config := jsonschema.Config{
+	config := &jsonschema.Config{
 		Packagename:   *packagename,
 		Output:        *output,
 		Schemaversion: *schemaversion,
 	}
-
-	schema := jsonschema.NewSchemaReferences(config)
 
 	var files []string
 	for _, file := range flag.Args() {
@@ -54,13 +54,9 @@ func main() {
 		}
 	}
 
-	err := schema.Parse(files)
+	inter := interpreter.NewInterpreterDefaults(config)
+	err := inter.Interpret(files)
 	if err != nil {
-		panic(err)
-	}
-
-	err = schema.Generate()
-	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
