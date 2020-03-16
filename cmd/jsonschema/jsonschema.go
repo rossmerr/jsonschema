@@ -54,9 +54,11 @@ func main() {
 		}
 	}
 
-	inter := interpreter.NewInterpreterDefaults(config)
-	err := inter.Interpret(files)
+	interpreter := interpreter.NewInterpreterDefaults(config)
+	interpret, err := interpreter.Interpret(files)
 	if err != nil {
 		log.Fatal(err)
 	}
+	interpret.ToFile(config.Output)
+
 }
