@@ -28,7 +28,7 @@ func NewInterpreterDefaults(config *jsonschema.Config) *Interpreter {
 }
 
 func (s *Interpreter) Interpret(files []string) (Interpret, error) {
-	schemas := map[string]*jsonschema.Schema{}
+	schemas := map[jsonschema.ID]*jsonschema.Schema{}
 
 	for _, filename := range files {
 
@@ -45,7 +45,7 @@ func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 			return nil, err
 		}
 
-		schemas[string(schema.ID)] = &schema
+		schemas[schema.ID] = &schema
 	}
 
 	root := s.parser.Parse(schemas)

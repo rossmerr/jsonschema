@@ -13,23 +13,26 @@ type Interpret interface {
 
 type interpret struct {
 	root     *parser.Parse
-	template Template
+	templateStruct Template
+	templateInterface Template
 }
 
-func NewInterpret(root *parser.Parse, template Template) Interpret {
+func NewInterpret(root *parser.Parse, templateStruct, templateInterface Template) Interpret {
 	return &interpret{
 		root:     root,
-		template: template,
+		templateStruct: templateStruct,
+		templateInterface: templateInterface,
 	}
 }
 
 func NewInterpretDefaults(root *parser.Parse) Interpret {
-	return NewInterpret(root, parser.Template())
+	return NewInterpret(root, parser.TemplateStruct(), parser.TemplateInterface())
 }
 
 func (s *interpret) ToFile(output string) error {
-	for _, obj := range s.root.Structs {
-		filename := output + obj.ID.Filename() + ".go"
+
+	for id, obj := range s.root.Interfaces {
+		filename := output + id.Filename() + ".go"
 		_, err := os.Stat(filename)
 		if !os.IsNotExist(err) {
 			err = os.Remove(filename)
@@ -43,9 +46,33 @@ func (s *interpret) ToFile(output string) error {
 			return err
 		}
 
-		err = s.template.Execute(file, parser.Document{
-			obj,
-		})
+		err = s.templateInterface.Execute(file, obj)
+		if err != nil {
+			return err
+		}
+
+		cmd := exec.Command("gofmt", "-w", filename)
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+	}
+
+	for _, obj := range s.root.Structs {
+		filename := output + obj.ID().Filename() + ".go"
+		_, err := os.Stat(filename)
+		if !os.IsNotExist(err) {
+			err = os.Remove(filename)
+			if err != nil {
+				return err
+			}
+		}
+
+		file, err := os.Create(filename)
+		if err != nil {
+			return err
+		}
+
+		err = s.templateStruct.Execute(file, obj)
 		if err != nil {
 			return err
 		}

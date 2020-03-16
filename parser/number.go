@@ -1,38 +1,44 @@
 package parser
 
 import (
-	"strings"
-
 	"github.com/RossMerr/jsonschema"
 )
 
 type Number struct {
-	Comment    string
+	id jsonschema.ID
+	comment    string
 	Name       string
 	Validation string
 	TypeValue  string
 	FieldTag   string
 }
 
-func NewNumber(ctx *SchemaContext, key string, schema, parent *jsonschema.Schema) *Number {
+func NewNumber(ctx *SchemaContext, key jsonschema.ID, schema, parent *jsonschema.Schema) *Number {
 
 	typeValue := schema.Type().String()
 
 	if parent != nil {
-		if jsonschema.Contains(parent.Required, key) {
+		if jsonschema.Contains(parent.Required, key.String()) {
 			typeValue = "*" + typeValue
 		}
 	}
 
 	return &Number{
-		Comment:   schema.Description,
-		Name:      strings.Title(key),
+		id: key,
+		comment:   schema.Description,
+		Name:      key.Title(),
 		TypeValue: typeValue,
-		FieldTag:  ctx.Tags.ToFieldTag(key, schema, parent),
+		FieldTag:  ctx.Tags.ToFieldTag(key.String(), schema, parent),
 	}
 }
 
-func (s *Number) types() {}
+func (s *Number) Comment() string {
+	return s.comment
+}
+
+func (s *Number) ID() jsonschema.ID {
+	return s.id
+}
 
 const NumberTemplate = `
 {{- define "number" -}}

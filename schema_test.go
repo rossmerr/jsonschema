@@ -13,7 +13,7 @@ import (
 
 func TestSchemas_Generate(t *testing.T) {
 	type fields struct {
-		documents map[string]*jsonschema.Schema
+		documents map[jsonschema.ID]*jsonschema.Schema
 		config    *jsonschema.Config
 	}
 	tests := []struct {
@@ -22,23 +22,23 @@ func TestSchemas_Generate(t *testing.T) {
 		wantErr bool
 	}{
 
-		// {
-		// 	name: "Basic",
-		// 	fields: fields{
-		// 		documents: map[string]*parser.Schema{
-		// 			"id": loadRawSchema("samples/basicBasic.json"),
-		// 		},
-		// 		config: jsonschema.Config{
-		// 			Packagename: "main",
-		// 			Output: "output/",
-		// 		},
-		// 	},
-		// },
+		{
+			name: "Basic",
+			fields: fields{
+				documents: map[jsonschema.ID]*jsonschema.Schema{
+					"basicBasic": loadRawSchema("samples/basicBasic.json"),
+				},
+				config: &jsonschema.Config{
+					Packagename: "main",
+					Output: "output/",
+				},
+			},
+		},
 		{
 			name: "Nesting data structures",
 			fields: fields{
-				documents: map[string]*jsonschema.Schema{
-					"id": loadRawSchema("samples/productNesting.json"),
+				documents: map[jsonschema.ID]*jsonschema.Schema{
+					"productNesting": loadRawSchema("samples/productNesting.json"),
 				},
 				config: &jsonschema.Config{
 					Packagename: "main",
@@ -46,32 +46,32 @@ func TestSchemas_Generate(t *testing.T) {
 				},
 			},
 		},
-		// {
-		// 	name: "References outside the schema",
-		// 	fields: fields{
-		// 		documents: map[string]*jsonschema.Schema{
-		// 			"https://example.com/geographical-location.schema.json": loadRawSchema("samples/geographical-location.schema.json"),
-		// 			"http://example.com/product.schema.json": loadRawSchema("samples/product.schema.json"),
-		//
-		// 		},
-		// 		config: &jsonschema.Config{
-		// 			Packagename: "main",
-		// 			Output: "output/",
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	name: "Oneof",
-		// 	fields: fields{
-		// 		documents: map[string]parser.Document{
-		// 			"http://example.com/entry-schema": loadRawSchema("samples/entry-schema.json"),
-		// 		},
-		// 		config: jsonschema.Config{
-		// 			Packagename: "main",
-		// 			Output:      "output/",
-		// 		},
-		// 	},
-		// },
+		{
+			name: "References outside the schema",
+			fields: fields{
+				documents: map[jsonschema.ID]*jsonschema.Schema{
+					"https://example.com/geographical-location.schema.json": loadRawSchema("samples/geographical-location.schema.json"),
+					"http://example.com/product.schema.json": loadRawSchema("samples/product.schema.json"),
+
+				},
+				config: &jsonschema.Config{
+					Packagename: "main",
+					Output: "output/",
+				},
+			},
+		},
+		{
+			name: "Oneof",
+			fields: fields{
+				documents: map[jsonschema.ID]*jsonschema.Schema{
+					"http://example.com/entry-schema": loadRawSchema("samples/entry-schema.json"),
+				},
+				config: &jsonschema.Config{
+					Packagename: "main",
+					Output:      "output/",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

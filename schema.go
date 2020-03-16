@@ -7,16 +7,16 @@ import (
 type Schema struct {
 	ID                   ID                 `json:"$id,omitempty"`
 	Schema               string             `json:"$schema,omitempty"`
-	Ref                  string             `json:"$ref,omitempty"`
+	Ref                  ID             `json:"$ref,omitempty"`
 	Description          string             `json:"Description,omitempty"`
 	Title                string             `json:"Title,omitempty"`
 	TypeValue            string             `json:"Type,omitempty"`
 	Required             []string           `json:"Required,omitempty"`
-	Properties           map[string]*Schema `json:"Properties,omitempty"`
-	Definitions          map[string]*Schema `json:"Definitions,omitempty"`
+	Properties           map[ID]*Schema `json:"Properties,omitempty"`
+	Definitions          map[ID]*Schema `json:"Definitions,omitempty"`
 	AdditionalProperties bool               `json:"additionalProperties"`
 	Items                *Schema            `json:"Items,omitempty"`
-	OneOf                []*Schema          `json:"oneOf"`
+	OneOf                []*Schema          `json:"oneOf,omitempty"`
 
 	// Validation
 	MaxProperties    *uint32 `json:"MaxProperties,omitempty"`
@@ -51,6 +51,10 @@ func (s Schema) Type() reflect.Kind {
 			return reflect.Ptr
 		}
 		return reflect.Struct
+	}
+
+	if s.Ref != EmptyString {
+		return reflect.Ptr
 	}
 
 	return reflect.Invalid

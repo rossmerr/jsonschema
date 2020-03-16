@@ -2,28 +2,35 @@ package parser
 
 import (
 	"reflect"
-	"strings"
 
 	"github.com/RossMerr/jsonschema"
 )
 
 type Array struct {
-	Comment   string
+	id jsonschema.ID
+	comment   string
 	Name      string
 	TypeValue reflect.Kind
 	FieldTag  string
 }
 
-func NewArray(ctx *SchemaContext, key string, schema, parent *jsonschema.Schema) *Array {
+func NewArray(ctx *SchemaContext, key jsonschema.ID, schema, parent *jsonschema.Schema) *Array {
 	return &Array{
-		Comment:   schema.Description,
-		Name:      strings.Title(key),
+		id: key,
+		comment:   schema.Description,
+		Name:     key.Title(),
 		TypeValue: schema.Items.Type(),
-		FieldTag:  ctx.Tags.ToFieldTag(key, schema, parent),
+		FieldTag:  ctx.Tags.ToFieldTag(key.String(), schema, parent),
 	}
 }
 
-func (s *Array) types() {}
+func (s *Array) Comment() string {
+	return s.comment
+}
+
+func (s *Array) ID() jsonschema.ID {
+	return s.id
+}
 
 const ArrayTemplate = `
 {{- define "array" -}}

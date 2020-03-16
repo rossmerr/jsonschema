@@ -3,21 +3,24 @@ package parser
 import (
 	"context"
 
+	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/tags"
 )
 
 type SchemaContext struct {
 	context.Context
-	Definitions Definitions
-	Package     string
-	Tags        tags.FieldTag
+	Refer   map[jsonschema.ID]*jsonschema.Schema
+	Package string
+	Tags    tags.FieldTag
+	ImplementInterface map[jsonschema.ID][]string
 }
 
 func NewContext(ctx context.Context, packageName string, tags tags.FieldTag) *SchemaContext {
 	return &SchemaContext{
 		ctx,
-		Definitions{},
+		map[jsonschema.ID]*jsonschema.Schema{},
 		packageName,
 		tags,
+		map[jsonschema.ID][]string{},
 	}
 }

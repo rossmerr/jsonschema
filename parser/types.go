@@ -1,13 +1,20 @@
 package parser
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"reflect"
+	"strings"
+
+	"github.com/RossMerr/jsonschema"
+)
 
 type Types interface {
-	types()
+	Comment()     string
+	ID() jsonschema.ID
 }
 
 func IsStruct(obj interface{}) bool {
-	_, ok := obj.(*Struct)
+	_, ok := obj.(*AnonymousStruct)
 	return ok
 }
 
@@ -43,4 +50,16 @@ func ToString(raw json.RawMessage) string {
 		panic(err)
 	}
 	return s
+}
+
+func MixedCase(raw string) string {
+	if len(raw) < 1 {
+		return raw
+	}
+	s := strings.Title(raw)
+	return  strings.ToLower(s[0:1]) + s[1:]
+}
+
+func KindOf(src interface{}) string {
+	return reflect.ValueOf(src).Kind().String()
 }

@@ -1,27 +1,33 @@
 package parser
 
 import (
-	"strings"
-
 	"github.com/RossMerr/jsonschema"
 )
 
 type String struct {
-	Comment    string
+	id jsonschema.ID
+	comment    string
 	Name       string
 	Validation string
 	FieldTag   string
 }
 
-func NewString(ctx *SchemaContext, key string, schema, parent *jsonschema.Schema) *String {
+func NewString(ctx *SchemaContext, key jsonschema.ID, schema, parent *jsonschema.Schema) *String {
 	return &String{
-		Comment:  schema.Description,
-		Name:     strings.Title(key),
-		FieldTag: ctx.Tags.ToFieldTag(key, schema, parent),
+		id: key,
+		comment:  schema.Description,
+		Name:     key.Title(),
+		FieldTag: ctx.Tags.ToFieldTag(key.String(), schema, parent),
 	}
 }
 
-func (s *String) types() {}
+func (s *String) Comment() string {
+	return s.comment
+}
+
+func (s *String) ID() jsonschema.ID {
+	return s.id
+}
 
 const StringTemplate = `
 {{- define "string" -}}
