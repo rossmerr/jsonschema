@@ -9,9 +9,9 @@ import (
 
 type SchemaContext struct {
 	context.Context
-	Refer   map[jsonschema.ID]*jsonschema.Schema
-	Package string
-	Tags    tags.FieldTag
+	ReferencedSchema   map[jsonschema.ID]*jsonschema.Schema
+	Package            string
+	Tags               tags.FieldTag
 	ImplementInterface map[jsonschema.ID][]string
 }
 

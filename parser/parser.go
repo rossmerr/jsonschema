@@ -52,10 +52,10 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 
 func (s *parser)findDefinitions(schemas map[jsonschema.ID]*jsonschema.Schema) {
 	for key, schema := range schemas {
-		s.ctx.Refer[key] = schema
+		s.ctx.ReferencedSchema[key] = schema
 		for key, definition := range schema.Definitions {
 			ref := fmt.Sprintf("#/definitions/%v", key)
-			s.ctx.Refer[jsonschema.NewID(ref)] = definition
+			s.ctx.ReferencedSchema[jsonschema.NewID(ref)] = definition
 		}
 	}
 }
@@ -92,7 +92,7 @@ func SchemaToType(ctx *SchemaContext, key jsonschema.ID, schema, parent *jsonsch
 	case reflect.String:
 		return NewString(ctx, key, schema, parent)
 	case reflect.Ptr:
-		ref := ctx.Refer[schema.Ref]
+		ref := ctx.ReferencedSchema[schema.Ref]
 		return SchemaToType(ctx, key, ref, parent)
 	default:
 		return NewAnonymousStruct(ctx, key, schema, parent)

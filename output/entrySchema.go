@@ -7,13 +7,6 @@ type EntrySchema struct {
 	Storage interface{} `json:"Storage"`
 }
 
-// DiskDevice
-// ID: #/definitions/diskDevice
-type DiskDevice struct {
-}
-
-func (s *DiskDevice) storage() {}
-
 // DiskUUID
 // ID: #/definitions/diskUUID
 type DiskUUID struct {
@@ -34,3 +27,10 @@ type Tmpfs struct {
 }
 
 func (s *Tmpfs) storage() {}
+
+// DiskDevice
+// ID: #/definitions/diskDevice
+type DiskDevice struct {
+}
+
+func (s *DiskDevice) storage() {}
