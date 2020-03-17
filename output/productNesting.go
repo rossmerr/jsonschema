@@ -6,8 +6,8 @@ package main
 type ProductSchemaJson struct {
 	Dimensions struct {
 		Length *float64 `json:"length,omitempty", validate:"required"`
-		Width  *float64 `json:"omitempty,width", validate:"required"`
-		Height *float64 `json:"omitempty,height", validate:"required"`
+		Width  *float64 `json:"width,omitempty", validate:"required"`
+		Height *float64 `json:"height,omitempty", validate:"required"`
 	} `json:"Dimensions"`
 
 	// The unique identifier for a product

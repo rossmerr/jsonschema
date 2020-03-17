@@ -2,35 +2,39 @@ package jsonschema
 
 import (
 	"reflect"
+	"strings"
 )
 
 type Schema struct {
-	ID                   ID                 `json:"$id,omitempty"`
-	Schema               string             `json:"$schema,omitempty"`
+	ID                   ID             `json:"$id,omitempty"`
+	Schema               string         `json:"$schema,omitempty"`
 	Ref                  ID             `json:"$ref,omitempty"`
-	Description          string             `json:"Description,omitempty"`
-	Title                string             `json:"Title,omitempty"`
-	TypeValue            string             `json:"Type,omitempty"`
-	Required             []string           `json:"Required,omitempty"`
-	Properties           map[ID]*Schema `json:"Properties,omitempty"`
-	Definitions          map[ID]*Schema `json:"Definitions,omitempty"`
-	AdditionalProperties bool               `json:"additionalProperties"`
-	Items                *Schema            `json:"Items,omitempty"`
-	OneOf                []*Schema          `json:"oneOf,omitempty"`
+	Defs                 map[ID]*Schema `json:"$defs,omitempty"`
+	Anchor               ID             `json:"$anchor,omitempty"`
+	Description          string         `json:"description,omitempty"`
+	Title                string         `json:"title,omitempty"`
+	TypeValue            string         `json:"type,omitempty"`
+	Required             []string       `json:"required,omitempty"`
+	Properties           map[ID]*Schema `json:"properties,omitempty"`
+	Definitions          map[ID]*Schema `json:"definitions,omitempty"`
+	Items                *Schema        `json:"items,omitempty"`
+	OneOf                []*Schema      `json:"oneof,omitempty"`
+	AnyOf                []*Schema      `json:"anyof,omitempty"`
+	AllOf                []*Schema      `json:"allof,omitempty"`
 
 	// Validation
-	MaxProperties    *uint32 `json:"MaxProperties,omitempty"`
-	MinProperties    *uint32 `json:"MinProperties,omitempty"`
-	MaxLength        *uint32 `json:"MaxLength,omitempty"`
-	MinLength        *uint32 `json:"MinLength,omitempty"`
-	MaxContains      *uint32 `json:"MaxContains,omitempty"`
-	MinContains      *uint32 `json:"MinContains,omitempty"`
-	MaxItems         *uint32 `json:"MaxItems,omitempty"`
-	MinItems         *uint32 `json:"MinItems,omitempty"`
-	Maximum          *int32  `json:"Maximum,omitempty"`
-	ExclusiveMaximum *int32  `ExclusiveMaximum:"Type,omitempty"`
-	Minimum          *int32  `json:"Minimum,omitempty"`
-	ExclusiveMinimum *int32  `json:"ExclusiveMinimum,omitempty"`
+	MaxProperties    *uint32 `json:"maxlroperties,omitempty"`
+	MinProperties    *uint32 `json:"minlroperties,omitempty"`
+	MaxLength        *uint32 `json:"maxlength,omitempty"`
+	MinLength        *uint32 `json:"minlength,omitempty"`
+	MaxContains      *uint32 `json:"maxcontains,omitempty"`
+	MinContains      *uint32 `json:"mincontains,omitempty"`
+	MaxItems         *uint32 `json:"maxitems,omitempty"`
+	MinItems         *uint32 `json:"minitems,omitempty"`
+	Maximum          *int32  `json:"maximum,omitempty"`
+	ExclusiveMaximum *int32  `json:"exclusivemaximum,omitempty"`
+	Minimum          *int32  `json:"minimum,omitempty"`
+	ExclusiveMinimum *int32  `json:"exclusiveminimum,omitempty"`
 }
 
 func (s Schema) Type() reflect.Kind {
@@ -44,7 +48,13 @@ func (s Schema) Type() reflect.Kind {
 	case Array:
 		return reflect.Array
 	case Object:
-		if s.OneOf != nil && len(s.OneOf) > 0 {
+		if s.OneOf != nil && len(s.OneOf) > 0{
+			return reflect.Interface
+		}
+		if s.AnyOf != nil && len(s.AnyOf) > 0 {
+			return reflect.Interface
+		}
+		if s.AllOf != nil && len(s.AllOf) > 0 {
 			return reflect.Interface
 		}
 		if s.Ref != EmptyString {
@@ -58,4 +68,71 @@ func (s Schema) Type() reflect.Kind {
 	}
 
 	return reflect.Invalid
+}
+
+func (s *Schema) Traverse(query []string) *Schema {
+	if query == nil {
+		return nil
+	}
+
+	if len(query) == 0 {
+		return nil
+	}
+
+	val := reflect.ValueOf(s).Elem()
+	return traverse(val, query)
+}
+
+func traverse(val reflect.Value, query []string) *Schema {
+	if len(query) == 0 {
+		i := val.Interface()
+		if s, ok := i.(*Schema); ok{
+			return s
+		}
+		return nil
+
+	}
+
+	segment := strings.ToLower(query[0])
+
+	switch val.Kind() {
+	case reflect.Struct:
+		id := val.FieldByName("ID")
+		text := id.String()
+		if strings.ToLower(text) == segment {
+
+			return traverse(val.Addr(), query[1:])
+		}
+
+		for i := 0; i < val.NumField(); i++ {
+			tag := val.Type().Field(i).Tag
+			if v, ok := tag.Lookup("json"); ok {
+				tagFields := strings.Split(v, ",")
+				list := ForEach(tagFields, func(v string) string { return strings.ToLower(v) })
+				if Contains(list, segment) {
+					return traverse(val.Field(i), query[1:])
+				}
+			}
+		}
+	case reflect.Map:
+		for _, k := range val.MapKeys() {
+			if strings.ToLower(k.String()) == segment {
+				val := val.MapIndex(k)
+				return traverse(val, query[1:])
+			}
+		}
+	case reflect.Slice:
+		i := val.Interface()
+		arr := i.([]*Schema)
+		for _, v := range arr  {
+			val := reflect.ValueOf(v).Elem()
+			result := traverse(val, query)
+			if result != nil {
+				return result
+			}
+		}
+	default:
+		return nil
+	}
+	return nil
 }

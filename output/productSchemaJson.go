@@ -4,6 +4,14 @@ package main
 // A product from Acme's catalog
 // ID: http://example.com/product.schema.json
 type ProductSchemaJson struct {
+	// The unique identifier for a product
+	ProductId *int32 `json:"productId,omitempty", validate:"required"`
+	// Name of the product
+	ProductName string `json:"productName,omitempty", validate:"required"`
+	// The price of the product
+	Price *float64 `json:"price,omitempty", validate:"gt=0,required"`
+	// Tags for the product
+	Tags       []string `json:"tags"`
 	Dimensions struct {
 		// length
 		Length *float64 `json:"length,omitempty", validate:"required"`
@@ -12,16 +20,7 @@ type ProductSchemaJson struct {
 	} `json:"Dimensions"`
 
 	GeographicalLocationSchemaJson struct {
-		Latitude  *float64 `json:"latitude,omitempty", validate:"gte=-90,required,lte=90"`
-		Longitude *float64 `json:"longitude,omitempty", validate:"required,lte=180,gte=-180"`
+		Latitude  *float64 `json:"latitude,omitempty", validate:"required,lte=90,gte=-90"`
+		Longitude *float64 `json:"longitude,omitempty", validate:"gte=-180,required,lte=180"`
 	} `json:"GeographicalLocationSchemaJson"`
-
-	// The unique identifier for a product
-	ProductId *int32 `json:"productId,omitempty", validate:"required"`
-	// Name of the product
-	ProductName string `json:"productName,omitempty", validate:"required"`
-	// The price of the product
-	Price *float64 `json:"price,omitempty", validate:"gt=0,required"`
-	// Tags for the product
-	Tags []string `json:"tags"`
 }

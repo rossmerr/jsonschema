@@ -2,25 +2,46 @@ package jsonschema
 
 import "strings"
 
-func Contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
+func Contains(a []string, b string) bool {
+	for _, v := range a {
+		if v == b {
 			return true
 		}
 	}
 	return false
 }
 
-func Unique(intSlice []string) []string {
+func ForEach(a []string, delegate func(string) string) []string {
+	list := []string{}
+	for _, v := range a {
+		list = append(list, delegate(v))
+	}
+
+	return list
+}
+
+func Unique(slice []string) []string {
 	keys := make(map[string]bool)
 	list := []string{}
-	for _, entry := range intSlice {
-		if _, value := keys[entry]; !value {
-			keys[entry] = true
-			list = append(list, entry)
+	for _, v := range slice {
+		if _, value := keys[v]; !value {
+			keys[v] = true
+			list = append(list, v)
 		}
 	}
 	return list
+}
+
+func Equal(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func KeysString(m map[string]string) string {
