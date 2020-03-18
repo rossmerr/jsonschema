@@ -4,12 +4,6 @@ package main
 // A product from Acme's catalog
 // ID: http://example.com/product.schema.json
 type productSchema struct {
-	// The unique identifier for a product
-	ProductId int32 `json:"ProductId"`
-	// Name of the product
-	ProductName string `json:"ProductName"`
-	// The price of the product
-	Price *float64 `json:"Price,omitempty", validate:"required,gt=0"`
 	// Tags for the product
 	Tags       []string `json:"Tags"`
 	Dimensions struct {
@@ -20,7 +14,14 @@ type productSchema struct {
 	}
 
 	WarehouseLocation struct {
-		Latitude  *float64 `json:"Latitude,omitempty", validate:"required,lte=90,gte=-90"`
+		Latitude  *float64 `json:"omitempty,Latitude", validate:"required,lte=90,gte=-90"`
 		Longitude *float64 `json:"Longitude,omitempty", validate:"required,lte=180,gte=-180"`
 	}
+
+	// The unique identifier for a product
+	ProductId int32 `json:"ProductId"`
+	// Name of the product
+	ProductName string `json:"ProductName"`
+	// The price of the product
+	Price *float64 `json:"Price,omitempty", validate:"required,gt=0"`
 }

@@ -13,8 +13,8 @@ type productNestingSchema struct {
 	// Tags for the product
 	Tags       []string `json:"Tags"`
 	Dimensions struct {
-		Length *float64 `json:"omitempty,Length", validate:"required"`
-		Width  *float64 `json:"omitempty,Width", validate:"required"`
+		Length *float64 `json:"Length,omitempty", validate:"required"`
+		Width  *float64 `json:"Width,omitempty", validate:"required"`
 		Height *float64 `json:"Height,omitempty", validate:"required"`
 	}
 }
