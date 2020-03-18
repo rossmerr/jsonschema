@@ -11,6 +11,17 @@ func Contains(a []string, b string) bool {
 	return false
 }
 
+func Filter(a []string, delegate func(string) bool) []string {
+	list := []string{}
+	for _, v := range a {
+		if delegate(v) {
+			list = append(list, v)
+		}
+	}
+
+	return list
+}
+
 func ForEach(a []string, delegate func(string) string) []string {
 	list := []string{}
 	for _, v := range a {

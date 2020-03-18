@@ -2,7 +2,6 @@ package parser
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"github.com/RossMerr/jsonschema"
@@ -28,61 +27,34 @@ func NewParser(ctx context.Context, packageName string) Parser {
 func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 	parse := NewParse()
 
-	s.findDefinitions(schemas)
+	s.buildReferences(schemas)
 
-	interfaces := s.findInterfaces(schemas)
-
-	for key, schema := range interfaces {
-		switch schema.Type() {
-		case reflect.Interface:
-			inter := NewInterface(s.ctx, key, schema, nil)
-			parse.Interfaces[jsonschema.ID(inter.Name)] = inter
-		}
-	}
-
-	for key, schema := range schemas {
+	for _, schema := range schemas {
 		switch schema.Type() {
 		case reflect.Struct:
-			parse.Structs[schema.ID] = NewStruct(s.ctx, NewAnonymousStruct(s.ctx, jsonschema.ID(key), schema, nil))
+			parse.Structs[schema.ID] = NewStruct(s.ctx, NewAnonymousStruct(s.ctx, schema, nil))
 		}
 	}
 
 	return parse
 }
 
-func (s *parser)findDefinitions(schemas map[jsonschema.ID]*jsonschema.Schema) {
-	for key, schema := range schemas {
-		s.ctx.ReferencedSchema[key] = schema
-		for key, definition := range schema.Definitions {
-			ref := fmt.Sprintf("#/definitions/%v", key)
-			s.ctx.ReferencedSchema[jsonschema.NewID(ref)] = definition
-		}
+func (s *parser)buildReferences(schemas map[jsonschema.ID]*jsonschema.Schema) {
+	for _, schema := range schemas {
+		key := schema.ID.Base()
+		s.ctx.References[key] = schema
 	}
-}
-
-func (s *parser)findInterfaces(schemas map[jsonschema.ID]*jsonschema.Schema)  map[jsonschema.ID]*jsonschema.Schema {
-	interfaces := map[jsonschema.ID]*jsonschema.Schema{}
-
-	for key, schema := range schemas {
-		if 	len(schema.OneOf) > 0 {
-			interfaces[key]= schema
-		}
-
-		for key, schema = range s.findInterfaces(schema.Properties) {
-			interfaces[key] = schema
-		}
-	}
-
-	return interfaces
 }
 
 
 func SchemaToType(ctx *SchemaContext, key jsonschema.ID, schema, parent *jsonschema.Schema) Types {
 	switch schema.Type() {
 	case reflect.Struct:
-		return NewAnonymousStruct(ctx, jsonschema.ID(key), schema, parent)
+		schema.ID = key
+		return NewAnonymousStruct(ctx, schema, parent)
 	case reflect.Interface:
-		return NewInterface(ctx, key, schema, parent)
+		schema.ID = key
+		return NewInterface(ctx, schema, parent)
 	case reflect.Array:
 		return NewArray(ctx, key, schema, parent)
 	case reflect.Int32:
@@ -92,10 +64,10 @@ func SchemaToType(ctx *SchemaContext, key jsonschema.ID, schema, parent *jsonsch
 	case reflect.String:
 		return NewString(ctx, key, schema, parent)
 	case reflect.Ptr:
-		ref := ctx.ReferencedSchema[schema.Ref]
+		ref := ctx.References[schema.Ref.Base()]
 		return SchemaToType(ctx, key, ref, parent)
 	default:
-		return NewAnonymousStruct(ctx, key, schema, parent)
+		return NewAnonymousStruct(ctx, schema, parent)
 	}
 
 	return nil

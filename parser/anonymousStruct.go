@@ -1,58 +1,49 @@
 package parser
 
 import (
-	"strings"
+	"reflect"
 
 	"github.com/RossMerr/jsonschema"
 )
 
 type AnonymousStruct struct {
-	comment     string
-	Name        string
-	id          jsonschema.ID
-	Fields      []Types
-	StructTag   string
-	Definitions []Types
-	InterfaceMethods []string
-
+	comment    string
+	Name       string
+	id         jsonschema.ID
+	Fields     []Types
+	StructTag  string
+	Interfaces []*Interface
+	Method     string
 }
 
-func NewAnonymousStruct(ctx *SchemaContext, id jsonschema.ID, schema, parent *jsonschema.Schema) *AnonymousStruct {
+func NewAnonymousStruct(ctx *SchemaContext, schema, parent *jsonschema.Schema) *AnonymousStruct {
 	fields := []Types{}
+	interfaces := []*Interface{}
 
 	for key, propertie := range schema.Properties {
 		t := SchemaToType(ctx, key, propertie, schema)
+		if propertie.Type() == reflect.Interface {
+			i := t.(*Interface)
+			interfaces = append(interfaces, i)
+		}
 
 		fields = append(fields, t)
 	}
 
 	name := schema.ID.Typename()
-	if name == "" {
-		name = id.Typename()
-	}
 
 	structTag := ""
 	if parent != nil {
-		structTag = ctx.Tags.ToFieldTag(strings.Title(name), schema, parent)
-	}
-
-
-	definitions := []Types{}
-	for key, definition := range schema.Definitions {
-		t := SchemaToType(ctx, jsonschema.NewDefinitionsID(key), definition, nil)
-
-		definitions = append(definitions, t)
+		structTag = ctx.Tags.ToFieldTag(name, schema, parent)
 	}
 
 	return &AnonymousStruct{
-		comment:     schema.Description,
-		Name:        strings.Title(name),
-		id:          id,
-		Fields:      fields,
-		StructTag:   structTag,
-		Definitions: definitions,
-		InterfaceMethods:jsonschema.Unique(ctx.ImplementInterface[id]),
-
+		comment:    schema.Description,
+		Name:       name,
+		id:         schema.ID,
+		Fields:     fields,
+		StructTag:  structTag,
+		Interfaces: interfaces,
 	}
 }
 
@@ -69,7 +60,7 @@ const AnonymousStructTemplate = `
 {{  .Name }} struct {
 {{range $key, $propertie := .Fields -}}
 	{{- if isInterface $propertie -}}
-		{{ $propertie.Name }} interface{} {{ $propertie.StructTag }}
+		{{ $propertie.Name }} {{ $propertie.Name }} {{ $propertie.StructTag }}
 	{{end -}}
 	{{- if isStruct $propertie -}}
 		{{template "struct" $propertie }}
@@ -87,11 +78,13 @@ const AnonymousStructTemplate = `
 		{{template "boolean" $propertie }}
 	{{end -}}
 {{end -}}
-} {{ .StructTag }}
+}
 
-{{ if .InterfaceMethods }}
-	{{range $key, $mathod := .InterfaceMethods -}}
-	func (s *{{$.Name}}) {{ $mathod }}() {}
-	{{end -}}
+{{ if .Method -}}
+	func (s *{{  .Name }}) {{.Method}}(){}
 {{end -}}
+
+{{range $key, $interface := .Interfaces -}}
+	{{template "interface" $interface }}
+{{end}}
 {{end}}`

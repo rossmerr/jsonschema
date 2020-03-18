@@ -18,21 +18,13 @@ func NewID(s string) ID {
 	return ID(s)
 }
 
-func NewDefinitionsID(s ID) ID {
-	return NewID(definitions + s.String())
-}
-
 func (s ID) String() string {
 	return string(s)
 }
 
-
+// Deprecated
 func (s ID)Title() string {
 	return strings.Title(s.String())
-}
-func (s ID) Filename() string {
-	filename := s.Typename()
-	return string(unicode.ToLower(rune(filename[0]))) + filename[1:]
 }
 
 
@@ -45,12 +37,15 @@ func (s ID) Pointer() (path string, query []string, err error) {
 
 	index := strings.Index(raw, "#")
 	if index < 0 {
-		err = fmt.Errorf("No point found, missing #")
+		path = raw
+		query = []string{}
 		return
 	}
 	path = raw[:index]
 	parts := raw[index+1:]
-	query =strings.Split(parts, "/")
+
+	query = strings.Split(parts, "/")
+	query = Filter(query, func(v string) bool { return v != "" })
 	return
 }
 
@@ -79,22 +74,27 @@ func (s ID) IsAbs() bool {
 
 
 
-func (s ID) Typename2() string {
-	_, query, _ := s.Pointer()
-	if len(query) < 1 {
-		return ""
-	}
+func (s ID) Typename() string {
+	basename := s.Base()
+	name := strings.TrimSuffix(basename, filepath.Ext(basename))
+
 	reg, err := regexp.Compile(`[^a-zA-Z0-9]+`)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	clean := reg.ReplaceAllString(query[len(query) -1], " ")
+	clean := reg.ReplaceAllString(name, " ")
 	return reg.ReplaceAllString( strings.Title(clean), "")
+}
+
+func (s ID) Filename() string {
+	filename := s.Typename()
+	return string(unicode.ToLower(rune(filename[0]))) + filename[1:]
 }
 
 
 
+// Deprecated
 func (s ID) Parts() (schema string, fragment string, typename string, err error) {
 	raw := string(s)
 	if len(raw) < 1 {
@@ -130,12 +130,4 @@ var name string
 	}
 	typename = reg.ReplaceAllString(strings.Title(name), "")
 	return
-}
-
-func (s ID) Typename() (string) {
-	_, _, typename, err := s.Parts()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return typename
 }

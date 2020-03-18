@@ -61,18 +61,18 @@ func TestSchemas_Generate(t *testing.T) {
 				},
 			},
 		},
-		{
-			name: "Oneof",
-			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/entry-schema": loadRawSchema("samples/entry-schema.json"),
-				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output:      "output/",
-				},
-			},
-		},
+		// {
+		// 	name: "Oneof",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"http://example.com/entry-schema.json": loadRawSchema("samples/entry-schema.json"),
+		// 		},
+		// 		config: &jsonschema.Config{
+		// 			Packagename: "main",
+		// 			Output:      "output/",
+		// 		},
+		// 	},
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

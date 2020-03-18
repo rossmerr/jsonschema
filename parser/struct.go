@@ -35,15 +35,5 @@ package main
 {{ end -}}
 type {{template "struct" .AnonymousStruct }}
 
-{{range $key, $definition := .AnonymousStruct.Definitions -}}
-	{{if $definition.Comment -}}
-	// {{ $definition.Comment}}
-	{{ else }}
-	// {{$definition.Name}}
-	{{end -}}
-	{{if $definition.ID -}}
-	// ID: {{ $definition.ID}}
-	{{end -}}
-	type {{template "struct" $definition }}
-{{ end -}}
+
 `

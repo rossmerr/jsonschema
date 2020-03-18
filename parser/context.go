@@ -9,18 +9,18 @@ import (
 
 type SchemaContext struct {
 	context.Context
-	ReferencedSchema   map[jsonschema.ID]*jsonschema.Schema
-	Package            string
-	Tags               tags.FieldTag
-	ImplementInterface map[jsonschema.ID][]string
+	Interfaces map[string]*jsonschema.Schema
+	References map[string]*jsonschema.Schema
+	Package    string
+	Tags       tags.FieldTag
 }
 
 func NewContext(ctx context.Context, packageName string, tags tags.FieldTag) *SchemaContext {
 	return &SchemaContext{
 		ctx,
-		map[jsonschema.ID]*jsonschema.Schema{},
+		map[string]*jsonschema.Schema{},
+		map[string]*jsonschema.Schema{},
 		packageName,
 		tags,
-		map[jsonschema.ID][]string{},
 	}
 }

@@ -4,33 +4,34 @@ package main
 // JSON Schema for an fstab entry
 // ID: http://example.com/entry-schema
 type EntrySchema struct {
-	Storage interface{} `json:"Storage"`
+	Storage Storage `json:"Storage"`
 }
 
-// DiskUUID
-// ID: #/definitions/diskUUID
+// Storage
+// #/definitions/diskDevice
+// #/definitions/diskUUID
+// #/definitions/nfs
+// #/definitions/tmpfs
+type Storage interface {
+	storage()
+}
+
+type DiskDevice struct {
+}
+
+func (s *DiskDevice) storage() {}
+
 type DiskUUID struct {
 }
 
 func (s *DiskUUID) storage() {}
 
-// Nfs
-// ID: #/definitions/nfs
 type Nfs struct {
 }
 
 func (s *Nfs) storage() {}
 
-// Tmpfs
-// ID: #/definitions/tmpfs
 type Tmpfs struct {
 }
 
 func (s *Tmpfs) storage() {}
-
-// DiskDevice
-// ID: #/definitions/diskDevice
-type DiskDevice struct {
-}
-
-func (s *DiskDevice) storage() {}

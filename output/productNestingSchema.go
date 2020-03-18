@@ -2,25 +2,19 @@
 package main
 
 // A product from Acme's catalog
-// ID: http://example.com/product.schema.json
-type ProductSchemaJson struct {
+// ID: http://example.com/product.nesting.schema.json
+type ProductNestingSchema struct {
 	// The unique identifier for a product
 	ProductId *int32 `json:"productId,omitempty", validate:"required"`
 	// Name of the product
 	ProductName string `json:"productName,omitempty", validate:"required"`
 	// The price of the product
-	Price *float64 `json:"price,omitempty", validate:"gt=0,required"`
+	Price *float64 `json:"omitempty,price", validate:"required,gt=0"`
 	// Tags for the product
 	Tags       []string `json:"tags"`
 	Dimensions struct {
-		// length
 		Length *float64 `json:"length,omitempty", validate:"required"`
 		Width  *float64 `json:"width,omitempty", validate:"required"`
 		Height *float64 `json:"height,omitempty", validate:"required"`
-	} `json:"Dimensions"`
-
-	GeographicalLocationSchemaJson struct {
-		Latitude  *float64 `json:"latitude,omitempty", validate:"required,lte=90,gte=-90"`
-		Longitude *float64 `json:"longitude,omitempty", validate:"gte=-180,required,lte=180"`
-	} `json:"GeographicalLocationSchemaJson"`
+	}
 }
