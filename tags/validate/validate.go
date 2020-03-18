@@ -2,6 +2,7 @@ package validate
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/tags"
@@ -14,14 +15,12 @@ func NewValidateTags() tags.StructTag {
 	return &validate{}
 }
 
-func (s *validate) ToStructTag(key string, schema, parent *jsonschema.Schema) string {
+func (s *validate) ToStructTag(key string, schema *jsonschema.Schema, required []string) string {
 
 	dict := map[string]string{}
 
-	if parent != nil {
-		if jsonschema.Contains(parent.Required, key) {
-			dict["required"] = jsonschema.EmptyString
-		}
+	if jsonschema.Contains(required, strings.ToLower(key)) {
+		dict["required"] = jsonschema.EmptyString
 	}
 
 	if schema.MaxLength != nil {

@@ -2,13 +2,15 @@ package parser
 
 type Struct struct {
 	*AnonymousStruct
+	Filename string
 	Package     string
 
 }
 
-func NewStruct(ctx *SchemaContext, anonymousStruct *AnonymousStruct) *Struct {
+func NewStruct(ctx *SchemaContext, anonymousStruct *AnonymousStruct, filename string) *Struct {
 	return &Struct{
 		anonymousStruct,
+		filename,
 		ctx.Package,
 	}
 

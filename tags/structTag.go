@@ -5,5 +5,5 @@ import (
 )
 
 type StructTag interface {
-	ToStructTag(key string, schema, parent *jsonschema.Schema) string
+	ToStructTag(key string, schema *jsonschema.Schema, required []string) string
 }

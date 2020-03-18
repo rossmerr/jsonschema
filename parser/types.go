@@ -1,16 +1,12 @@
 package parser
 
 import (
-	"encoding/json"
-	"reflect"
 	"strings"
-
-	"github.com/RossMerr/jsonschema"
 )
 
 type Types interface {
 	Comment()     string
-	ID() jsonschema.ID
+	ID() string
 }
 
 func IsStruct(obj interface{}) bool {
@@ -43,23 +39,10 @@ func IsBoolean(obj interface{}) bool {
 	return ok
 }
 
-func ToString(raw json.RawMessage) string {
-	var s string
-	err := json.Unmarshal(raw, &s)
-	if err != nil {
-		panic(err)
-	}
-	return s
-}
-
 func MixedCase(raw string) string {
 	if len(raw) < 1 {
 		return raw
 	}
 	s := strings.Title(raw)
 	return  strings.ToLower(s[0:1]) + s[1:]
-}
-
-func KindOf(src interface{}) string {
-	return reflect.ValueOf(src).Kind().String()
 }

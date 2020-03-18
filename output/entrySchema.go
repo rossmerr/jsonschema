@@ -3,8 +3,8 @@ package main
 
 // JSON Schema for an fstab entry
 // ID: http://example.com/entry-schema
-type EntrySchema struct {
-	Storage Storage `json:"Storage"`
+type entrySchema struct {
+	Storage Storage `json:"Storage,omitempty", validate:"required"`
 }
 
 // Storage

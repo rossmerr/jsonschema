@@ -61,26 +61,28 @@ func TestSchemas_Generate(t *testing.T) {
 				},
 			},
 		},
-		// {
-		// 	name: "Oneof",
-		// 	fields: fields{
-		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
-		// 			"http://example.com/entry-schema.json": loadRawSchema("samples/entry-schema.json"),
-		// 		},
-		// 		config: &jsonschema.Config{
-		// 			Packagename: "main",
-		// 			Output:      "output/",
-		// 		},
-		// 	},
-		// },
+		{
+			name: "Oneof",
+			fields: fields{
+				documents: map[jsonschema.ID]*jsonschema.Schema{
+					"http://example.com/entry-schema.json": loadRawSchema("samples/entry-schema.json"),
+				},
+				config: &jsonschema.Config{
+					Packagename: "main",
+					Output:      "output/",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
 			p := parser.NewParser(context.Background(), tt.fields.config.Packagename)
 			parse := p.Parse(tt.fields.documents)
-			interpret := interpreter.NewInterpretDefaults(parse)
-
+			interpret, err := interpreter.NewInterpretDefaults(parse)
+			if err != nil {
+				t.Error(err)
+			}
 			if err := interpret.ToFile(tt.fields.config.Output); (err != nil) != tt.wantErr {
 				t.Errorf("Schemas.Generate() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -122,8 +124,8 @@ func TestSchema_Traverse(t *testing.T) {
 		{
 			name: "Definitions",
 			schema: &jsonschema.Schema{
-				Definitions: map[jsonschema.ID]*jsonschema.Schema{
-					jsonschema.ID("test"): &jsonschema.Schema{ID:jsonschema.ID("test")},
+				Definitions: map[string]*jsonschema.Schema{
+					"test": &jsonschema.Schema{ID:jsonschema.ID("test")},
 				},
 			},
 			query:[]string{"Definitions", "test"},

@@ -7,20 +7,20 @@ import (
 )
 
 type Array struct {
-	id jsonschema.ID
+	id string
 	comment   string
 	Name      string
 	TypeValue reflect.Kind
 	FieldTag  string
 }
 
-func NewArray(ctx *SchemaContext, key jsonschema.ID, schema, parent *jsonschema.Schema) *Array {
+func NewArray(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *Array {
 	return &Array{
-		id: key,
+		id: schema.ID.String(),
 		comment:   schema.Description,
-		Name:     key.Title(),
+		Name:     typename,
 		TypeValue: schema.Items.Type(),
-		FieldTag:  ctx.Tags.ToFieldTag(key.String(), schema, parent),
+		FieldTag:  ctx.Tags.ToFieldTag(typename, schema, required),
 	}
 }
 
@@ -28,7 +28,7 @@ func (s *Array) Comment() string {
 	return s.comment
 }
 
-func (s *Array) ID() jsonschema.ID {
+func (s *Array) ID() string {
 	return s.id
 }
 

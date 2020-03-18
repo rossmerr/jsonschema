@@ -1,11 +1,13 @@
 package parser
 
 import (
+	"strings"
+
 	"github.com/RossMerr/jsonschema"
 )
 
 type Number struct {
-	id jsonschema.ID
+	id         string
 	comment    string
 	Name       string
 	Validation string
@@ -13,22 +15,19 @@ type Number struct {
 	FieldTag   string
 }
 
-func NewNumber(ctx *SchemaContext, key jsonschema.ID, schema, parent *jsonschema.Schema) *Number {
-
+func NewNumber(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *Number {
 	typeValue := schema.Type().String()
 
-	if parent != nil {
-		if jsonschema.Contains(parent.Required, key.String()) {
-			typeValue = "*" + typeValue
-		}
+	if jsonschema.Contains(required, strings.ToLower(typename)) {
+		typeValue = "*" + typeValue
 	}
 
 	return &Number{
-		id: key,
+		id:        schema.ID.String(),
 		comment:   schema.Description,
-		Name:      key.Title(),
+		Name:      typename,
 		TypeValue: typeValue,
-		FieldTag:  ctx.Tags.ToFieldTag(key.String(), schema, parent),
+		FieldTag:  ctx.Tags.ToFieldTag(typename, schema, required),
 	}
 }
 
@@ -36,7 +35,7 @@ func (s *Number) Comment() string {
 	return s.comment
 }
 
-func (s *Number) ID() jsonschema.ID {
+func (s *Number) ID() string {
 	return s.id
 }
 

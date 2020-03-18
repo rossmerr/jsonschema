@@ -5,18 +5,18 @@ import (
 )
 
 type Boolean struct {
-	id jsonschema.ID
+	id string
 	comment  string
 	Name     string
 	FieldTag string
 }
 
-func NewBoolean(ctx *SchemaContext, key jsonschema.ID, schema, parent *jsonschema.Schema) *Boolean {
+func NewBoolean(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *Boolean {
 	return &Boolean{
-		id: key,
+		id: schema.ID.String(),
 		comment:  schema.Description,
-		Name:     key.Title(),
-		FieldTag: ctx.Tags.ToFieldTag(key.String(), schema, parent),
+		Name:     typename,
+		FieldTag: ctx.Tags.ToFieldTag(typename, schema, required),
 	}
 }
 
@@ -24,7 +24,7 @@ func (s *Boolean) Comment() string {
 	return s.comment
 }
 
-func (s *Boolean) ID() jsonschema.ID {
+func (s *Boolean) ID() string {
 	return s.id
 }
 

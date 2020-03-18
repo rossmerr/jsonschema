@@ -6,21 +6,22 @@ import (
 )
 
 type Schema struct {
-	ID                   ID             `json:"$id,omitempty"`
-	Schema               string         `json:"$schema,omitempty"`
-	Ref                  ID             `json:"$ref,omitempty"`
-	Defs                 map[ID]*Schema `json:"$defs,omitempty"`
-	Anchor               ID             `json:"$anchor,omitempty"`
-	Description          string         `json:"description,omitempty"`
-	Title                string         `json:"title,omitempty"`
-	TypeValue            string         `json:"type,omitempty"`
-	Required             []string       `json:"required,omitempty"`
-	Properties           map[ID]*Schema `json:"properties,omitempty"`
-	Definitions          map[ID]*Schema `json:"definitions,omitempty"`
-	Items                *Schema        `json:"items,omitempty"`
-	OneOf                []*Schema      `json:"oneof,omitempty"`
-	AnyOf                []*Schema      `json:"anyof,omitempty"`
-	AllOf                []*Schema      `json:"allof,omitempty"`
+	ID          ID                 `json:"$id,omitempty"`
+	Schema      string             `json:"$schema,omitempty"`
+	Ref         Pointer            `json:"$ref,omitempty"`
+	Defs        map[string]*Schema `json:"$defs,omitempty"`
+	Anchor      Anchor             `json:"$anchor,omitempty"`
+	Description string             `json:"description,omitempty"`
+	Title       string             `json:"title,omitempty"`
+	TypeValue   string             `json:"type,omitempty"`
+	Required    []string           `json:"required,omitempty"`
+	Properties  map[string]*Schema `json:"properties,omitempty"`
+	// Deprecated use Defs
+	Definitions map[string]*Schema `json:"definitions,omitempty"`
+	Items       *Schema            `json:"items,omitempty"`
+	OneOf       []*Schema          `json:"oneof,omitempty"`
+	AnyOf       []*Schema          `json:"anyof,omitempty"`
+	AllOf       []*Schema          `json:"allof,omitempty"`
 
 	// Validation
 	MaxProperties    *uint32 `json:"maxlroperties,omitempty"`
@@ -48,7 +49,7 @@ func (s Schema) Type() reflect.Kind {
 	case Array:
 		return reflect.Array
 	case Object:
-		if s.OneOf != nil && len(s.OneOf) > 0{
+		if s.OneOf != nil && len(s.OneOf) > 0 {
 			return reflect.Interface
 		}
 		if s.AnyOf != nil && len(s.AnyOf) > 0 {
@@ -86,7 +87,7 @@ func (s *Schema) Traverse(query []string) *Schema {
 func traverse(val reflect.Value, query []string) *Schema {
 	if len(query) == 0 {
 		i := val.Interface()
-		if s, ok := i.(*Schema); ok{
+		if s, ok := i.(*Schema); ok {
 			return s
 		}
 		return nil
@@ -124,7 +125,7 @@ func traverse(val reflect.Value, query []string) *Schema {
 	case reflect.Slice:
 		i := val.Interface()
 		arr := i.([]*Schema)
-		for _, v := range arr  {
+		for _, v := range arr {
 			val := reflect.ValueOf(v).Elem()
 			result := traverse(val, query)
 			if result != nil {

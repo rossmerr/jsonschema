@@ -9,40 +9,34 @@ import (
 type AnonymousStruct struct {
 	comment    string
 	Name       string
-	id         jsonschema.ID
+	id         string
 	Fields     []Types
 	StructTag  string
 	Interfaces []*Interface
 	Method     string
 }
 
-func NewAnonymousStruct(ctx *SchemaContext, schema, parent *jsonschema.Schema) *AnonymousStruct {
+func NewAnonymousStruct(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *AnonymousStruct {
 	fields := []Types{}
 	interfaces := []*Interface{}
 
 	for key, propertie := range schema.Properties {
-		t := SchemaToType(ctx, key, propertie, schema)
+		t := SchemaToType(WrapContext(ctx, schema), key, propertie, schema.Required)
 		if propertie.Type() == reflect.Interface {
-			i := t.(*Interface)
-			interfaces = append(interfaces, i)
+			if i, ok := t.(*Interface); ok {
+				interfaces = append(interfaces, i)
+			}
 		}
 
 		fields = append(fields, t)
 	}
 
-	name := schema.ID.Typename()
-
-	structTag := ""
-	if parent != nil {
-		structTag = ctx.Tags.ToFieldTag(name, schema, parent)
-	}
-
 	return &AnonymousStruct{
 		comment:    schema.Description,
-		Name:       name,
-		id:         schema.ID,
+		Name:       typename,
+		id:         schema.ID.String(),
 		Fields:     fields,
-		StructTag:  structTag,
+		StructTag:  ctx.Tags.ToFieldTag(typename, schema, required),
 		Interfaces: interfaces,
 	}
 }
@@ -51,7 +45,7 @@ func (s *AnonymousStruct) Comment() string {
 	return s.comment
 }
 
-func (s *AnonymousStruct) ID() jsonschema.ID {
+func (s *AnonymousStruct) ID() string {
 	return s.id
 }
 

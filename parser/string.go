@@ -5,19 +5,19 @@ import (
 )
 
 type String struct {
-	id jsonschema.ID
+	id string
 	comment    string
 	Name       string
 	Validation string
 	FieldTag   string
 }
 
-func NewString(ctx *SchemaContext, key jsonschema.ID, schema, parent *jsonschema.Schema) *String {
+func NewString(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *String {
 	return &String{
-		id: key,
+		id: schema.ID.String(),
 		comment:  schema.Description,
-		Name:     key.Title(),
-		FieldTag: ctx.Tags.ToFieldTag(key.String(), schema, parent),
+		Name:     typename,
+		FieldTag: ctx.Tags.ToFieldTag(typename, schema, required),
 	}
 }
 
@@ -25,7 +25,7 @@ func (s *String) Comment() string {
 	return s.comment
 }
 
-func (s *String) ID() jsonschema.ID {
+func (s *String) ID() string {
 	return s.id
 }
 

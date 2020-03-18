@@ -50,5 +50,5 @@ func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 
 	root := s.parser.Parse(schemas)
 
-	return NewInterpretDefaults(root), nil
+	return NewInterpretDefaults(root)
 }

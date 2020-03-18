@@ -1,6 +1,11 @@
 package jsonschema
 
-import "strings"
+import (
+	"log"
+	"path/filepath"
+	"regexp"
+	"strings"
+)
 
 func Contains(a []string, b string) bool {
 	for _, v := range a {
@@ -65,4 +70,17 @@ func KeysString(m map[string]string) string {
 		}
 	}
 	return strings.Join(keys, ",")
+}
+
+func Typename(s string) string {
+
+	name := strings.TrimSuffix(s, filepath.Ext(s))
+
+	reg, err := regexp.Compile(`[^a-zA-Z0-9]+`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	clean := reg.ReplaceAllString(name, " ")
+	return reg.ReplaceAllString( strings.Title(clean), "")
 }

@@ -23,13 +23,17 @@ func NewInterpret(root *parser.Parse, templateStruct Template) Interpret {
 	}
 }
 
-func NewInterpretDefaults(root *parser.Parse) Interpret {
-	return NewInterpret(root, parser.TemplateStruct())
+func NewInterpretDefaults(root *parser.Parse) (Interpret, error) {
+	templates, err := parser.Template()
+	if err != nil {
+		return nil, err
+	}
+	return NewInterpret(root, templates),nil
 }
 
 func (s *interpret) ToFile(output string) error {
 	for _, obj := range s.root.Structs {
-		filename := output + obj.ID().Filename() + ".go"
+		filename := output + obj.Filename + ".go"
 		_, err := os.Stat(filename)
 		if !os.IsNotExist(err) {
 			err = os.Remove(filename)

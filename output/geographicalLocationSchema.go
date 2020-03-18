@@ -3,7 +3,7 @@ package main
 
 // A geographical coordinate on a planet (most commonly Earth).
 // ID: https://example.com/geographical-location.schema.json
-type GeographicalLocationSchema struct {
-	Latitude  *float64 `json:"latitude,omitempty", validate:"required,lte=90,gte=-90"`
-	Longitude *float64 `json:"longitude,omitempty", validate:"gte=-180,required,lte=180"`
+type geographicalLocationSchema struct {
+	Latitude  *float64 `json:"Latitude,omitempty", validate:"required,lte=90,gte=-90"`
+	Longitude *float64 `json:"Longitude,omitempty", validate:"required,lte=180,gte=-180"`
 }

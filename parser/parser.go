@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
 	"github.com/RossMerr/jsonschema"
@@ -32,7 +33,8 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 	for _, schema := range schemas {
 		switch schema.Type() {
 		case reflect.Struct:
-			parse.Structs[schema.ID] = NewStruct(s.ctx, NewAnonymousStruct(s.ctx, schema, nil))
+			filename := schema.ID.Filename()
+			parse.Structs[schema.ID] = NewStruct(s.ctx, NewAnonymousStruct(s.ctx, filename, schema, nil), filename)
 		}
 	}
 
@@ -47,28 +49,30 @@ func (s *parser)buildReferences(schemas map[jsonschema.ID]*jsonschema.Schema) {
 }
 
 
-func SchemaToType(ctx *SchemaContext, key jsonschema.ID, schema, parent *jsonschema.Schema) Types {
+func SchemaToType(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string ) Types {
+	typename = jsonschema.Typename(typename)
 	switch schema.Type() {
 	case reflect.Struct:
-		schema.ID = key
-		return NewAnonymousStruct(ctx, schema, parent)
+		return NewAnonymousStruct(ctx, typename, schema, required)
 	case reflect.Interface:
-		schema.ID = key
-		return NewInterface(ctx, schema, parent)
+		return NewInterface(ctx, typename, schema, required)
 	case reflect.Array:
-		return NewArray(ctx, key, schema, parent)
+		return NewArray(ctx, typename, schema, required)
 	case reflect.Int32:
 		fallthrough
 	case reflect.Float64:
-		return NewNumber(ctx, key, schema, parent)
+		return NewNumber(ctx, typename, schema, required)
 	case reflect.String:
-		return NewString(ctx, key, schema, parent)
+		return NewString(ctx, typename, schema, required)
+	case reflect.Bool:
+		return NewBoolean(ctx, typename, schema, required)
 	case reflect.Ptr:
-		ref := ctx.References[schema.Ref.Base()]
-		return SchemaToType(ctx, key, ref, parent)
+		if ref, ok := ctx.References[schema.Ref.Base()]; ok {
+			return SchemaToType(ctx, typename, ref, required)
+		} else {
+			panic(fmt.Errorf("Reference not found! '%v'", schema.Ref.Base()))
+		}
 	default:
-		return NewAnonymousStruct(ctx, schema, parent)
+		return NewAnonymousStruct(ctx, typename, schema, required)
 	}
-
-	return nil
 }
