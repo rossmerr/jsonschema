@@ -24,10 +24,8 @@ func NewInterface(ctx *SchemaContext, typename string, schema *jsonschema.Schema
 	structs := []*AnonymousStruct{}
 
 	for _, oneOf:= range schema.OneOf  {
-		fragments := oneOf.Ref.Fragments()
-		def := ctx.ParentSchema.Traverse(fragments)
-		typename := fragments[len(fragments)-1]
-		t := SchemaToType(WrapContext(ctx, schema), typename, def, schema.Required)
+		def, typename, ctx := ResolvePointer(ctx, oneOf.Ref)
+		t := SchemaToType(ctx, typename, def, schema.Required)
 		if i, ok := t.(*AnonymousStruct); ok {
 			i.Method = method
 			structs = append(structs, i)
@@ -36,10 +34,8 @@ func NewInterface(ctx *SchemaContext, typename string, schema *jsonschema.Schema
 	}
 
 	for _, anyOf:= range schema.AnyOf  {
-		fragments := anyOf.Ref.Fragments()
-		def := ctx.ParentSchema.Traverse(fragments)
-		typename := fragments[len(fragments)-1]
-		t := SchemaToType(WrapContext(ctx, schema), typename, def, schema.Required)
+		def, typename, ctx := ResolvePointer(ctx, anyOf.Ref)
+		t := SchemaToType(ctx, typename, def, schema.Required)
 		if i, ok := t.(*AnonymousStruct); ok {
 			i.Method = method
 			structs = append(structs, i)
@@ -48,10 +44,8 @@ func NewInterface(ctx *SchemaContext, typename string, schema *jsonschema.Schema
 	}
 
 	for _, allOf:= range schema.AllOf  {
-		fragments := allOf.Ref.Fragments()
-		def := ctx.ParentSchema.Traverse(fragments)
-		typename := fragments[len(fragments)-1]
-		t := SchemaToType(WrapContext(ctx, schema), typename, def, schema.Required)
+		def, typename, ctx := ResolvePointer(ctx, allOf.Ref)
+		t := SchemaToType(ctx, typename, def, schema.Required)
 		if i, ok := t.(*AnonymousStruct); ok {
 			i.Method = method
 			structs = append(structs, i)

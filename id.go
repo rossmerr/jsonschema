@@ -9,8 +9,6 @@ import (
 	"unicode"
 )
 
-const definitions = "#/definitions/"
-
 type ID string
 
 func NewID(s string) ID {

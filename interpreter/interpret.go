@@ -3,6 +3,7 @@ package interpreter
 import (
 	"os"
 	"os/exec"
+	"path"
 
 	"github.com/RossMerr/jsonschema/parser"
 )
@@ -33,7 +34,7 @@ func NewInterpretDefaults(root *parser.Parse) (Interpret, error) {
 
 func (s *interpret) ToFile(output string) error {
 	for _, obj := range s.root.Structs {
-		filename := output + obj.Filename + ".go"
+		filename := path.Join( output,obj.Filename + ".go")
 		_, err := os.Stat(filename)
 		if !os.IsNotExist(err) {
 			err = os.Remove(filename)

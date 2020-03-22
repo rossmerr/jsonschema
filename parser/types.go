@@ -34,6 +34,11 @@ func IsNumber(obj interface{}) bool {
 	return ok
 }
 
+func IsInteger(obj interface{}) bool {
+	_, ok := obj.(*Integer)
+	return ok
+}
+
 func IsBoolean(obj interface{}) bool {
 	_, ok := obj.(*Boolean)
 	return ok

@@ -2,14 +2,16 @@ package parser
 
 type Struct struct {
 	*AnonymousStruct
+	Definitions []*Definition
 	Filename string
 	Package     string
 
 }
 
-func NewStruct(ctx *SchemaContext, anonymousStruct *AnonymousStruct, filename string) *Struct {
+func NewStruct(ctx *SchemaContext, anonymousStruct *AnonymousStruct, definitions []*Definition, filename string) *Struct {
 	return &Struct{
 		anonymousStruct,
+		definitions,
 		filename,
 		ctx.Package,
 	}
@@ -35,7 +37,12 @@ package main
 {{ if .ID -}}
 // ID: {{.ID}}
 {{ end -}}
+{{ if .AnonymousStruct.IsNotEmpty }}
 type {{template "struct" .AnonymousStruct }}
+{{ end }}
 
 
+{{range $key, $definition := .Definitions -}}
+type {{template "struct" $definition }}
+{{end -}}
 `

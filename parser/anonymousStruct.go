@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"reflect"
-
 	"github.com/RossMerr/jsonschema"
 )
 
@@ -22,7 +20,7 @@ func NewAnonymousStruct(ctx *SchemaContext, typename string, schema *jsonschema.
 
 	for key, propertie := range schema.Properties {
 		t := SchemaToType(WrapContext(ctx, schema), key, propertie, schema.Required)
-		if propertie.Type() == reflect.Interface {
+		if RequiesInterface(propertie) {
 			if i, ok := t.(*Interface); ok {
 				interfaces = append(interfaces, i)
 			}
@@ -40,6 +38,11 @@ func NewAnonymousStruct(ctx *SchemaContext, typename string, schema *jsonschema.
 		Interfaces: interfaces,
 	}
 }
+
+func (s *AnonymousStruct) IsNotEmpty() bool {
+	return len(s.Fields) > 0
+}
+
 
 func (s *AnonymousStruct) Comment() string {
 	return s.comment
@@ -64,6 +67,9 @@ const AnonymousStructTemplate = `
 	{{end -}}
 	{{- if isNumber $propertie -}}
 		{{template "number" $propertie }}
+	{{end -}}
+	{{- if isInteger $propertie -}}
+		{{template "integer" $propertie }}
 	{{end -}}
 	{{- if isString $propertie -}}
 		{{template "string" $propertie }}

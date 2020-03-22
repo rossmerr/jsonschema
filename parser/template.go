@@ -4,16 +4,16 @@ import (
 	"text/template"
 )
 
-
 func Template() (*template.Template, error) {
 	tmpl, err := template.New("document").Funcs(template.FuncMap{
 		"isStruct":    IsStruct,
 		"isArray":     IsArray,
 		"isString":    IsString,
 		"isNumber":    IsNumber,
+		"isInteger":   IsInteger,
 		"isInterface": IsInterface,
 		"isBoolean":   IsBoolean,
-		"mixedCase": MixedCase,
+		"mixedCase":   MixedCase,
 	}).Parse(StructTemplate)
 	tmpl, err = tmpl.Parse(AnonymousStructTemplate)
 	if err != nil {
@@ -24,6 +24,10 @@ func Template() (*template.Template, error) {
 		return nil, err
 	}
 	tmpl, err = tmpl.Parse(NumberTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(IntegerTemplate)
 	if err != nil {
 		return nil, err
 	}

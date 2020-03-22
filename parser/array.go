@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"reflect"
-
 	"github.com/RossMerr/jsonschema"
 )
 
@@ -10,16 +8,18 @@ type Array struct {
 	id string
 	comment   string
 	Name      string
-	TypeValue reflect.Kind
+	TypeValue string
 	FieldTag  string
 }
 
 func NewArray(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *Array {
+	arrType := schema.Items.Ref.Typename()
+
 	return &Array{
 		id: schema.ID.String(),
 		comment:   schema.Description,
 		Name:     typename,
-		TypeValue: schema.Items.Type(),
+		TypeValue: arrType,
 		FieldTag:  ctx.Tags.ToFieldTag(typename, schema, required),
 	}
 }

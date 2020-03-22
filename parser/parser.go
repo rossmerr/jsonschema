@@ -2,8 +2,6 @@ package parser
 
 import (
 	"context"
-	"fmt"
-	"reflect"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/tags"
@@ -31,10 +29,20 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 	s.buildReferences(schemas)
 
 	for _, schema := range schemas {
-		switch schema.Type() {
-		case reflect.Struct:
+		switch schema.Type {
+		case jsonschema.Object:
 			filename := schema.ID.Filename()
-			parse.Structs[schema.ID] = NewStruct(s.ctx, NewAnonymousStruct(s.ctx, filename, schema, nil), filename)
+			anonymousStruct := NewAnonymousStruct(s.ctx, filename, schema, nil)
+			definitions := make([]*Definition, 0)
+			for typename, def := range schema.Definitions  {
+				definition := NewDefinition(WrapContext(s.ctx, schema), typename, def)
+				definitions = append(definitions, definition)
+			}
+			for typename, def := range schema.Defs  {
+				definition := NewDefinition(WrapContext(s.ctx, schema), typename, def)
+				definitions = append(definitions, definition)
+			}
+			parse.Structs[schema.ID] = NewStruct(s.ctx, anonymousStruct, definitions, filename)
 		}
 	}
 
@@ -51,28 +59,43 @@ func (s *parser)buildReferences(schemas map[jsonschema.ID]*jsonschema.Schema) {
 
 func SchemaToType(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string ) Types {
 	typename = jsonschema.Typename(typename)
-	switch schema.Type() {
-	case reflect.Struct:
-		return NewAnonymousStruct(ctx, typename, schema, required)
-	case reflect.Interface:
-		return NewInterface(ctx, typename, schema, required)
-	case reflect.Array:
-		return NewArray(ctx, typename, schema, required)
-	case reflect.Int32:
-		fallthrough
-	case reflect.Float64:
-		return NewNumber(ctx, typename, schema, required)
-	case reflect.String:
-		return NewString(ctx, typename, schema, required)
-	case reflect.Bool:
+	switch schema.Type {
+	case jsonschema.Boolean:
 		return NewBoolean(ctx, typename, schema, required)
-	case reflect.Ptr:
-		if ref, ok := ctx.References[schema.Ref.Base()]; ok {
-			return SchemaToType(ctx, typename, ref, required)
-		} else {
-			panic(fmt.Errorf("Reference not found! '%v'", schema.Ref.Base()))
-		}
+	case jsonschema.String:
+		return NewString(ctx, typename, schema, required)
+	case jsonschema.Integer:
+		return NewInteger(ctx, typename, schema, required)
+	case jsonschema.Number:
+		return NewNumber(ctx, typename, schema, required)
+	case jsonschema.Array:
+		return NewArray(ctx, typename, schema, required)
+	case jsonschema.Object:
+		fallthrough
 	default:
+		if RequiesInterface(schema) {
+			return NewInterface(ctx, typename, schema, required)
+		}
+
+		if schema.Ref != jsonschema.EmptyString {
+			def, typename, ctx := ResolvePointer(ctx, schema.Ref)
+			return SchemaToType(ctx, typename, def, required)
+		}
+
 		return NewAnonymousStruct(ctx, typename, schema, required)
 	}
+}
+
+func RequiesInterface(s *jsonschema.Schema) bool {
+	if s.OneOf != nil && len(s.OneOf) > 0 {
+		return true
+	}
+	if s.AnyOf != nil && len(s.AnyOf) > 0 {
+		return true
+	}
+	if s.AllOf != nil && len(s.AllOf) > 0 {
+		return true
+	}
+
+	return false
 }

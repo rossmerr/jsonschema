@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/url"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -66,3 +67,21 @@ func (s Pointer) Base() string {
 	return file
 }
 
+
+func (s Pointer) Typename() string {
+	fragments := s.Fragments()
+
+	if len(fragments) == 0 {
+		log.Print(fmt.Sprintf("Pointer: no fragents found in '%v'", string(s)))
+		return EmptyString
+	}
+	name := fragments[len(fragments)-1]
+
+	reg, err := regexp.Compile(`[^a-zA-Z0-9]+`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	clean := reg.ReplaceAllString(name, " ")
+	return reg.ReplaceAllString(strings.Title(clean), "")
+}

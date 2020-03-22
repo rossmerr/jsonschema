@@ -6,7 +6,7 @@ import (
 	"github.com/RossMerr/jsonschema"
 )
 
-type Number struct {
+type Integer struct {
 	id         string
 	comment    string
 	Name       string
@@ -15,34 +15,36 @@ type Number struct {
 	Pointer string
 }
 
-func NewNumber(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *Number {
+func NewInteger(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *Integer {
+
 	pointer := "*"
 	if jsonschema.Contains(required, strings.ToLower(typename)) {
 		pointer = ""
 	}
 
-	return &Number{
+	return &Integer{
 		id:        schema.ID.String(),
 		comment:   schema.Description,
 		Name:      typename,
 		FieldTag:  ctx.Tags.ToFieldTag(typename, schema, required),
-		Pointer: pointer,
+		Pointer:pointer,
 	}
 }
 
-func (s *Number) Comment() string {
+func (s *Integer) Comment() string {
 	return s.comment
 }
 
-func (s *Number) ID() string {
+func (s *Integer) ID() string {
 	return s.id
 }
 
-const NumberTemplate = `
-{{- define "number" -}}
+const IntegerTemplate = `
+{{- define "integer" -}}
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-{{ .Name}} {{ .Pointer}}float64 {{ .FieldTag }}
+{{ .Name}} {{ .Pointer}}int32 {{ .FieldTag }}
 {{- end -}}
 `
+
