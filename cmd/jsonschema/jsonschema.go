@@ -59,6 +59,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	interpret.ToFile(config.Output)
+	err = interpret.ToFile(config.Output)
+	if err != nil {
+		panic(err)
+	}
 
 }

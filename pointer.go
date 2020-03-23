@@ -68,7 +68,7 @@ func (s Pointer) Base() string {
 }
 
 
-func (s Pointer) Typename() string {
+func (s Pointer) Fieldname() string {
 	fragments := s.Fragments()
 
 	if len(fragments) == 0 {

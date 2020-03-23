@@ -44,6 +44,11 @@ func IsBoolean(obj interface{}) bool {
 	return ok
 }
 
+func IsReference(obj interface{}) bool {
+	_, ok := obj.(*Reference)
+	return ok
+}
+
 func MixedCase(raw string) string {
 	if len(raw) < 1 {
 		return raw

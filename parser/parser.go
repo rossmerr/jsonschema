@@ -34,11 +34,11 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 			filename := schema.ID.Filename()
 			anonymousStruct := NewAnonymousStruct(s.ctx, filename, schema, nil)
 			definitions := make([]*Definition, 0)
-			for typename, def := range schema.Definitions  {
+			for typename, def := range schema.Definitions {
 				definition := NewDefinition(WrapContext(s.ctx, schema), typename, def)
 				definitions = append(definitions, definition)
 			}
-			for typename, def := range schema.Defs  {
+			for typename, def := range schema.Defs {
 				definition := NewDefinition(WrapContext(s.ctx, schema), typename, def)
 				definitions = append(definitions, definition)
 			}
@@ -49,32 +49,34 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 	return parse
 }
 
-func (s *parser)buildReferences(schemas map[jsonschema.ID]*jsonschema.Schema) {
+func (s *parser) buildReferences(schemas map[jsonschema.ID]*jsonschema.Schema) {
 	for _, schema := range schemas {
 		key := schema.ID.Base()
 		s.ctx.References[key] = schema
 	}
 }
 
-
-func SchemaToType(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string ) Types {
-	typename = jsonschema.Typename(typename)
+func SchemaToType(ctx *SchemaContext, field string, schema *jsonschema.Schema, required []string) Types {
+	field = jsonschema.Fieldname(field)
 	switch schema.Type {
 	case jsonschema.Boolean:
-		return NewBoolean(ctx, typename, schema, required)
+		return NewBoolean(ctx, field, schema, required)
 	case jsonschema.String:
-		return NewString(ctx, typename, schema, required)
+		// if schema.IsEnum() {
+		// 	return NewEnum(ctx, field, schema, required)
+		// }
+		return NewString(ctx, field, schema, required)
 	case jsonschema.Integer:
-		return NewInteger(ctx, typename, schema, required)
+		return NewInteger(ctx, field, schema, required)
 	case jsonschema.Number:
-		return NewNumber(ctx, typename, schema, required)
+		return NewNumber(ctx, field, schema, required)
 	case jsonschema.Array:
-		return NewArray(ctx, typename, schema, required)
+		return NewArray(ctx, field, schema, required)
 	case jsonschema.Object:
 		fallthrough
 	default:
 		if RequiesInterface(schema) {
-			return NewInterface(ctx, typename, schema, required)
+			return NewInterface(ctx, field, schema, required)
 		}
 
 		if schema.Ref != jsonschema.EmptyString {
@@ -82,7 +84,7 @@ func SchemaToType(ctx *SchemaContext, typename string, schema *jsonschema.Schema
 			return SchemaToType(ctx, typename, def, required)
 		}
 
-		return NewAnonymousStruct(ctx, typename, schema, required)
+		return NewAnonymousStruct(ctx, field, schema, required)
 	}
 }
 
@@ -99,3 +101,4 @@ func RequiesInterface(s *jsonschema.Schema) bool {
 
 	return false
 }
+

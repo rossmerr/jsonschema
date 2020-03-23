@@ -1,7 +1,6 @@
 package jsonschema
 
 import (
-	"fmt"
 	"log"
 	"path/filepath"
 	"regexp"
@@ -19,32 +18,19 @@ func (s ID) String() string {
 	return string(s)
 }
 
-func (s ID) pointer() (path string, query []string, err error) {
+// Base reports the file this ID references
+func (s ID) Base() string {
 	raw := string(s)
 	if len(raw) < 1 {
-		err = fmt.Errorf("No parts found")
-		return
+		return "."
 	}
 
 	index := strings.Index(raw, "#")
 	if index < 0 {
-		path = raw
-		query = []string{}
-		return
+		return filepath.Base(raw)
 	}
-	path = raw[:index]
-	parts := raw[index+1:]
 
-	query = strings.Split(parts, "/")
-	query = Filter(query, func(v string) bool { return v != "" })
-	return
-}
-
-// Base reports the file this ID references
-func (s ID) Base() string {
-	path, _, _ := s.pointer()
-
-	return filepath.Base(path)
+	return filepath.Base(raw[:index])
 }
 
 func (s ID) Filename() string {
@@ -58,5 +44,8 @@ func (s ID) Filename() string {
 
 	clean := reg.ReplaceAllString(name, " ")
 	filename := reg.ReplaceAllString( strings.Title(clean), "")
-	return string(unicode.ToLower(rune(filename[0]))) + filename[1:]
+	if len(filename) > 0 {
+		return string(unicode.ToLower(rune(filename[0]))) + filename[1:]
+	}
+	return filename
 }

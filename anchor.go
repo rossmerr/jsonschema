@@ -20,7 +20,7 @@ func (s Anchor) String() string {
 	return string(s)
 }
 
-func (s Anchor) Typename() string {
+func (s Anchor) Fieldname() string {
 	raw := string(s)
 	index := strings.Index(raw, "#")
 	if index < 0 {

@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"strings"
+
 	"github.com/RossMerr/jsonschema"
 )
 
@@ -9,14 +11,22 @@ type Boolean struct {
 	comment  string
 	Name     string
 	FieldTag string
+	Pointer string
+
 }
 
-func NewBoolean(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *Boolean {
+func NewBoolean(ctx *SchemaContext, field string, schema *jsonschema.Schema, required []string) *Boolean {
+	pointer := "*"
+	if jsonschema.Contains(required, strings.ToLower(field)) {
+		pointer = ""
+	}
+
 	return &Boolean{
-		id: schema.ID.String(),
+		id:       schema.ID.String(),
 		comment:  schema.Description,
-		Name:     typename,
-		FieldTag: ctx.Tags.ToFieldTag(typename, schema, required),
+		Name:     field,
+		FieldTag: ctx.Tags.ToFieldTag(field, schema, required),
+		Pointer:  pointer,
 	}
 }
 
@@ -33,6 +43,6 @@ const BooleanTemplate = `
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-{{ .Name}} bool
+{{ .Name}} {{ .Pointer}}bool {{ .FieldTag }}
 {{- end -}}
 `

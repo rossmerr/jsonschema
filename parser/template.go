@@ -13,6 +13,7 @@ func Template() (*template.Template, error) {
 		"isInteger":   IsInteger,
 		"isInterface": IsInterface,
 		"isBoolean":   IsBoolean,
+		"isReference":   IsReference,
 		"mixedCase":   MixedCase,
 	}).Parse(StructTemplate)
 	tmpl, err = tmpl.Parse(AnonymousStructTemplate)
@@ -40,6 +41,14 @@ func Template() (*template.Template, error) {
 		return nil, err
 	}
 	tmpl, err = tmpl.Parse(InterfaceTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(EnumTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(ReferenceTemplate)
 	if err != nil {
 		return nil, err
 	}

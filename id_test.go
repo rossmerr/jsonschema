@@ -93,7 +93,7 @@ func TestID_Filename(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.s.Filename(); got != tt.want {
-				t.Errorf("Typename() = %v, want %v", got, tt.want)
+				t.Errorf("Fieldname() = %v, want %v", got, tt.want)
 			}
 		})
 	}

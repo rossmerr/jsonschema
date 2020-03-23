@@ -22,3 +22,28 @@ func ResolvePointer(ctx *SchemaContext, ref jsonschema.Pointer) (*jsonschema.Sch
 
 	return def, typename, WrapContext(ctx, base)
 }
+
+
+type Reference struct {
+	Name     string
+}
+
+func NewReference(typename string) *Reference {
+	return &Reference{
+		Name:     typename,
+	}
+}
+
+func (s *Reference) Comment() string {
+	return jsonschema.EmptyString
+}
+
+func (s *Reference) ID() string {
+	return jsonschema.EmptyString
+}
+
+const ReferenceTemplate = `
+{{- define "reference" -}}
+*{{ .Name}}
+{{- end -}}
+`

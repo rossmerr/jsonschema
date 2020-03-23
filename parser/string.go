@@ -5,19 +5,20 @@ import (
 )
 
 type String struct {
-	id string
-	comment    string
-	Name       string
-	Validation string
-	FieldTag   string
+	id       string
+	comment  string
+	Name     string
+	FieldTag string
+	IsEnum   bool
 }
 
 func NewString(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *String {
 	return &String{
-		id: schema.ID.String(),
+		id:       schema.ID.String(),
 		comment:  schema.Description,
 		Name:     typename,
 		FieldTag: ctx.Tags.ToFieldTag(typename, schema, required),
+		IsEnum:   schema.IsEnum(),
 	}
 }
 

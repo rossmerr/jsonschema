@@ -41,7 +41,6 @@ package main
 type {{template "struct" .AnonymousStruct }}
 {{ end }}
 
-
 {{range $key, $definition := .Definitions -}}
 type {{template "struct" $definition }}
 {{end -}}

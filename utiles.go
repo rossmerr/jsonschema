@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"unicode"
 )
 
 func Contains(a []string, b string) bool {
@@ -72,9 +73,15 @@ func KeysString(m map[string]string) string {
 	return strings.Join(keys, ",")
 }
 
-func Typename(s string) string {
+func Fieldname(s string) string {
 
 	name := strings.TrimSuffix(s, filepath.Ext(s))
+
+
+	// Valid field names must start with a unicode letter
+	if !unicode.IsLetter(rune(name[0])) {
+		name = "A" + name
+	}
 
 	reg, err := regexp.Compile(`[^a-zA-Z0-9]+`)
 	if err != nil {
