@@ -22,7 +22,7 @@ type Schema struct {
 	Items                *Schema            `json:"items,omitempty"`
 	OneOf                []*Schema          `json:"oneof,omitempty"`
 	AnyOf                []*Schema          `json:"anyof,omitempty"`
-	AllOf                map[string]*Schema          `json:"allof,omitempty"`
+	AllOf                map[string]*Schema          `json:"-"`
 	Enum                 []string           `json:"enum,omitempty"`
 	AdditionalProperties *bool              `json:"additionalproperties,omitempty"`
 
@@ -40,9 +40,6 @@ type Schema struct {
 	Minimum          *int32  `json:"minimum,omitempty"`
 	ExclusiveMinimum *int32  `json:"exclusiveminimum,omitempty"`
 	Pattern          string  `json:"pattern,omitempty"`
-
-	// All unhandled json fields are unmarshaled here
-	UnknownFields map[string]interface{} `json:"-"`
 }
 
 func (s *Schema) IsEnum() bool {
@@ -50,44 +47,67 @@ func (s *Schema) IsEnum() bool {
 }
 
 func (s *Schema) UnmarshalJSON(b []byte) (err error) {
-
 	type Alias Schema
 	a := Alias{}
 
 	if err = json.Unmarshal(b, &a); err == nil {
 		*s = Schema(a)
-		s.UnknownFields = make(map[string]interface{})
-
 	}
 
-	if err != nil {
-		return
+	m := make(map[string]json.RawMessage)
+
+	if err := json.Unmarshal(b, &m); err != nil {
+		return err
 	}
-	m := make(map[string]interface{})
+	for k, v := range m {
+		delete(m, k)
+		m[strings.ToLower(k)] = v
+	}
 
-	if err = json.Unmarshal(b, &m); err == nil {
+	s.AllOf = s.combining("allof", JsonTags(s), m)
+	return
+}
 
-		for k, v := range m {
-			delete(m, k)
-			m[strings.ToLower(k)] = v
-		}
 
-		val := reflect.ValueOf(s).Elem()
-		for i := 0; i < val.NumField(); i++ {
-			tag := val.Type().Field(i).Tag
-			if v, ok := tag.Lookup("json"); ok {
-				tagFields := strings.Split(v, ",")
-				ForEach(tagFields, func(v string) string {
-					delete(m, v)
-					return v
-				})
+func (s *Schema) combining(key string, jsonTags []string, m map[string]json.RawMessage) map[string]*Schema  {
+	combined := map[string]*Schema{}
+	if raw, ok := m[key]; ok {
+		allOf := make([]json.RawMessage, 0)
+		json.Unmarshal(raw, &allOf)
+		for _, k := range allOf {
+			items := make(map[string]json.RawMessage)
+			json.Unmarshal(k, &items)
+
+			for key, v := range items {
+				if Contains(jsonTags, key) {
+					ref := Schema{}
+					if err := json.Unmarshal(k, &ref); err == nil {
+						combined[key] = &ref
+					}
+				} else {
+					obj := Schema{}
+					if err := json.Unmarshal(v, &obj); err == nil {
+						combined[key] = &obj
+					}
+				}
 			}
 		}
+	}
 
-		for k, v := range m {
-			s.UnknownFields[k] = v
+	return combined
+}
+
+func JsonTags(s *Schema) []string {
+	tags := make([]string, 0)
+	val := reflect.ValueOf(s).Elem()
+	for i := 0; i < val.NumField(); i++ {
+		tag := val.Type().Field(i).Tag
+		if v, ok := tag.Lookup("json"); ok {
+			tagFields := strings.Split(v, ",")
+			list := ForEach(tagFields, func(v string) string { return strings.ToLower(v) })
+			tags = append(tags, list...)
 		}
 	}
 
-	return
+	return tags
 }

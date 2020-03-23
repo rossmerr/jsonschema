@@ -19,21 +19,23 @@ func NewAnonymousStruct(ctx *SchemaContext, typename string, schema *jsonschema.
 	interfaces := []*Interface{}
 
 	interfaces, fields = addProperties(ctx, schema, interfaces, fields)
-	for _, child := range schema.AllOf {
-		if child.Ref != jsonschema.EmptyString {
+	for key, child := range schema.AllOf {
+		if key == "$ref" {
 			_, typename, _ := ResolvePointer(ctx, child.Ref)
-			t := NewReference(typename)
+			t := NewEmbeddedStruct(typename)
 			fields = append(fields, t)
 			continue
 		}
 
-		//  if len(child.Properties) > 0 {
-		// 	 //TODO fix
-		// // 	interfaces, fields = addProperties(ctx, child, interfaces, fields)
-		//  	continue
-		//  }
-		// t := SchemaToType(ctx, typename, child, schema.Required)
-		// fields = append(fields, t)
+		if child.Ref != jsonschema.EmptyString {
+			_, typename, _ := ResolvePointer(ctx, child.Ref)
+			t := NewReference(typename, jsonschema.Fieldname(key))
+			fields = append(fields, t)
+			continue
+		}
+
+		//interfaces, fields = addProperties(ctx, child, interfaces, fields)
+
 	}
 
 	return &AnonymousStruct{
@@ -77,6 +79,9 @@ const AnonymousStructTemplate = `
 {{- define "struct" -}}
 {{  .Name }} struct {
 {{range $key, $propertie := .Fields -}}
+	{{- if isEmbeddedStruct $propertie -}}
+		{{template "embeddedStruct" $propertie }}
+	{{end -}}
 	{{- if isReference $propertie -}}
 		{{template "reference" $propertie }}
 	{{end -}}

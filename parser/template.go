@@ -14,6 +14,7 @@ func Template() (*template.Template, error) {
 		"isInterface": IsInterface,
 		"isBoolean":   IsBoolean,
 		"isReference":   IsReference,
+		"isEmbeddedStruct": IsEmbeddedStruct,
 		"mixedCase":   MixedCase,
 	}).Parse(StructTemplate)
 	tmpl, err = tmpl.Parse(AnonymousStructTemplate)
@@ -49,6 +50,10 @@ func Template() (*template.Template, error) {
 		return nil, err
 	}
 	tmpl, err = tmpl.Parse(ReferenceTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(EmbeddedStructTemplate)
 	if err != nil {
 		return nil, err
 	}

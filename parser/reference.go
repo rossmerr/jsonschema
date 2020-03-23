@@ -25,12 +25,14 @@ func ResolvePointer(ctx *SchemaContext, ref jsonschema.Pointer) (*jsonschema.Sch
 
 
 type Reference struct {
+	Type string
 	Name     string
 }
 
-func NewReference(typename string) *Reference {
+func NewReference(typename, name string) *Reference {
 	return &Reference{
-		Name:     typename,
+		Type: typename,
+		Name:     name,
 	}
 }
 
@@ -44,6 +46,6 @@ func (s *Reference) ID() string {
 
 const ReferenceTemplate = `
 {{- define "reference" -}}
-*{{ .Name}}
+{{ .Name}} *{{ .Type}}
 {{- end -}}
 `
