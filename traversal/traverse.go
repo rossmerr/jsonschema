@@ -1,27 +1,26 @@
 package traversal
 
 import (
+	"fmt"
+	"log"
 	"reflect"
 	"strings"
 
 	"github.com/RossMerr/jsonschema"
 )
 
-func Traverse(s *jsonschema.Schema, query []string) *jsonschema.Schema {
-	if query == nil {
+func Traverse(s *jsonschema.Schema, pointer jsonschema.Pointer) *jsonschema.Schema {
+	if pointer == nil {
+		log.Print(fmt.Sprintf("Traverse: nil pointer not allowed"))
 		return nil
 	}
 
-	if len(query) == 0 {
-		return nil
-	}
-
-	val := reflect.ValueOf(s).Elem()
-	return traverse(val, query)
+	val := reflect.ValueOf(s)
+	return traverse(val, pointer)
 }
 
-func traverse(val reflect.Value, query []string) *jsonschema.Schema {
-	if len(query) == 0 {
+func traverse(val reflect.Value, pointer jsonschema.Pointer) *jsonschema.Schema {
+	if len(pointer) == 0 {
 		i := val.Interface()
 		if s, ok := i.(*jsonschema.Schema); ok {
 			return s
@@ -30,7 +29,7 @@ func traverse(val reflect.Value, query []string) *jsonschema.Schema {
 
 	}
 
-	segment := strings.ToLower(query[0])
+	segment := strings.ToLower(pointer[0])
 
 	switch val.Kind() {
 	case reflect.Struct:
@@ -38,7 +37,7 @@ func traverse(val reflect.Value, query []string) *jsonschema.Schema {
 		text := id.String()
 		if strings.ToLower(text) == segment {
 
-			return traverse(val.Addr(), query[1:])
+			return traverse(val.Addr(), pointer[1:])
 		}
 
 		for i := 0; i < val.NumField(); i++ {
@@ -47,7 +46,7 @@ func traverse(val reflect.Value, query []string) *jsonschema.Schema {
 				tagFields := strings.Split(v, ",")
 				list := jsonschema.ForEach(tagFields, func(v string) string { return strings.ToLower(v) })
 				if jsonschema.Contains(list, segment) {
-					return traverse(val.Field(i), query[1:])
+					return traverse(val.Field(i), pointer[1:])
 				}
 			}
 		}
@@ -55,7 +54,7 @@ func traverse(val reflect.Value, query []string) *jsonschema.Schema {
 		for _, k := range val.MapKeys() {
 			if strings.ToLower(k.String()) == segment {
 				val := val.MapIndex(k)
-				return traverse(val, query[1:])
+				return traverse(val, pointer[1:])
 			}
 		}
 	case reflect.Slice:
@@ -63,7 +62,7 @@ func traverse(val reflect.Value, query []string) *jsonschema.Schema {
 		arr := i.([]*jsonschema.Schema)
 		for _, v := range arr {
 			val := reflect.ValueOf(v).Elem()
-			result := traverse(val, query)
+			result := traverse(val, pointer)
 			if result != nil {
 				return result
 			}

@@ -44,7 +44,7 @@ const IntegerTemplate = `
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-{{ .Name}} {{ .Pointer}}int32 {{ .FieldTag }}
+//{{ .Name}} {{ .Pointer}}int32 {{ .FieldTag }}
 {{- end -}}
 `
 

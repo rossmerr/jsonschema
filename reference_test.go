@@ -7,96 +7,96 @@ import (
 	"github.com/RossMerr/jsonschema"
 )
 
-func TestPointer_Fragments(t *testing.T) {
+func TestReference_Fragments(t *testing.T) {
 	tests := []struct {
 		name      string
-		s         jsonschema.Pointer
+		s         jsonschema.Reference
 		wantQuery []string
 	}{
 		{
 			name:      "Empty string",
-			s:         jsonschema.NewPointer(""),
+			s:         jsonschema.NewReference(""),
 			wantQuery: []string{},
 		},
 		{
 			name:      "No pointer",
-			s:         jsonschema.NewPointer("test"),
+			s:         jsonschema.NewReference("test"),
 			wantQuery: []string{},
 		},
 		{
 			name:      "Just pointer",
-			s:         jsonschema.NewPointer("#"),
+			s:         jsonschema.NewReference("#"),
 			wantQuery: []string{},
 		},
 		{
 			name:      "One fragment",
-			s:         jsonschema.NewPointer("#test"),
+			s:         jsonschema.NewReference("#test"),
 			wantQuery: []string{"test"},
 		},
 		{
 			name:      "Two fragment",
-			s:         jsonschema.NewPointer("#hello/world"),
+			s:         jsonschema.NewReference("#hello/world"),
 			wantQuery: []string{"hello", "world"},
 		},
 		{
 			name:      "Relative",
-			s:         jsonschema.NewPointer("test.json#hello/world"),
+			s:         jsonschema.NewReference("test.json#hello/world"),
 			wantQuery: []string{"hello", "world"},
 		},
 		{
 			name:      "Relative",
-			s:         jsonschema.NewPointer("http://www.sample.com/test.json#hello/world"),
+			s:         jsonschema.NewReference("http://www.sample.com/test.json#hello/world"),
 			wantQuery: []string{"hello", "world"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotQuery := tt.s.Fragments(); !reflect.DeepEqual(gotQuery, tt.wantQuery) {
-				t.Errorf("Fragments() = %v, want %v", gotQuery, tt.wantQuery)
+			if gotQuery := tt.s.Pointer(); !reflect.DeepEqual(gotQuery, tt.wantQuery) {
+				t.Errorf("Pointer() = %v, want %v", gotQuery, tt.wantQuery)
 			}
 		})
 	}
 }
 
-func TestPointer_Base(t *testing.T) {
+func TestReference_Base(t *testing.T) {
 	tests := []struct {
 		name string
-		s    jsonschema.Pointer
+		s    jsonschema.Reference
 		want string
 	}{
 		{
 			name: "Empty string",
-			s:    jsonschema.NewPointer(""),
+			s:    jsonschema.NewReference(""),
 			want: ".",
 		},
 		{
 			name: "No pointer",
-			s:    jsonschema.NewPointer("test"),
+			s:    jsonschema.NewReference("test"),
 			want: "test",
 		},
 		{
 			name: "Just pointer",
-			s:    jsonschema.NewPointer("#"),
+			s:    jsonschema.NewReference("#"),
 			want: ".",
 		},
 		{
 			name: "One fragment",
-			s:    jsonschema.NewPointer("#test"),
+			s:    jsonschema.NewReference("#test"),
 			want: ".",
 		},
 		{
 			name: "Two fragment",
-			s:    jsonschema.NewPointer("#hello/world"),
+			s:    jsonschema.NewReference("#hello/world"),
 			want: ".",
 		},
 		{
 			name: "Relative",
-			s:    jsonschema.NewPointer("test.json#hello/world"),
+			s:    jsonschema.NewReference("test.json#hello/world"),
 			want: "test.json",
 		},
 		{
 			name: "Relative",
-			s:    jsonschema.NewPointer("http://www.sample.com/test.json#hello/world"),
+			s:    jsonschema.NewReference("http://www.sample.com/test.json#hello/world"),
 			want: "test.json",
 		},
 	}

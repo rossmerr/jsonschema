@@ -17,25 +17,30 @@ type AnonymousStruct struct {
 func NewAnonymousStruct(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *AnonymousStruct {
 	fields := []Types{}
 	interfaces := []*Interface{}
+	typename = jsonschema.Structname(typename)
 
-	interfaces, fields = addProperties(ctx, schema, interfaces, fields)
+	fields = addProperties(ctx, schema, fields)
 	for key, child := range schema.AllOf {
 		if key == "$ref" {
 			_, typename, _ := ResolvePointer(ctx, child.Ref)
-			t := NewEmbeddedStruct(typename)
-			fields = append(fields, t)
+			fields = append(fields, NewEmbeddedStruct(typename))
 			continue
 		}
 
 		if child.Ref != jsonschema.EmptyString {
 			_, typename, _ := ResolvePointer(ctx, child.Ref)
-			t := NewReference(typename, jsonschema.Fieldname(key))
-			fields = append(fields, t)
+			fields = append(fields, NewReference(typename, jsonschema.Fieldname(key)))
 			continue
 		}
 
-		//interfaces, fields = addProperties(ctx, child, interfaces, fields)
+		fields = addProperties(ctx, child, fields)
+	}
 
+	for _, t := range fields {
+		if ref, ok := t.(*InterfaceReference); ok {
+			i := NewInterface(ref.Type)
+			interfaces = append(interfaces, i)
+		}
 	}
 
 	return &AnonymousStruct{
@@ -48,18 +53,12 @@ func NewAnonymousStruct(ctx *SchemaContext, typename string, schema *jsonschema.
 	}
 }
 
-func addProperties(ctx *SchemaContext, schema *jsonschema.Schema, interfaces []*Interface, fields []Types) ([]*Interface, []Types) {
+func addProperties(ctx *SchemaContext, schema *jsonschema.Schema, fields []Types) ([]Types) {
 	for key, propertie := range schema.Properties {
 		t := SchemaToType(WrapContext(ctx, schema), key, propertie, schema.Required)
-		if RequiesInterface(propertie) {
-			if i, ok := t.(*Interface); ok {
-				interfaces = append(interfaces, i)
-			}
-		}
-
 		fields = append(fields, t)
 	}
-	return interfaces, fields
+	return fields
 }
 
 func (s *AnonymousStruct) IsNotEmpty() bool {
@@ -84,6 +83,9 @@ const AnonymousStructTemplate = `
 	{{end -}}
 	{{- if isReference $propertie -}}
 		{{template "reference" $propertie }}
+	{{end -}}
+	{{- if isInterfaceReference $propertie -}}
+		{{template "interfacereference" $propertie }}
 	{{end -}}
 	{{- if isInterface $propertie -}}
 		{{ $propertie.Name }} {{ $propertie.Name }} {{ $propertie.StructTag }}

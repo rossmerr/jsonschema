@@ -33,6 +33,7 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 		case jsonschema.Object:
 			filename := schema.ID.Filename()
 			anonymousStruct := NewAnonymousStruct(s.ctx, filename, schema, nil)
+
 			definitions := make([]*Definition, 0)
 			for typename, def := range schema.Definitions {
 				definition := NewDefinition(WrapContext(s.ctx, schema), typename, def)
@@ -42,7 +43,7 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 				definition := NewDefinition(WrapContext(s.ctx, schema), typename, def)
 				definitions = append(definitions, definition)
 			}
-			parse.Structs[schema.ID] = NewStruct(s.ctx, anonymousStruct, definitions, filename)
+			parse.Structs[schema.ID] = NewStruct(s.ctx, anonymousStruct,definitions, filename)
 		}
 	}
 
@@ -76,12 +77,14 @@ func SchemaToType(ctx *SchemaContext, field string, schema *jsonschema.Schema, r
 		fallthrough
 	default:
 		if RequiesInterface(schema) {
-			return NewInterface(ctx, field, schema, required)
+			t := NewInterfaceReference(ctx,  field, schema)
+			return t
 		}
 
 		if schema.Ref != jsonschema.EmptyString {
-			def, typename, ctx := ResolvePointer(ctx, schema.Ref)
-			return SchemaToType(ctx, typename, def, required)
+			_, typename, _ := ResolvePointer(ctx, schema.Ref)
+			t := NewReference(typename, field)
+			return t
 		}
 
 		return NewAnonymousStruct(ctx, field, schema, required)

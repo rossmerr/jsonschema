@@ -27,20 +27,19 @@ package {{.Package}}
 package main
 {{- end}}
 
-
-
 {{if .Comment -}}
 // {{ .Comment}}
 {{ else -}}
-// {{ .Name}}
+	{{ if .Name}}// {{ .Name}}{{ end }}
 {{end -}}
 {{ if .ID -}}
 // ID: {{.ID}}
 {{ end -}}
-{{ if .AnonymousStruct.IsNotEmpty }}
-type {{template "struct" .AnonymousStruct }}
-{{ end }}
-
+{{ if .AnonymousStruct -}}
+	{{ if .AnonymousStruct.IsNotEmpty -}}
+		type {{template "struct" .AnonymousStruct }}
+	{{ end -}}
+{{end -}}
 {{range $key, $definition := .Definitions -}}
 type {{template "struct" $definition }}
 {{end -}}

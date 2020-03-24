@@ -35,8 +35,8 @@ package jsonschema_test
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
-// 			if gotQuery := tt.s.Fragments(); !reflect.DeepEqual(gotQuery, tt.wantQuery) {
-// 				t.Errorf("Fragments() = %v, want %v", gotQuery, tt.wantQuery)
+// 			if gotQuery := tt.s.Pointer(); !reflect.DeepEqual(gotQuery, tt.wantQuery) {
+// 				t.Errorf("Pointer() = %v, want %v", gotQuery, tt.wantQuery)
 // 			}
 // 		})
 // 	}

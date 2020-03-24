@@ -10,6 +10,7 @@ import (
 type SchemaContext struct {
 	context.Context
 	References   map[string]*jsonschema.Schema
+	Implementations map[string][]string
 	Package      string
 	Tags         tags.FieldTag
 	ParentSchema *jsonschema.Schema
@@ -19,6 +20,7 @@ func NewContext(ctx context.Context, packageName string, tags tags.FieldTag) *Sc
 	return &SchemaContext{
 		ctx,
 		map[string]*jsonschema.Schema{},
+		map[string][]string{},
 		packageName,
 		tags,
 		nil,
@@ -29,6 +31,7 @@ func WrapContext(ctx *SchemaContext, schema *jsonschema.Schema) *SchemaContext {
 	return &SchemaContext{
 		ctx,
 		ctx.References,
+		ctx.Implementations,
 		ctx.Package,
 		ctx.Tags,
 		schema,

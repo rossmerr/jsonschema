@@ -10,6 +10,7 @@ import (
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/interpreter"
 	"github.com/RossMerr/jsonschema/parser"
+	"github.com/RossMerr/jsonschema/traversal"
 )
 
 func TestSchemas_Generate(t *testing.T) {
@@ -23,56 +24,56 @@ func TestSchemas_Generate(t *testing.T) {
 		wantErr bool
 	}{
 
-		{
-			name: "Basic",
-			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"basicBasic": loadRawSchema("samples/basicBasic.json"),
-				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output: "output/",
-				},
-			},
-		},
-		{
-			name: "Nesting data structures",
-			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"productNesting": loadRawSchema("samples/productNesting.json"),
-				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output:      "output/",
-				},
-			},
-		},
-		{
-			name: "References outside the schema",
-			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"https://example.com/geographical-location.schema.json": loadRawSchema("samples/geographical-location.schema.json"),
-					"http://example.com/product.schema.json": loadRawSchema("samples/product.schema.json"),
-
-				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output: "output/",
-				},
-			},
-		},
-		{
-			name: "Oneof",
-			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/entry-schema.json": loadRawSchema("samples/entry-schema.json"),
-				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output:      "output/",
-				},
-			},
-		},
+		// {
+		// 	name: "Basic",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"basicBasic": loadRawSchema("samples/basicBasic.json"),
+		// 		},
+		// 		config: &jsonschema.Config{
+		// 			Packagename: "main",
+		// 			Output: "output/",
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	name: "Nesting data structures",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"productNesting": loadRawSchema("samples/productNesting.json"),
+		// 		},
+		// 		config: &jsonschema.Config{
+		// 			Packagename: "main",
+		// 			Output:      "output/",
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	name: "References outside the schema",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"https://example.com/geographical-location.schema.json": loadRawSchema("samples/geographical-location.schema.json"),
+		// 			"http://example.com/product.schema.json": loadRawSchema("samples/product.schema.json"),
+		//
+		// 		},
+		// 		config: &jsonschema.Config{
+		// 			Packagename: "main",
+		// 			Output: "output/",
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	name: "Oneof",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"http://example.com/entry-schema.json": loadRawSchema("samples/entry-schema.json"),
+		// 		},
+		// 		config: &jsonschema.Config{
+		// 			Packagename: "main",
+		// 			Output:      "output/",
+		// 		},
+		// 	},
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -144,7 +145,7 @@ func TestSchema_Traverse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.schema.Traverse(tt.query); !reflect.DeepEqual(got, tt.want) {
+			if got := traversal.Traverse(tt.schema, tt.query); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Traverse() = %v, want %v", got, tt.want)
 			}
 		})

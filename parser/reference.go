@@ -5,9 +5,9 @@ import (
 	"github.com/RossMerr/jsonschema/traversal"
 )
 
-func ResolvePointer(ctx *SchemaContext, ref jsonschema.Pointer) (*jsonschema.Schema, string, *SchemaContext) {
+func ResolvePointer(ctx *SchemaContext, ref jsonschema.Reference) (*jsonschema.Schema, string, *SchemaContext) {
 
-	fragments := ref.Fragments()
+	pointer := ref.Pointer()
 	reference := ref.Base()
 	var base *jsonschema.Schema
 	if reference != "." {
@@ -16,11 +16,14 @@ func ResolvePointer(ctx *SchemaContext, ref jsonschema.Pointer) (*jsonschema.Sch
 		base, _ = ctx.Base()
 	}
 
-	def := traversal.Traverse(base, fragments)
+	def := traversal.Traverse(base, pointer)
 
-	typename := fragments[len(fragments)-1]
+	fieldname := pointer.Fieldname()
+	if fieldname == jsonschema.EmptyString {
+		fieldname = jsonschema.Fieldname(def.ID.Filename())
+	}
 
-	return def, typename, WrapContext(ctx, base)
+	return def, fieldname, WrapContext(ctx, base)
 }
 
 

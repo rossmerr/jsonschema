@@ -91,3 +91,7 @@ func Fieldname(s string) string {
 	clean := reg.ReplaceAllString(name, " ")
 	return reg.ReplaceAllString( strings.Title(clean), "")
 }
+
+func Structname(s string) string {
+	return Fieldname(s)
+}

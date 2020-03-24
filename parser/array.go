@@ -13,7 +13,10 @@ type Array struct {
 }
 
 func NewArray(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *Array {
-	arrType := schema.Items.Ref.Fieldname()
+	arrType := string(schema.Items.Type)
+	if schema.Items.Ref != jsonschema.EmptyString {
+		arrType = schema.Items.Ref.Fieldname()
+	}
 
 	return &Array{
 		id: schema.ID.String(),

@@ -54,6 +54,11 @@ func IsEmbeddedStruct(obj interface{}) bool {
 	return ok
 }
 
+func IsInterfaceReference(obj interface{}) bool {
+	_, ok := obj.(*InterfaceReference)
+	return ok
+}
+
 
 func MixedCase(raw string) string {
 	if len(raw) < 1 {

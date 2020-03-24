@@ -9,7 +9,7 @@ import (
 type Schema struct {
 	ID          ID                 `json:"$id,omitempty"`
 	Schema      string             `json:"$schema,omitempty"`
-	Ref         Pointer            `json:"$ref,omitempty"`
+	Ref         Reference          `json:"$ref,omitempty"`
 	Defs        map[string]*Schema `json:"$defs,omitempty"`
 	Anchor      Anchor             `json:"$anchor,omitempty"`
 	Description string             `json:"description,omitempty"`
