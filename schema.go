@@ -50,7 +50,7 @@ func (s *Schema) Structname() string {
 
 func  (s *Schema) ArrayType() string {
 	arrType := string(s.Items.Type)
-	if !s.Items.Ref.IsEmpty()  {
+	if s.Items.Ref.IsNotEmpty()  {
 		arrType = s.Items.Ref.Fieldname()
 	}
 	return arrType

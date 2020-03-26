@@ -85,13 +85,20 @@ func SchemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, ren
 		return NewArray(name, schema.Description, fieldTag, schema.ArrayType())
 	}
 
-	if !schema.Ref.IsEmpty() {
+	if schema.Ref.IsNotEmpty() {
 		return NewReference(ctx, schema.Ref, name, fieldTag)
 	}
 
-	subschemas := append(schema.OneOf, append(schema.AnyOf, schema.AllOf...)...)
-	if len(subschemas) > 0 {
-		return NewInterfaceReference(ctx, name, fieldTag, subschemas)
+	if len(schema.OneOf) > 0 {
+		return NewInterfaceReferenceOneOf(ctx, name, fieldTag, schema.OneOf)
+	}
+
+	if len(schema.AnyOf) > 0 {
+		return NewInterfaceReferenceAnyOf(ctx, name, fieldTag, schema.AnyOf)
+	}
+
+	if len(schema.AllOf) > 0 {
+		return NewInterfaceReferenceAllOf(ctx, name, fieldTag, schema.AllOf)
 	}
 
 	return NewStruct(ctx, name, schema.Properties, schema.Description, fieldTag, schema.Required...)

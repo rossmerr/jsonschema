@@ -98,6 +98,18 @@ func TestSchemas_Generate(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "AllOf",
+			fields: fields{
+				documents: map[jsonschema.ID]*jsonschema.Schema{
+					"http://example.com/allof.json": loadRawSchema("samples/allof.json"),
+				},
+				config: &jsonschema.Config{
+					Packagename: "main",
+					Output:      "output/",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

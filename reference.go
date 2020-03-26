@@ -81,6 +81,6 @@ func (s Reference) Fieldname() string {
 	return reg.ReplaceAllString(strings.Title(clean), "")
 }
 
-func (s Reference) IsEmpty() bool {
-	return s == EmptyString
+func (s Reference) IsNotEmpty() bool {
+	return s != EmptyString
 }

@@ -6,11 +6,16 @@ import (
 
 type EmbeddedStruct struct {
 	name     string
+	StructTag  string
+	Types []string
+
 }
 
-func NewEmbeddedStruct(typename string) *EmbeddedStruct {
+func NewEmbeddedStruct(typename string, fieldTag string, types ...string) *EmbeddedStruct {
 	return &EmbeddedStruct{
 		name:     typename,
+		StructTag:fieldTag,
+		Types: types,
 	}
 }
 
@@ -25,6 +30,10 @@ func (s *EmbeddedStruct) Name() string {
 
 const EmbeddedStructTemplate = `
 {{- define "embeddedStruct" -}}
-*{{ .Name}}
+{{  .Name }} struct {
+	{{range $key, $type := .Types -}}
+		*{{ $type}}
+	{{end -}}
+} {{ .StructTag }}
 {{- end -}}
 `

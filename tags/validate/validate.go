@@ -24,6 +24,18 @@ func (s *validate) ToStructTag(key string, schema *jsonschema.Schema, required [
 	}
 
 	if schema != nil {
+		if schema.AnyOf != nil {
+			dict["anyof"] = jsonschema.EmptyString
+		}
+
+		if schema.AllOf != nil {
+			dict["allof"] = jsonschema.EmptyString
+		}
+
+		if schema.OneOf != nil {
+			dict["oneof"] = jsonschema.EmptyString
+		}
+
 		if schema.MaxLength != nil {
 			dict["max"] = fmt.Sprint(*schema.MaxLength)
 		}
