@@ -1,19 +1,14 @@
 package parser
 
-import (
-	"github.com/RossMerr/jsonschema"
-)
-
 type Interface struct {
 	comment string
 	CommentImplementations string
-	Name    string
-
+	name    string
 }
 
 func NewInterface(typename string) *Interface {
 	return &Interface{
-		Name:    typename,
+		name:    typename,
 	}
 }
 
@@ -21,8 +16,8 @@ func (s *Interface) Comment() string {
 	return s.comment
 }
 
-func (s *Interface) ID() string {
-	return jsonschema.EmptyString
+func (s *Interface) Name() string {
+	return s.name
 }
 
 const InterfaceTemplate = `

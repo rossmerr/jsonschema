@@ -7,10 +7,12 @@ import (
 	"github.com/RossMerr/jsonschema/tags"
 )
 
+type Implementations map[string][]string
+
 type SchemaContext struct {
 	context.Context
 	References   map[string]*jsonschema.Schema
-	Implementations map[string][]string
+	Implementations Implementations
 	Package      string
 	Tags         tags.FieldTag
 	ParentSchema *jsonschema.Schema
@@ -27,7 +29,7 @@ func NewContext(ctx context.Context, packageName string, tags tags.FieldTag) *Sc
 	}
 }
 
-func WrapContext(ctx *SchemaContext, schema *jsonschema.Schema) *SchemaContext {
+func (ctx *SchemaContext) WrapContext(schema *jsonschema.Schema) *SchemaContext {
 	return &SchemaContext{
 		ctx,
 		ctx.References,
@@ -59,4 +61,15 @@ func (ctx *SchemaContext) base() *SchemaContext {
 	}
 
 	return nil
+}
+
+func (s Implementations) AddMethod(structname, typename string) {
+	if structname != jsonschema.EmptyString {
+		arr := s[structname]
+		if arr == nil {
+			arr = []string{}
+		}
+		arr = append(arr, typename)
+		s[structname] = arr
+	}
 }

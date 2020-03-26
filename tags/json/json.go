@@ -20,7 +20,7 @@ func (s *json) ToStructTag(key string, schema *jsonschema.Schema, required []str
 	dict := map[string]string{}
 
 	dict[key] = jsonschema.EmptyString
-	if jsonschema.Contains(required, strings.ToLower(key)) {
+	if !jsonschema.Contains(required, strings.ToLower(key)) {
 		dict["omitempty"] = jsonschema.EmptyString
 	}
 

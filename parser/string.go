@@ -1,24 +1,17 @@
 package parser
 
-import (
-	"github.com/RossMerr/jsonschema"
-)
-
 type String struct {
-	id       string
 	comment  string
-	Name     string
+	name     string
 	FieldTag string
-	IsEnum   bool
+	Methods    []string
 }
 
-func NewString(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *String {
+func NewString(name *Name, description, fieldTag string) *String {
 	return &String{
-		id:       schema.ID.String(),
-		comment:  schema.Description,
-		Name:     typename,
-		FieldTag: ctx.Tags.ToFieldTag(typename, schema, required),
-		IsEnum:   schema.IsEnum(),
+		comment:  description,
+		name:     name.Fieldname(),
+		FieldTag: fieldTag,
 	}
 }
 
@@ -26,9 +19,14 @@ func (s *String) Comment() string {
 	return s.comment
 }
 
-func (s *String) ID() string {
-	return s.id
+func (s *String) AppendMethods(methods []string) {
+	s.Methods = append(s.Methods, methods...)
 }
+
+func (s *String) Name() string {
+	return s.name
+}
+
 
 const StringTemplate = `
 {{- define "string" -}}
@@ -36,5 +34,9 @@ const StringTemplate = `
 // {{.Comment}}
 {{end -}}
 {{ .Name}} string {{ .FieldTag }}
+
+{{range $key, $method := .Methods -}}
+	func (s *{{ $.Name }}) {{$method}}(){}
+{{end -}}
 {{- end -}}
 `

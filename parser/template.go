@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"strings"
 	"text/template"
 )
 
@@ -16,9 +17,10 @@ func Template() (*template.Template, error) {
 		"isReference":   IsReference,
 		"isEmbeddedStruct": IsEmbeddedStruct,
 		"isInterfaceReference": IsInterfaceReference,
+		"isCustomType": IsCustomType,
 		"mixedCase":   MixedCase,
-	}).Parse(StructTemplate)
-	tmpl, err = tmpl.Parse(AnonymousStructTemplate)
+	}).Parse(DocumentTemplate)
+	tmpl, err = tmpl.Parse(StructTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -62,5 +64,78 @@ func Template() (*template.Template, error) {
 	if err != nil {
 		return nil, err
 	}
+	tmpl, err = tmpl.Parse(CustomTypeTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(KindTemplate)
+	if err != nil {
+		return nil, err
+	}
 	return tmpl, nil
 }
+
+
+func IsStruct(obj interface{}) bool {
+	_, ok := obj.(*Struct)
+	return ok
+}
+
+func IsInterface(obj interface{}) bool {
+	_, ok := obj.(*Interface)
+	return ok
+}
+
+func IsArray(obj interface{}) bool {
+	_, ok := obj.(*Array)
+	return ok
+}
+
+func IsString(obj interface{}) bool {
+	_, ok := obj.(*String)
+	return ok
+}
+
+func IsNumber(obj interface{}) bool {
+	_, ok := obj.(*Number)
+	return ok
+}
+
+func IsInteger(obj interface{}) bool {
+	_, ok := obj.(*Integer)
+	return ok
+}
+
+func IsBoolean(obj interface{}) bool {
+	_, ok := obj.(*Boolean)
+	return ok
+}
+
+func IsReference(obj interface{}) bool {
+	_, ok := obj.(*Reference)
+	return ok
+}
+
+func IsEmbeddedStruct(obj interface{}) bool {
+	_, ok := obj.(*EmbeddedStruct)
+	return ok
+}
+
+func IsInterfaceReference(obj interface{}) bool {
+	_, ok := obj.(*InterfaceReference)
+	return ok
+}
+
+func IsCustomType(obj interface{}) bool {
+	_, ok := obj.(*CustomType)
+	return ok
+}
+
+func MixedCase(raw string) string {
+	if len(raw) < 1 {
+		return raw
+	}
+	s := strings.Title(raw)
+	return  strings.ToLower(s[0:1]) + s[1:]
+}
+

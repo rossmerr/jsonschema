@@ -67,6 +67,8 @@ func traverse(val reflect.Value, pointer jsonschema.Pointer) *jsonschema.Schema 
 				return result
 			}
 		}
+	case reflect.Ptr:
+		return traverse(val.Elem(), pointer)
 	default:
 		return nil
 	}

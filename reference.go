@@ -80,3 +80,7 @@ func (s Reference) Fieldname() string {
 	clean := reg.ReplaceAllString(name, " ")
 	return reg.ReplaceAllString(strings.Title(clean), "")
 }
+
+func (s Reference) IsEmpty() bool {
+	return s == EmptyString
+}

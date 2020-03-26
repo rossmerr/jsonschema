@@ -1,33 +1,24 @@
 package parser
 
-import (
-	"strings"
-
-	"github.com/RossMerr/jsonschema"
-)
-
 type Integer struct {
-	id         string
 	comment    string
-	Name       string
+	name       string
 	Validation string
 	FieldTag   string
-	Pointer string
+	Reference string
 }
 
-func NewInteger(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *Integer {
-
-	pointer := "*"
-	if jsonschema.Contains(required, strings.ToLower(typename)) {
-		pointer = ""
+func NewInteger(name *Name, description, fieldTag string, isReference bool) *Integer {
+	reference := ""
+	if isReference {
+		reference = "*"
 	}
 
 	return &Integer{
-		id:        schema.ID.String(),
-		comment:   schema.Description,
-		Name:      typename,
-		FieldTag:  ctx.Tags.ToFieldTag(typename, schema, required),
-		Pointer:pointer,
+		comment:   description,
+		name:      name.Fieldname(),
+		FieldTag:  fieldTag,
+		Reference:reference,
 	}
 }
 
@@ -35,16 +26,17 @@ func (s *Integer) Comment() string {
 	return s.comment
 }
 
-func (s *Integer) ID() string {
-	return s.id
+func (s *Integer) Name() string {
+	return s.name
 }
+
 
 const IntegerTemplate = `
 {{- define "integer" -}}
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-//{{ .Name}} {{ .Pointer}}int32 {{ .FieldTag }}
+{{ .Name}} {{ .Reference}}int32 {{ .FieldTag }}
 {{- end -}}
 `
 

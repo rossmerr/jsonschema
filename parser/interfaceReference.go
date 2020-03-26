@@ -4,37 +4,26 @@ import "github.com/RossMerr/jsonschema"
 
 type InterfaceReference struct {
 	Type string
-	Name     string
+	name     string
+	FieldTag string
 }
 
-
-func NewInterfaceReference(ctx *SchemaContext,  name string, schema *jsonschema.Schema) *InterfaceReference {
+func NewInterfaceReference(ctx *SchemaContext, name *Name, schema *jsonschema.Schema) *InterfaceReference {
 	parent, _ := ctx.Base()
-	filename := parent.ID.Filename()
-	typename := jsonschema.Structname(filename) + name
-	var arr []*jsonschema.Schema
-	if schema.OneOf != nil {
-		arr = schema.OneOf
-	}
-	if schema.AnyOf != nil {
-		arr = schema.AnyOf
-	}
+	fieldTag := ctx.Tags.ToFieldTag(name.Tagname(), schema, parent.Required)
 
-	for _, item := range arr {
-		fieldname := item.Ref.Fieldname()
-		if fieldname != jsonschema.EmptyString {
-			arr := ctx.Implementations[fieldname]
-			if arr == nil {
-				arr = []string{}
-			}
-			arr = append(arr, typename)
-			ctx.Implementations[fieldname] = arr
-		}
+	filename := parent.ID.Filename()
+	typename := jsonschema.Structname(filename) + name.Fieldname()
+
+	for _, item := range append(schema.OneOf, append(schema.AnyOf, schema.AllOf...)...) {
+		structname := item.Ref.Fieldname()
+		ctx.Implementations.AddMethod(structname, typename)
 	}
 
 	return &InterfaceReference{
 		Type: typename,
-		Name:     name,
+		name: name.Fieldname(),
+		FieldTag: fieldTag,
 	}
 }
 
@@ -42,13 +31,12 @@ func (s *InterfaceReference) Comment() string {
 	return jsonschema.EmptyString
 }
 
-func (s *InterfaceReference) ID() string {
-	return jsonschema.EmptyString
+func (s *InterfaceReference) Name() string {
+	return s.name
 }
 
 const InterfaceReferenceTemplate = `
 {{- define "interfacereference" -}}
-{{ .Name}} {{ .Type}}
+{{ .Name}} {{ .Type}} {{ .FieldTag }}
 {{- end -}}
 `
-

@@ -1,5 +1,7 @@
 package jsonschema
 
+import "reflect"
+
 type Kind string
 
 const (
@@ -11,3 +13,26 @@ const (
 	Boolean Kind = "boolean"
 	Null Kind = ""
 )
+
+func (s Kind) String() string {
+	return string(s)
+}
+
+func (s Kind) ToKind() reflect.Kind {
+	switch s {
+	case String:
+		return reflect.String
+	case Object:
+		return reflect.Struct
+	case Array:
+		return reflect.Slice
+	case Integer:
+		return reflect.Int32
+	case Number:
+		return reflect.Float64
+	case Boolean:
+		return reflect.Bool
+	default:
+		return reflect.Struct
+	}
+}

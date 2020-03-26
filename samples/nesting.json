@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://example.com/product.nesting.schema.json",
+  "$id": "http://example.com/nesting.json",
   "title": "ProductNesting",
   "description": "A product from Acme's catalog",
   "type": "object",

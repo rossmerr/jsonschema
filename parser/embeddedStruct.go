@@ -5,12 +5,12 @@ import (
 )
 
 type EmbeddedStruct struct {
-	Name     string
+	name     string
 }
 
 func NewEmbeddedStruct(typename string) *EmbeddedStruct {
 	return &EmbeddedStruct{
-		Name:     typename,
+		name:     typename,
 	}
 }
 
@@ -18,9 +18,10 @@ func (s *EmbeddedStruct) Comment() string {
 	return jsonschema.EmptyString
 }
 
-func (s *EmbeddedStruct) ID() string {
-	return jsonschema.EmptyString
+func (s *EmbeddedStruct) Name() string {
+	return s.name
 }
+
 
 const EmbeddedStructTemplate = `
 {{- define "embeddedStruct" -}}

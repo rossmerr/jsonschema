@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"strings"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/tags"
@@ -31,19 +32,21 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 	for _, schema := range schemas {
 		switch schema.Type {
 		case jsonschema.Object:
-			filename := schema.ID.Filename()
-			anonymousStruct := NewAnonymousStruct(s.ctx, filename, schema, nil)
+			anonymousStruct := NewStruct(s.ctx, NewName(schema.ID.Filename()), schema, false)
 
-			definitions := make([]*Definition, 0)
-			for typename, def := range schema.Definitions {
-				definition := NewDefinition(WrapContext(s.ctx, schema), typename, def)
-				definitions = append(definitions, definition)
+			if schema.Defs == nil {
+				schema.Defs = map[string]*jsonschema.Schema{}
 			}
+			for k, v := range schema.Definitions {
+				schema.Defs [k] = v
+			}
+
+			definitions := make([]*CustomType, 0)
 			for typename, def := range schema.Defs {
-				definition := NewDefinition(WrapContext(s.ctx, schema), typename, def)
+				definition := NewDefinition(s.ctx.WrapContext(schema),  NewName(typename), def)
 				definitions = append(definitions, definition)
 			}
-			parse.Structs[schema.ID] = NewStruct(s.ctx, anonymousStruct,definitions, filename)
+			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct,definitions, schema.ID.Filename())
 		}
 	}
 
@@ -57,51 +60,38 @@ func (s *parser) buildReferences(schemas map[jsonschema.ID]*jsonschema.Schema) {
 	}
 }
 
-func SchemaToType(ctx *SchemaContext, field string, schema *jsonschema.Schema, required []string) Types {
-	field = jsonschema.Fieldname(field)
+func SchemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, renderFieldTags bool, required ...string) Types {
+	fieldTag := ""
+	if renderFieldTags {
+		fieldTag = ctx.Tags.ToFieldTag(name.Tagname(), schema, required)
+	}
+
+	isReference := true
+	if jsonschema.Contains(required, strings.ToLower(name.Tagname())) {
+		isReference = false
+	}
+
 	switch schema.Type {
 	case jsonschema.Boolean:
-		return NewBoolean(ctx, field, schema, required)
+		return NewBoolean(name, schema.Description, fieldTag, isReference)
 	case jsonschema.String:
-		// if schema.IsEnum() {
-		// 	return NewEnum(ctx, field, schema, required)
-		// }
-		return NewString(ctx, field, schema, required)
+		return NewString(name, schema.Description, fieldTag)
 	case jsonschema.Integer:
-		return NewInteger(ctx, field, schema, required)
+		return NewInteger(name, schema.Description, fieldTag, isReference)
 	case jsonschema.Number:
-		return NewNumber(ctx, field, schema, required)
+		return NewNumber(name, schema.Description, fieldTag, isReference)
 	case jsonschema.Array:
-		return NewArray(ctx, field, schema, required)
+		return NewArray(name, schema.Description, fieldTag, schema.ArrayType())
 	case jsonschema.Object:
 		fallthrough
 	default:
-		if RequiesInterface(schema) {
-			t := NewInterfaceReference(ctx,  field, schema)
-			return t
-		}
-
-		if schema.Ref != jsonschema.EmptyString {
-			_, typename, _ := ResolvePointer(ctx, schema.Ref)
-			t := NewReference(typename, field)
-			return t
-		}
-
-		return NewAnonymousStruct(ctx, field, schema, required)
+		return NewStruct(ctx, name, schema, renderFieldTags, required...)
 	}
 }
 
-func RequiesInterface(s *jsonschema.Schema) bool {
-	if s.OneOf != nil && len(s.OneOf) > 0 {
-		return true
-	}
-	if s.AnyOf != nil && len(s.AnyOf) > 0 {
-		return true
-	}
-	if s.AllOf != nil && len(s.AllOf) > 0 {
-		return true
-	}
 
-	return false
+func NewDefinition(ctx *SchemaContext, name *Name, schema *jsonschema.Schema) *CustomType {
+	t := SchemaToType(ctx, name, schema, false)
+	arr := ctx.Implementations[name.Fieldname()]
+	return PrefixType(t, arr...)
 }
-

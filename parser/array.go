@@ -1,29 +1,18 @@
 package parser
 
-import (
-	"github.com/RossMerr/jsonschema"
-)
-
 type Array struct {
-	id string
-	comment   string
-	Name      string
-	TypeValue string
-	FieldTag  string
+	comment  string
+	name     string
+	Type     string
+	FieldTag string
 }
 
-func NewArray(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *Array {
-	arrType := string(schema.Items.Type)
-	if schema.Items.Ref != jsonschema.EmptyString {
-		arrType = schema.Items.Ref.Fieldname()
-	}
-
+func NewArray(name *Name, description, fieldTag, arrayType string) *Array {
 	return &Array{
-		id: schema.ID.String(),
-		comment:   schema.Description,
-		Name:     typename,
-		TypeValue: arrType,
-		FieldTag:  ctx.Tags.ToFieldTag(typename, schema, required),
+		comment:  description,
+		name:     name.Fieldname(),
+		Type:     arrayType,
+		FieldTag: fieldTag,
 	}
 }
 
@@ -31,8 +20,8 @@ func (s *Array) Comment() string {
 	return s.comment
 }
 
-func (s *Array) ID() string {
-	return s.id
+func (s *Array) Name() string {
+	return s.name
 }
 
 const ArrayTemplate = `
@@ -40,6 +29,6 @@ const ArrayTemplate = `
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-{{ .Name}} []{{ .TypeValue }} {{ .FieldTag }}
+{{ .Name}} []{{ .Type }} {{ .FieldTag }}
 {{- end -}}
 `
