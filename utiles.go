@@ -37,29 +37,6 @@ func ForEach(a []string, delegate func(string) string) []string {
 	return list
 }
 
-func Unique(slice []string) []string {
-	keys := make(map[string]bool)
-	list := []string{}
-	for _, v := range slice {
-		if _, value := keys[v]; !value {
-			keys[v] = true
-			list = append(list, v)
-		}
-	}
-	return list
-}
-
-func Equal(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i, v := range a {
-		if v != b[i] {
-			return false
-		}
-	}
-	return true
-}
 
 func KeysString(m map[string]string) string {
 	keys := make([]string, 0, len(m))

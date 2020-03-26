@@ -1,33 +1,29 @@
 package parser
 
 import (
-	"strings"
 
-	"github.com/RossMerr/jsonschema"
 )
 
 type Enum struct {
-	id       string
 	comment  string
-	Name     string
+	name     string
 	Values   []string
 	FieldTag string
-	Pointer  string
+	Reference  string
 }
 
-func NewEnum(ctx *SchemaContext, typename string, schema *jsonschema.Schema, required []string) *Enum {
-	pointer := "*"
-	if jsonschema.Contains(required, strings.ToLower(typename)) {
-		pointer = ""
+func NewEnum(name *Name, description, fieldTag string, isReference bool, values []string) *Enum {
+	reference := ""
+	if isReference {
+		reference = "*"
 	}
 
 	return &Enum{
-		id:       schema.ID.String(),
-		comment:  schema.Description,
-		Name:     typename,
-		FieldTag: ctx.Tags.ToFieldTag(typename, schema, required),
-		Pointer:  pointer,
-		Values:   schema.Enum,
+		comment:  description,
+		name:     name.Fieldname(),
+		FieldTag: fieldTag,
+		Reference:  reference,
+		Values:  values,
 	}
 }
 
@@ -35,8 +31,8 @@ func (s *Enum) Comment() string {
 	return s.comment
 }
 
-func (s *Enum) ID() string {
-	return s.id
+func (s *Enum) Name() string {
+	return s.name
 }
 
 const EnumTemplate = `

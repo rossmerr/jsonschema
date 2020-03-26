@@ -15,11 +15,6 @@ func PrefixType(t Types, methods ...string ) *CustomType {
 	}
 }
 
-func (s *CustomType) AppendMethods(methods []string) {
-	s.Methods = append(s.Methods, methods...)
-}
-
-
 func (s *CustomType) Comment() string {
 	return s.comment
 }

@@ -1,6 +1,10 @@
 package parser
 
-import "github.com/RossMerr/jsonschema"
+import (
+	"strconv"
+
+	"github.com/RossMerr/jsonschema"
+)
 
 type InterfaceReference struct {
 	Type string
@@ -8,17 +12,25 @@ type InterfaceReference struct {
 	FieldTag string
 }
 
-func NewInterfaceReference(ctx *SchemaContext, name *Name, schema *jsonschema.Schema) *InterfaceReference {
-	parent, _ := ctx.Base()
-	fieldTag := ctx.Tags.ToFieldTag(name.Tagname(), schema, parent.Required)
+func NewInterfaceReference(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) *InterfaceReference {
+	parent := ctx.Parent()
 
 	filename := parent.ID.Filename()
 	typename := jsonschema.Structname(filename) + name.Fieldname()
 
-	for _, item := range append(schema.OneOf, append(schema.AnyOf, schema.AllOf...)...) {
-		structname := item.Ref.Fieldname()
-		ctx.Implementations.AddMethod(structname, typename)
+	for i, subschema := range subschemas {
+		if !subschema.Ref.IsEmpty() {
+			ctx.AddMethods(subschema.Ref.Fieldname(), typename)
+			continue
+		}
+		structname := typename + strconv.Itoa(i)
+		t :=  SchemaToType(ctx, NewName(structname), subschema, false)
+		ctx.Globals[structname] = PrefixType(t, typename)
+		ctx.AddMethods(structname, typename)
+
 	}
+
+	ctx.Globals[name.Fieldname()] = NewInterface(typename)
 
 	return &InterfaceReference{
 		Type: typename,

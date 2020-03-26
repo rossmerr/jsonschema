@@ -2,20 +2,20 @@ package parser
 
 import (
 	"context"
+	"strings"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/tags"
 )
 
-type Implementations map[string][]string
-
 type SchemaContext struct {
 	context.Context
 	References   map[string]*jsonschema.Schema
-	Implementations Implementations
+	implementations  map[string][]string
 	Package      string
 	Tags         tags.FieldTag
-	ParentSchema *jsonschema.Schema
+	parentSchema *jsonschema.Schema
+	Globals map[string]Types
 }
 
 func NewContext(ctx context.Context, packageName string, tags tags.FieldTag) *SchemaContext {
@@ -26,50 +26,37 @@ func NewContext(ctx context.Context, packageName string, tags tags.FieldTag) *Sc
 		packageName,
 		tags,
 		nil,
+		map[string]Types{},
 	}
 }
 
-func (ctx *SchemaContext) WrapContext(schema *jsonschema.Schema) *SchemaContext {
-	return &SchemaContext{
-		ctx,
-		ctx.References,
-		ctx.Implementations,
-		ctx.Package,
-		ctx.Tags,
-		schema,
-	}
-}
-
-func (ctx *SchemaContext) Base() (*jsonschema.Schema, *SchemaContext) {
-	if base := ctx.base(); base != nil {
-		return base.ParentSchema, base
-	}
-	return nil, nil
-}
-
-func (ctx *SchemaContext) base() *SchemaContext {
-	if ctx.ParentSchema == nil {
-		return nil
-	}
-
-	if ctx.ParentSchema.ID != jsonschema.EmptyString {
+func (ctx *SchemaContext) SetParent(schema *jsonschema.Schema) *SchemaContext {
+	if schema == nil {
 		return ctx
-	} else {
-		if c, ok := ctx.Context.(*SchemaContext); ok {
-			return c.base()
-		}
 	}
-
-	return nil
+	if schema.ID != jsonschema.EmptyString {
+		ctx.parentSchema = schema
+	}
+	return ctx
 }
 
-func (s Implementations) AddMethod(structname, typename string) {
+func (ctx *SchemaContext) Parent() *jsonschema.Schema {
+	return ctx.parentSchema
+}
+
+func (ctx *SchemaContext) AddMethods(structname string, methods ...string) {
 	if structname != jsonschema.EmptyString {
-		arr := s[structname]
+		structname = strings.ToLower(structname)
+		arr := ctx.implementations[structname]
 		if arr == nil {
 			arr = []string{}
 		}
-		arr = append(arr, typename)
-		s[structname] = arr
+		arr = append(arr, methods...)
+		ctx.implementations[structname] = arr
 	}
+}
+
+func (ctx *SchemaContext) GetMethods(structname string) []string {
+	structname = strings.ToLower(structname)
+	return ctx.implementations[structname]
 }

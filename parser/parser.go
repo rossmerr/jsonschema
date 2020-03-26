@@ -32,21 +32,21 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 	for _, schema := range schemas {
 		switch schema.Type {
 		case jsonschema.Object:
-			anonymousStruct := NewStruct(s.ctx, NewName(schema.ID.Filename()), schema, false)
+
+			anonymousStruct := NewStruct(s.ctx.SetParent(schema), NewName(schema.ID.Filename()), schema.Properties, schema.Description, "", schema.Required...)
 
 			if schema.Defs == nil {
 				schema.Defs = map[string]*jsonschema.Schema{}
 			}
 			for k, v := range schema.Definitions {
-				schema.Defs [k] = v
+				schema.Defs[k] = v
 			}
 
-			definitions := make([]*CustomType, 0)
+			definitions := make([]Types, 0)
 			for typename, def := range schema.Defs {
-				definition := NewDefinition(s.ctx.WrapContext(schema),  NewName(typename), def)
-				definitions = append(definitions, definition)
+				definitions = append(definitions, NewDefinition(s.ctx.SetParent(schema), NewName(typename), def))
 			}
-			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct,definitions, schema.ID.Filename())
+			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct, definitions, schema.ID.Filename())
 		}
 	}
 
@@ -61,6 +61,7 @@ func (s *parser) buildReferences(schemas map[jsonschema.ID]*jsonschema.Schema) {
 }
 
 func SchemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, renderFieldTags bool, required ...string) Types {
+
 	fieldTag := ""
 	if renderFieldTags {
 		fieldTag = ctx.Tags.ToFieldTag(name.Tagname(), schema, required)
@@ -82,16 +83,22 @@ func SchemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, ren
 		return NewNumber(name, schema.Description, fieldTag, isReference)
 	case jsonschema.Array:
 		return NewArray(name, schema.Description, fieldTag, schema.ArrayType())
-	case jsonschema.Object:
-		fallthrough
-	default:
-		return NewStruct(ctx, name, schema, renderFieldTags, required...)
 	}
-}
 
+	if !schema.Ref.IsEmpty() {
+		return NewReference(ctx, schema.Ref, name, fieldTag)
+	}
+
+	subschemas := append(schema.OneOf, append(schema.AnyOf, schema.AllOf...)...)
+	if len(subschemas) > 0 {
+		return NewInterfaceReference(ctx, name, fieldTag, subschemas)
+	}
+
+	return NewStruct(ctx, name, schema.Properties, schema.Description, fieldTag, schema.Required...)
+}
 
 func NewDefinition(ctx *SchemaContext, name *Name, schema *jsonschema.Schema) *CustomType {
 	t := SchemaToType(ctx, name, schema, false)
-	arr := ctx.Implementations[name.Fieldname()]
+	arr := ctx.GetMethods(name.Fieldname())
 	return PrefixType(t, arr...)
 }

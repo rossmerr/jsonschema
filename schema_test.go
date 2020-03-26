@@ -74,7 +74,6 @@ func TestSchemas_Generate(t *testing.T) {
 				},
 			},
 		},
-
 		{
 			name: "Oneof",
 			fields: fields{

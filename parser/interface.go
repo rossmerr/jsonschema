@@ -34,6 +34,5 @@ const InterfaceTemplate = `
 type {{ .Name }} interface {
 	{{ .Name}}()
 }
-
 {{end -}}
 `

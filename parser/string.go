@@ -27,7 +27,6 @@ func (s *String) Name() string {
 	return s.name
 }
 
-
 const StringTemplate = `
 {{- define "string" -}}
 {{ if .Comment -}}
