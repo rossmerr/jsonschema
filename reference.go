@@ -30,7 +30,7 @@ func (s Reference) Pointer() (pointer Pointer) {
 		return Pointer{}
 	}
 
-	if uri.Fragment == EmptyString{
+	if uri.Fragment == EmptyString {
 		return Pointer{}
 	}
 	parts := uri.Fragment
@@ -62,7 +62,6 @@ func (s Reference) Base() string {
 	file := filepath.Base(uri.Path)
 	return file
 }
-
 
 func (s Reference) Fieldname() string {
 	fragments := s.Pointer()

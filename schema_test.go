@@ -16,7 +16,6 @@ import (
 func TestSchemas_Generate(t *testing.T) {
 	type fields struct {
 		documents map[jsonschema.ID]*jsonschema.Schema
-		config    *jsonschema.Config
 	}
 	tests := []struct {
 		name    string
@@ -30,10 +29,6 @@ func TestSchemas_Generate(t *testing.T) {
 				documents: map[jsonschema.ID]*jsonschema.Schema{
 					"basicBasic": loadRawSchema("samples/basic.json"),
 				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output: "output/",
-				},
 			},
 		},
 		{
@@ -41,10 +36,6 @@ func TestSchemas_Generate(t *testing.T) {
 			fields: fields{
 				documents: map[jsonschema.ID]*jsonschema.Schema{
 					"productNesting": loadRawSchema("samples/nesting.json"),
-				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output:      "output/",
 				},
 			},
 		},
@@ -54,10 +45,6 @@ func TestSchemas_Generate(t *testing.T) {
 				documents: map[jsonschema.ID]*jsonschema.Schema{
 					"http://example.com/reference.json": loadRawSchema("samples/reference.json"),
 				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output:      "output/",
-				},
 			},
 		},
 		{
@@ -65,12 +52,7 @@ func TestSchemas_Generate(t *testing.T) {
 			fields: fields{
 				documents: map[jsonschema.ID]*jsonschema.Schema{
 					"https://example.com/reference-outside.schema.json": loadRawSchema("samples/reference-outside.schema.json"),
-					"http://example.com/reference-outside.json": loadRawSchema("samples/reference-outside.json"),
-
-				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output: "output/",
+					"http://example.com/reference-outside.json":         loadRawSchema("samples/reference-outside.json"),
 				},
 			},
 		},
@@ -80,10 +62,6 @@ func TestSchemas_Generate(t *testing.T) {
 				documents: map[jsonschema.ID]*jsonschema.Schema{
 					"http://example.com/oneof.json": loadRawSchema("samples/oneof.json"),
 				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output:      "output/",
-				},
 			},
 		},
 		{
@@ -91,10 +69,6 @@ func TestSchemas_Generate(t *testing.T) {
 			fields: fields{
 				documents: map[jsonschema.ID]*jsonschema.Schema{
 					"http://example.com/anyof.json": loadRawSchema("samples/anyof.json"),
-				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output:      "output/",
 				},
 			},
 		},
@@ -104,23 +78,19 @@ func TestSchemas_Generate(t *testing.T) {
 				documents: map[jsonschema.ID]*jsonschema.Schema{
 					"http://example.com/allof.json": loadRawSchema("samples/allof.json"),
 				},
-				config: &jsonschema.Config{
-					Packagename: "main",
-					Output:      "output/",
-				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			p := parser.NewParser(context.Background(), tt.fields.config.Packagename)
+			p := parser.NewParser(context.Background(), "main")
 			parse := p.Parse(tt.fields.documents)
 			interpret, err := interpreter.NewInterpretDefaults(parse)
 			if err != nil {
 				t.Error(err)
 			}
-			if err := interpret.ToFile(tt.fields.config.Output); (err != nil) != tt.wantErr {
+			if err := interpret.ToFile("output/"); (err != nil) != tt.wantErr {
 				t.Errorf("Schemas.Generate() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -149,34 +119,34 @@ func TestSchema_Traverse(t *testing.T) {
 	tests := []struct {
 		name   string
 		schema *jsonschema.Schema
-		query []string
+		query  []string
 		want   *jsonschema.Schema
 	}{
 		{
-			name: "Empty",
+			name:   "Empty",
 			schema: &jsonschema.Schema{},
-			query:[]string{},
-			want: nil,
+			query:  []string{},
+			want:   nil,
 		},
 		{
 			name: "Definitions",
 			schema: &jsonschema.Schema{
 				Definitions: map[string]*jsonschema.Schema{
-					"test": &jsonschema.Schema{ID:jsonschema.ID("test")},
+					"test": &jsonschema.Schema{ID: jsonschema.ID("test")},
 				},
 			},
-			query:[]string{"Definitions", "test"},
-			want: &jsonschema.Schema{ID:jsonschema.ID("test")},
+			query: []string{"Definitions", "test"},
+			want:  &jsonschema.Schema{ID: jsonschema.ID("test")},
 		},
 		{
 			name: "OneOf",
 			schema: &jsonschema.Schema{
-				OneOf:[]*jsonschema.Schema{
-					&jsonschema.Schema{ID:jsonschema.ID("test")},
+				OneOf: []*jsonschema.Schema{
+					&jsonschema.Schema{ID: jsonschema.ID("test")},
 				},
 			},
-			query:[]string{"Oneof", "test"},
-			want: &jsonschema.Schema{ID:jsonschema.ID("test")},
+			query: []string{"Oneof", "test"},
+			want:  &jsonschema.Schema{ID: jsonschema.ID("test")},
 		},
 	}
 	for _, tt := range tests {

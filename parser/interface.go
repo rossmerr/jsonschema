@@ -1,14 +1,14 @@
 package parser
 
 type Interface struct {
-	comment string
+	comment                string
 	CommentImplementations string
-	name    string
+	name                   string
 }
 
 func NewInterface(typename string) *Interface {
 	return &Interface{
-		name:    typename,
+		name: typename,
 	}
 }
 

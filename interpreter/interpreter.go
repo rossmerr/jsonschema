@@ -10,21 +10,19 @@ import (
 )
 
 type Interpreter struct {
-	config    *jsonschema.Config
 	validator jsonschema.Validator
 	parser    parser.Parser
 }
 
-func NewInterpreter(config *jsonschema.Config, validator jsonschema.Validator, parser parser.Parser) *Interpreter {
+func NewInterpreter(validator jsonschema.Validator, parser parser.Parser) *Interpreter {
 	return &Interpreter{
-		config:    config,
 		validator: validator,
 		parser:    parser,
 	}
 }
 
-func NewInterpreterDefaults(config *jsonschema.Config) *Interpreter {
-	return NewInterpreter(config, jsonschema.NewValidator(), parser.NewParser(context.Background(), config.Packagename))
+func NewInterpreterDefaults(packagename string) *Interpreter {
+	return NewInterpreter(jsonschema.NewValidator(), parser.NewParser(context.Background(), packagename))
 }
 
 func (s *Interpreter) Interpret(files []string) (Interpret, error) {
@@ -40,7 +38,7 @@ func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 		var schema jsonschema.Schema
 		json.Unmarshal(data, &schema)
 
-		err = s.validator.ValidateSchema(s.config.Schemaversion, schema)
+		err = s.validator.ValidateSchema(schema)
 		if err != nil {
 			return nil, err
 		}

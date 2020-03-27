@@ -5,7 +5,7 @@ type Integer struct {
 	name       string
 	Validation string
 	FieldTag   string
-	Reference string
+	Reference  string
 }
 
 func NewInteger(name *Name, description, fieldTag string, isReference bool) *Integer {
@@ -18,7 +18,7 @@ func NewInteger(name *Name, description, fieldTag string, isReference bool) *Int
 		comment:   description,
 		name:      name.Fieldname(),
 		FieldTag:  fieldTag,
-		Reference:reference,
+		Reference: reference,
 	}
 }
 
@@ -30,7 +30,6 @@ func (s *Integer) Name() string {
 	return s.name
 }
 
-
 const IntegerTemplate = `
 {{- define "integer" -}}
 {{ if .Comment -}}
@@ -39,4 +38,3 @@ const IntegerTemplate = `
 {{ .Name}} {{ .Reference}}int32 {{ .FieldTag }}
 {{- end -}}
 `
-

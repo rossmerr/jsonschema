@@ -13,7 +13,7 @@ func NewAnchor(s string) Anchor {
 	if strings.HasPrefix(s, "#") {
 		return Anchor(s)
 	}
-	return Anchor("#"+s)
+	return Anchor("#" + s)
 }
 
 func (s Anchor) String() string {

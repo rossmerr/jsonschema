@@ -1,17 +1,16 @@
-
 package parser
 
 type CustomType struct {
-	comment  string
-	Type Types
+	comment string
+	Type    Types
 	Methods []string
 }
 
-func PrefixType(t Types, methods ...string ) *CustomType {
+func PrefixType(t Types, methods ...string) *CustomType {
 	return &CustomType{
-		comment:  t.Comment(),
+		comment: t.Comment(),
 		Methods: methods,
-		Type: t,
+		Type:    t,
 	}
 }
 
@@ -22,7 +21,6 @@ func (s *CustomType) Comment() string {
 func (s *CustomType) Name() string {
 	return s.Type.Name()
 }
-
 
 const CustomTypeTemplate = `
 {{- define "customtype" -}}
@@ -36,4 +34,3 @@ func (s {{ $.Name }}) {{$method}}(){}
 {{end }}
 {{- end -}}
 `
-

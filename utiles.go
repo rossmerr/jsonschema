@@ -37,7 +37,6 @@ func ForEach(a []string, delegate func(string) string) []string {
 	return list
 }
 
-
 func KeysString(m map[string]string) string {
 	keys := make([]string, 0, len(m))
 	for k, v := range m {
@@ -54,7 +53,6 @@ func Fieldname(s string) string {
 
 	name := strings.TrimSuffix(s, filepath.Ext(s))
 
-
 	// Valid field names must start with a unicode letter
 	if !unicode.IsLetter(rune(name[0])) {
 		name = "A" + name
@@ -66,7 +64,7 @@ func Fieldname(s string) string {
 	}
 
 	clean := reg.ReplaceAllString(name, " ")
-	return reg.ReplaceAllString( strings.Title(clean), "")
+	return reg.ReplaceAllString(strings.Title(clean), "")
 }
 
 func Structname(s string) string {

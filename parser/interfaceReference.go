@@ -7,7 +7,7 @@ import (
 )
 
 type InterfaceReference struct {
-	Type string
+	Type     string
 	name     string
 	FieldTag string
 }
@@ -26,14 +26,11 @@ func NewInterfaceReferenceAllOf(ctx *SchemaContext, name *Name, fieldTag string,
 		}
 		structname := typename + strconv.Itoa(i)
 		types = append(types, structname)
-		t :=  SchemaToType(ctx, NewName(structname), subschema, false)
+		t := SchemaToType(ctx, NewName(structname), subschema, false)
 		ctx.Globals[structname] = PrefixType(t, typename)
 	}
 
-
-
 	return NewEmbeddedStruct(name.Fieldname(), fieldTag, types...)
-
 }
 
 func NewInterfaceReferenceAnyOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) *InterfaceReference {
@@ -48,7 +45,7 @@ func NewInterfaceReferenceAnyOf(ctx *SchemaContext, name *Name, fieldTag string,
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
-		t :=  SchemaToType(ctx, NewName(structname), subschema, false)
+		t := SchemaToType(ctx, NewName(structname), subschema, false)
 		ctx.Globals[structname] = PrefixType(t, typename)
 		ctx.AddMethods(structname, typename)
 
@@ -57,12 +54,11 @@ func NewInterfaceReferenceAnyOf(ctx *SchemaContext, name *Name, fieldTag string,
 	ctx.Globals[name.Fieldname()] = NewInterface(typename)
 
 	return &InterfaceReference{
-		Type: "[]"+typename,
-		name: name.Fieldname(),
+		Type:     "[]" + typename,
+		name:     name.Fieldname(),
 		FieldTag: fieldTag,
 	}
 }
-
 
 func NewInterfaceReferenceOneOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) *InterfaceReference {
 	parent := ctx.Parent()
@@ -76,7 +72,7 @@ func NewInterfaceReferenceOneOf(ctx *SchemaContext, name *Name, fieldTag string,
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
-		t :=  SchemaToType(ctx, NewName(structname), subschema, false)
+		t := SchemaToType(ctx, NewName(structname), subschema, false)
 		ctx.Globals[structname] = PrefixType(t, typename)
 		ctx.AddMethods(structname, typename)
 
@@ -85,8 +81,8 @@ func NewInterfaceReferenceOneOf(ctx *SchemaContext, name *Name, fieldTag string,
 	ctx.Globals[name.Fieldname()] = NewInterface(typename)
 
 	return &InterfaceReference{
-		Type: typename,
-		name: name.Fieldname(),
+		Type:     typename,
+		name:     name.Fieldname(),
 		FieldTag: fieldTag,
 	}
 }

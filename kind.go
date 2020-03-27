@@ -5,13 +5,13 @@ import "reflect"
 type Kind string
 
 const (
-	String Kind = "string"
-	Object Kind = "object"
-	Array Kind = "array"
+	String  Kind = "string"
+	Object  Kind = "object"
+	Array   Kind = "array"
 	Integer Kind = "integer"
-	Number Kind = "number"
+	Number  Kind = "number"
 	Boolean Kind = "boolean"
-	Null Kind = ""
+	Null    Kind = "null"
 )
 
 func (s Kind) String() string {
@@ -32,6 +32,8 @@ func (s Kind) ToKind() reflect.Kind {
 		return reflect.Float64
 	case Boolean:
 		return reflect.Bool
+	case Null:
+		return reflect.Invalid
 	default:
 		return reflect.Struct
 	}

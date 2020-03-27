@@ -4,7 +4,7 @@ type String struct {
 	comment  string
 	name     string
 	FieldTag string
-	Methods    []string
+	Methods  []string
 }
 
 func NewString(name *Name, description, fieldTag string) *String {

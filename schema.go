@@ -48,10 +48,14 @@ func (s *Schema) Structname() string {
 	return structname
 }
 
-func  (s *Schema) ArrayType() string {
+func (s *Schema) ArrayType() string {
 	arrType := string(s.Items.Type)
-	if s.Items.Ref.IsNotEmpty()  {
+	if s.Items.Ref.IsNotEmpty() {
 		arrType = s.Items.Ref.Fieldname()
 	}
 	return arrType
+}
+
+func (s *Schema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema) {
+	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf
 }

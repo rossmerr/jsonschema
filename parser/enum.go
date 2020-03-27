@@ -1,15 +1,13 @@
 package parser
 
-import (
-
-)
+import ()
 
 type Enum struct {
-	comment  string
-	name     string
-	Values   []string
-	FieldTag string
-	Reference  string
+	comment   string
+	name      string
+	Values    []string
+	FieldTag  string
+	Reference string
 }
 
 func NewEnum(name *Name, description, fieldTag string, isReference bool, values []string) *Enum {
@@ -19,11 +17,11 @@ func NewEnum(name *Name, description, fieldTag string, isReference bool, values 
 	}
 
 	return &Enum{
-		comment:  description,
-		name:     name.Fieldname(),
-		FieldTag: fieldTag,
-		Reference:  reference,
-		Values:  values,
+		comment:   description,
+		name:      name.Fieldname(),
+		FieldTag:  fieldTag,
+		Reference: reference,
+		Values:    values,
 	}
 }
 

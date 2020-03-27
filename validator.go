@@ -5,7 +5,7 @@ import (
 )
 
 type Validator interface {
-	ValidateSchema(customSchema string, schema Schema) error
+	ValidateSchema(schema Schema) error
 }
 
 type validator struct {
@@ -15,13 +15,7 @@ func NewValidator() Validator {
 	return &validator{}
 }
 
-func (s *validator) ValidateSchema(customSchema string, schema Schema) error {
-	if customSchema != EmptyString {
-		if schema.Schema == customSchema {
-			return nil
-		}
-	}
-
+func (s *validator) ValidateSchema(schema Schema) error {
 	switch schema.Schema {
 	case "http://json-schema.org/draft-06/schema#":
 		return nil

@@ -43,7 +43,7 @@ func (s ID) Filename() string {
 	}
 
 	clean := reg.ReplaceAllString(name, " ")
-	filename := reg.ReplaceAllString( strings.Title(clean), "")
+	filename := reg.ReplaceAllString(strings.Title(clean), "")
 	if len(filename) > 0 {
 		return string(unicode.ToLower(rune(filename[0]))) + filename[1:]
 	}

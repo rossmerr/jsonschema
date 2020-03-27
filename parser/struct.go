@@ -5,10 +5,10 @@ import (
 )
 
 type Struct struct {
-	comment    string
-	name       string
-	Fields     []Types
-	StructTag  string
+	comment   string
+	name      string
+	Fields    []Types
+	StructTag string
 }
 
 func NewStruct(ctx *SchemaContext, name *Name, properties map[string]*jsonschema.Schema, comment, fieldTag string, required ...string) Types {
@@ -19,10 +19,10 @@ func NewStruct(ctx *SchemaContext, name *Name, properties map[string]*jsonschema
 	}
 
 	return &Struct{
-		comment:    comment,
-		name:       name.Fieldname(),
-		Fields:     fields,
-		StructTag:  fieldTag,
+		comment:   comment,
+		name:      name.Fieldname(),
+		Fields:    fields,
+		StructTag: fieldTag,
 	}
 }
 

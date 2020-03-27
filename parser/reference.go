@@ -6,19 +6,18 @@ import (
 )
 
 type Reference struct {
-	Type string
+	Type     string
 	name     string
-	FieldTag   string
-
+	FieldTag string
 }
 
 func NewReference(ctx *SchemaContext, ref jsonschema.Reference, name *Name, fieldTag string) *Reference {
 	typename := ResolvePointer(ctx, ref)
 
 	return &Reference{
-		Type: typename,
+		Type:     typename,
 		name:     name.Fieldname(),
-		FieldTag:fieldTag,
+		FieldTag: fieldTag,
 	}
 }
 

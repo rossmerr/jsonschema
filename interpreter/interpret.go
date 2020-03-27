@@ -13,13 +13,13 @@ type Interpret interface {
 }
 
 type interpret struct {
-	root     *parser.Parse
+	root           *parser.Parse
 	templateStruct Template
 }
 
 func NewInterpret(root *parser.Parse, templateStruct Template) Interpret {
 	return &interpret{
-		root:     root,
+		root:           root,
 		templateStruct: templateStruct,
 	}
 }
@@ -29,12 +29,12 @@ func NewInterpretDefaults(root *parser.Parse) (Interpret, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewInterpret(root, templates),nil
+	return NewInterpret(root, templates), nil
 }
 
 func (s *interpret) ToFile(output string) error {
 	for _, obj := range s.root.Structs {
-		filename := path.Join( output,obj.Filename + ".go")
+		filename := path.Join(output, obj.Filename+".go")
 		_, err := os.Stat(filename)
 		if !os.IsNotExist(err) {
 			err = os.Remove(filename)

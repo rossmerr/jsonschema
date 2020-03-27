@@ -1,6 +1,6 @@
 package parser
 
 type Types interface {
-	Comment()     string
+	Comment() string
 	Name() string
 }

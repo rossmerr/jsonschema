@@ -61,7 +61,6 @@ func (s *parser) buildReferences(schemas map[jsonschema.ID]*jsonschema.Schema) {
 }
 
 func SchemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, renderFieldTags bool, required ...string) Types {
-
 	fieldTag := ""
 	if renderFieldTags {
 		fieldTag = ctx.Tags.ToFieldTag(name.Tagname(), schema, required)
@@ -72,36 +71,28 @@ func SchemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, ren
 		isReference = false
 	}
 
-	switch schema.Type {
-	case jsonschema.Boolean:
+	switch kind, ref, oneOf, anyOf, allOf := schema.Stat(); {
+	case kind == jsonschema.Boolean:
 		return NewBoolean(name, schema.Description, fieldTag, isReference)
-	case jsonschema.String:
+	case kind == jsonschema.String:
 		return NewString(name, schema.Description, fieldTag)
-	case jsonschema.Integer:
+	case kind == jsonschema.Integer:
 		return NewInteger(name, schema.Description, fieldTag, isReference)
-	case jsonschema.Number:
+	case kind == jsonschema.Number:
 		return NewNumber(name, schema.Description, fieldTag, isReference)
-	case jsonschema.Array:
+	case kind == jsonschema.Array:
 		return NewArray(name, schema.Description, fieldTag, schema.ArrayType())
-	}
-
-	if schema.Ref.IsNotEmpty() {
+	case ref.IsNotEmpty():
 		return NewReference(ctx, schema.Ref, name, fieldTag)
+	case len(oneOf) > 0:
+		return NewInterfaceReferenceOneOf(ctx, name, fieldTag, oneOf)
+	case len(anyOf) > 0:
+		return NewInterfaceReferenceAnyOf(ctx, name, fieldTag, anyOf)
+	case len(allOf) > 0:
+		return NewInterfaceReferenceAllOf(ctx, name, fieldTag, allOf)
+	default:
+		return NewStruct(ctx, name, schema.Properties, schema.Description, fieldTag, schema.Required...)
 	}
-
-	if len(schema.OneOf) > 0 {
-		return NewInterfaceReferenceOneOf(ctx, name, fieldTag, schema.OneOf)
-	}
-
-	if len(schema.AnyOf) > 0 {
-		return NewInterfaceReferenceAnyOf(ctx, name, fieldTag, schema.AnyOf)
-	}
-
-	if len(schema.AllOf) > 0 {
-		return NewInterfaceReferenceAllOf(ctx, name, fieldTag, schema.AllOf)
-	}
-
-	return NewStruct(ctx, name, schema.Properties, schema.Description, fieldTag, schema.Required...)
 }
 
 func NewDefinition(ctx *SchemaContext, name *Name, schema *jsonschema.Schema) *CustomType {

@@ -1,67 +1,74 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"log"
+	"go/scanner"
 	"os"
 	"path/filepath"
+	"strings"
 
-	"github.com/RossMerr/jsonschema"
+	flag "github.com/spf13/pflag"
+
 	"github.com/RossMerr/jsonschema/interpreter"
 )
 
 var (
-	packagename   = flag.String("package", "main", "Go package")
-	output        = flag.String("output", "", "Output folder")
-	schemaversion = flag.String("schema", "", "If you need to declare a schema")
+	packagename = flag.StringP("package", "p", "main", "Go package name to use")
+	output      = flag.StringP("output", "o", "", "Output folder")
 )
+
+var (
+	exitCode = 0
+	files    []string
+)
+
+func report(err error) {
+	scanner.PrintError(os.Stderr, err)
+	exitCode = 2
+}
+
+func isJsonFile(f os.FileInfo) bool {
+	// ignore non-JSON files
+	name := f.Name()
+	return !f.IsDir() && !strings.HasPrefix(name, ".") && strings.HasSuffix(name, ".json")
+}
+
+func visitFile(path string, f os.FileInfo, err error) error {
+	if err == nil && isJsonFile(f) {
+		files = append(files, path)
+	}
+	if err != nil && !os.IsNotExist(err) {
+		report(err)
+	}
+	return nil
+}
+
+func walkDir(path string) {
+	filepath.Walk(path, visitFile)
+}
 
 func main() {
 	flag.Parse()
 
-	config := &jsonschema.Config{
-		Packagename:   *packagename,
-		Output:        *output,
-		Schemaversion: *schemaversion,
-	}
-
-	var files []string
-	for _, file := range flag.Args() {
-		fileInfo, err := os.Stat(file)
-
-		if err != nil {
-			if os.IsNotExist(err) {
-				panic(fmt.Errorf("File does not exist."))
-			}
-
-		}
-
-		if fileInfo.IsDir() {
-			err := filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
-				if filepath.Ext(path) == ".json" {
-					files = append(files, path)
-				}
-				return nil
-			})
-			if err != nil {
-				panic(err)
-			}
-		} else {
-			if filepath.Ext(file) == ".json" {
-				files = append(files, file)
-			}
+	for i := 0; i < flag.NArg(); i++ {
+		path := flag.Arg(i)
+		switch dir, err := os.Stat(path); {
+		case err != nil:
+			report(err)
+		case dir.IsDir():
+			walkDir(path)
+		default:
+			files = append(files, path)
 		}
 	}
 
-	interpreter := interpreter.NewInterpreterDefaults(config)
+	interpreter := interpreter.NewInterpreterDefaults(*packagename)
 	interpret, err := interpreter.Interpret(files)
 	if err != nil {
-		log.Fatal(err)
+		report(err)
 	}
-	err = interpret.ToFile(config.Output)
+	err = interpret.ToFile(*output)
 	if err != nil {
-		panic(err)
+		report(err)
 	}
-
+	os.Exit(exitCode)
 }

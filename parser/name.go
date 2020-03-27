@@ -4,13 +4,13 @@ import "github.com/RossMerr/jsonschema"
 
 type Name struct {
 	fieldname string
-	tagname string
+	tagname   string
 }
 
 func NewName(name string) *Name {
 	return &Name{
 		fieldname: jsonschema.Structname(name),
-		tagname:name,
+		tagname:   name,
 	}
 }
 

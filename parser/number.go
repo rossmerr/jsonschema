@@ -5,7 +5,7 @@ type Number struct {
 	name       string
 	Validation string
 	FieldTag   string
-	Reference string
+	Reference  string
 }
 
 func NewNumber(name *Name, description, fieldTag string, isReference bool) *Number {
@@ -29,7 +29,6 @@ func (s *Number) Comment() string {
 func (s *Number) Name() string {
 	return s.name
 }
-
 
 const NumberTemplate = `
 {{- define "number" -}}

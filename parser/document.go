@@ -2,12 +2,11 @@ package parser
 
 type Document struct {
 	*CustomType
-	ID         string
+	ID          string
 	Definitions []Types
-	Filename string
+	Filename    string
 	Package     string
-	Globals map[string]Types
-
+	Globals     map[string]Types
 }
 
 func NewDocument(ctx *SchemaContext, id string, anonymousStruct Types, definitions []Types, filename string) *Document {

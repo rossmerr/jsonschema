@@ -7,18 +7,18 @@ import (
 
 func Template() (*template.Template, error) {
 	tmpl, err := template.New("document").Funcs(template.FuncMap{
-		"isStruct":    IsStruct,
-		"isArray":     IsArray,
-		"isString":    IsString,
-		"isNumber":    IsNumber,
-		"isInteger":   IsInteger,
-		"isInterface": IsInterface,
-		"isBoolean":   IsBoolean,
-		"isReference":   IsReference,
-		"isEmbeddedStruct": IsEmbeddedStruct,
+		"isStruct":             IsStruct,
+		"isArray":              IsArray,
+		"isString":             IsString,
+		"isNumber":             IsNumber,
+		"isInteger":            IsInteger,
+		"isInterface":          IsInterface,
+		"isBoolean":            IsBoolean,
+		"isReference":          IsReference,
+		"isEmbeddedStruct":     IsEmbeddedStruct,
 		"isInterfaceReference": IsInterfaceReference,
-		"isCustomType": IsCustomType,
-		"mixedCase":   MixedCase,
+		"isCustomType":         IsCustomType,
+		"mixedCase":            MixedCase,
 	}).Parse(DocumentTemplate)
 	tmpl, err = tmpl.Parse(StructTemplate)
 	if err != nil {
@@ -74,7 +74,6 @@ func Template() (*template.Template, error) {
 	}
 	return tmpl, nil
 }
-
 
 func IsStruct(obj interface{}) bool {
 	_, ok := obj.(*Struct)
@@ -136,6 +135,5 @@ func MixedCase(raw string) string {
 		return raw
 	}
 	s := strings.Title(raw)
-	return  strings.ToLower(s[0:1]) + s[1:]
+	return strings.ToLower(s[0:1]) + s[1:]
 }
-

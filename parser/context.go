@@ -10,12 +10,12 @@ import (
 
 type SchemaContext struct {
 	context.Context
-	References   map[string]*jsonschema.Schema
-	implementations  map[string][]string
-	Package      string
-	Tags         tags.FieldTag
-	parentSchema *jsonschema.Schema
-	Globals map[string]Types
+	References      map[string]*jsonschema.Schema
+	implementations map[string][]string
+	Package         string
+	Tags            tags.FieldTag
+	parentSchema    *jsonschema.Schema
+	Globals         map[string]Types
 }
 
 func NewContext(ctx context.Context, packageName string, tags tags.FieldTag) *SchemaContext {

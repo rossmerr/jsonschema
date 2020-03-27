@@ -59,6 +59,10 @@ func (s *validate) ToStructTag(key string, schema *jsonschema.Schema, required [
 		if schema.ExclusiveMinimum != nil {
 			dict["gt"] = fmt.Sprint(*schema.ExclusiveMinimum)
 		}
+
+		if schema.Pattern != jsonschema.EmptyString {
+			dict["regex"] = fmt.Sprint(schema.Pattern)
+		}
 	}
 
 	if len(dict) == 0 {
