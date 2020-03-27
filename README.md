@@ -5,7 +5,7 @@
 
 
 Basic support to generate go struct's, featuring:
-* ##### $ref 
+##### $ref 
   * Can resolve to any point in the document or another local file using a JSON Pointer.
   
   `"#/definitions/address"`
@@ -16,19 +16,19 @@ Basic support to generate go struct's, featuring:
   
   `"http://www.sample.com/definitions.json#/address"`
   
-* ##### $id
+##### $id
   * Top level $id must follow the absolute-URI convention. The old 'id' field is not supported.
   
-* ##### $def
+##### $def
    * The old 'definitions' field is still supported but merged into the new $def field.
    
-* ##### allOf
+##### allOf
   * Will generate a struct with all of the subschemas embedded.
    
-* ##### anyOf
+##### anyOf
   * Will generate an array of a interface with all subschemas implementing its method.
    
-* ##### oneOf
+##### oneOf
   * Will generate a interface with all subschemas implementing its method.
   
 #### Validation
@@ -45,15 +45,15 @@ Which you can then use for any custom validators.
 
 #### Not Supported
 
-* ##### Not
+##### Not
   * No support we be provided for the 'not' keyword 
 
-* ##### String-encoding 
+##### String-encoding 
   * 'contentMediaType' and 'contentEncoding' will not be supported
  
-* ##### External JSON Pointer
+##### External JSON Pointer
 
-* ##### Conditionally
+##### Conditionally
   * If, Then and Else are not supported 
   
 #### Coming soon

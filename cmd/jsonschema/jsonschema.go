@@ -13,7 +13,7 @@ import (
 
 var (
 	packagename = flag.StringP("package", "p", "main", "Go package name to use")
-	output      = flag.StringP("output", "o", "", "Output folder")
+	output      = flag.StringP("output", "o", ".", "Output folder")
 )
 
 var (
