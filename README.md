@@ -1,5 +1,7 @@
 ## Installation
 
+![Go](https://github.com/RossMerr/jsonschema/workflows/Go/badge.svg)
+
 * `go get -u github.com/RossMerr/jsonschema/cmd/jsonschema`
 
 
