@@ -42,7 +42,7 @@ func TestAnchor_Fieldname(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotQuery := tt.s.Fieldname(); !reflect.DeepEqual(gotQuery, tt.want) {
-				t.Errorf("Pointer() = %v, want %v", gotQuery, tt.want)
+				t.Errorf("Path() = %v, want %v", gotQuery, tt.want)
 			}
 		})
 	}

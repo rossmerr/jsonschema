@@ -1,12 +1,7 @@
 package jsonschema
 
-type Pointer []string
+type Pointer string
 
-func (s Pointer) Fieldname() string {
-	if len(s) > 0 {
-		field := s[len(s)-1]
-		return Fieldname(field)
-	}
-
-	return EmptyString
+func (s Pointer) String() string {
+	return string(s)
 }

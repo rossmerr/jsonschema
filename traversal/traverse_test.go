@@ -9,8 +9,8 @@ import (
 
 func TestTraverse(t *testing.T) {
 	type args struct {
-		s       *jsonschema.Schema
-		pointer jsonschema.Pointer
+		s         *jsonschema.Schema
+		reference jsonschema.Reference
 	}
 	tests := []struct {
 		name string
@@ -20,10 +20,10 @@ func TestTraverse(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				s:       &jsonschema.Schema{},
-				pointer: jsonschema.Pointer{},
+				s:         &jsonschema.Schema{},
+				reference: jsonschema.Reference(""),
 			},
-			want: &jsonschema.Schema{},
+			want: nil,
 		},
 		{
 			name: "Definitions",
@@ -33,19 +33,19 @@ func TestTraverse(t *testing.T) {
 						"test": &jsonschema.Schema{ID: jsonschema.ID("test")},
 					},
 				},
-				pointer: jsonschema.Pointer{"Definitions", "test"},
+				reference: jsonschema.Reference("#/Definitions/test"),
 			},
 			want: &jsonschema.Schema{ID: jsonschema.ID("test")},
 		},
 		{
-			name: "Oneof",
+			name: "Pointer",
 			args: args{
 				s: &jsonschema.Schema{
 					OneOf: []*jsonschema.Schema{
 						&jsonschema.Schema{ID: jsonschema.ID("test")},
 					},
 				},
-				pointer: jsonschema.Pointer{"Oneof", "test"},
+				reference: jsonschema.Reference("#test"),
 			},
 			want: &jsonschema.Schema{ID: jsonschema.ID("test")},
 		},
@@ -53,7 +53,7 @@ func TestTraverse(t *testing.T) {
 	{
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
-				if got := Traverse(tt.args.s, tt.args.pointer); !reflect.DeepEqual(got, tt.want) {
+				if got := Traverse(tt.args.s, tt.args.reference); !reflect.DeepEqual(got, tt.want) {
 					t.Errorf("Traverse() = %v, want %v", got, tt.want)
 				}
 			})

@@ -30,16 +30,16 @@ func (s *Reference) Name() string {
 }
 
 func ResolvePointer(ctx *SchemaContext, ref jsonschema.Reference) string {
-	pointer := ref.Pointer()
+	path := ref.Path()
 	reference := ref.Base()
 	base := ctx.Parent()
 	if reference != "." {
 		base = ctx.References[reference]
 	}
 
-	def := traversal.Traverse(base, pointer)
+	def := traversal.Traverse(base, ref)
 
-	fieldname := pointer.Fieldname()
+	fieldname := path.Fieldname()
 	if fieldname == jsonschema.EmptyString {
 		fieldname = jsonschema.Fieldname(def.ID.Filename())
 	}
