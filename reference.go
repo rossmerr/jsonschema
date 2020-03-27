@@ -1,11 +1,8 @@
 package jsonschema
 
 import (
-	"fmt"
-	"log"
 	"net/url"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -19,7 +16,7 @@ func (s Reference) String() string {
 	return string(s)
 }
 
-func (s Reference) Pointer() (pointer Pointer) {
+func (s Reference) Pointer() Pointer {
 	raw := string(s)
 	if len(raw) < 1 {
 		return Pointer{}
@@ -55,7 +52,6 @@ func (s Reference) Base() string {
 
 	uri, err := url.Parse(raw)
 	if err != nil {
-		log.Print(fmt.Sprintf("Reference: not a vaild url format '%v'", raw))
 		return "."
 	}
 
@@ -71,13 +67,7 @@ func (s Reference) Fieldname() string {
 	}
 	name := fragments[len(fragments)-1]
 
-	reg, err := regexp.Compile(`[^a-zA-Z0-9]+`)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	clean := reg.ReplaceAllString(name, " ")
-	return reg.ReplaceAllString(strings.Title(clean), "")
+	return Title(name)
 }
 
 func (s Reference) IsNotEmpty() bool {

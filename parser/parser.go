@@ -27,7 +27,7 @@ func NewParser(ctx context.Context, packageName string) Parser {
 func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 	parse := NewParse()
 
-	s.buildReferences(schemas)
+	buildReferences(s.ctx, schemas)
 
 	for _, schema := range schemas {
 		switch schema.Type {
@@ -44,7 +44,7 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 
 			definitions := make([]Types, 0)
 			for typename, def := range schema.Defs {
-				definitions = append(definitions, NewDefinition(s.ctx.SetParent(schema), NewName(typename), def))
+				definitions = append(definitions, definition(s.ctx.SetParent(schema), NewName(typename), def))
 			}
 			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct, definitions, schema.ID.Filename())
 		}
@@ -53,14 +53,20 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 	return parse
 }
 
-func (s *parser) buildReferences(schemas map[jsonschema.ID]*jsonschema.Schema) {
+func buildReferences(ctx *SchemaContext, schemas map[jsonschema.ID]*jsonschema.Schema) {
 	for _, schema := range schemas {
 		key := schema.ID.Base()
-		s.ctx.References[key] = schema
+		ctx.References[key] = schema
 	}
 }
 
-func SchemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, renderFieldTags bool, required ...string) Types {
+func definition(ctx *SchemaContext, name *Name, schema *jsonschema.Schema) *CustomType {
+	t := schemaToType(ctx, name, schema, false)
+	arr := ctx.GetMethods(name.Fieldname())
+	return PrefixType(t, arr...)
+}
+
+func schemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, renderFieldTags bool, required ...string) Types {
 	fieldTag := ""
 	if renderFieldTags {
 		fieldTag = ctx.Tags.ToFieldTag(name.Tagname(), schema, required)
@@ -93,10 +99,4 @@ func SchemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, ren
 	default:
 		return NewStruct(ctx, name, schema.Properties, schema.Description, fieldTag, schema.Required...)
 	}
-}
-
-func NewDefinition(ctx *SchemaContext, name *Name, schema *jsonschema.Schema) *CustomType {
-	t := SchemaToType(ctx, name, schema, false)
-	arr := ctx.GetMethods(name.Fieldname())
-	return PrefixType(t, arr...)
 }

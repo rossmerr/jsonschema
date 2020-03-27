@@ -1,24 +1,18 @@
 package jsonschema
 
 import (
-	"log"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"unicode"
 )
 
 type ID string
 
-func NewID(s string) ID {
-	return ID(s)
-}
-
 func (s ID) String() string {
 	return string(s)
 }
 
-// Base reports the file this ID references
+// Base returns the last element of path.
 func (s ID) Base() string {
 	raw := string(s)
 	if len(raw) < 1 {
@@ -33,19 +27,14 @@ func (s ID) Base() string {
 	return filepath.Base(raw[:index])
 }
 
+// Filename returns the file name from the ID.
 func (s ID) Filename() string {
 	basename := s.Base()
-	name := strings.TrimSuffix(basename, filepath.Ext(basename))
 
-	reg, err := regexp.Compile(`[^a-zA-Z0-9]+`)
-	if err != nil {
-		log.Fatal(err)
-	}
+	name := Fieldname(basename)
 
-	clean := reg.ReplaceAllString(name, " ")
-	filename := reg.ReplaceAllString(strings.Title(clean), "")
-	if len(filename) > 0 {
-		return string(unicode.ToLower(rune(filename[0]))) + filename[1:]
+	if len(name) > 0 {
+		return string(unicode.ToLower(rune(name[0]))) + name[1:]
 	}
-	return filename
+	return name
 }

@@ -15,7 +15,7 @@ func NewStruct(ctx *SchemaContext, name *Name, properties map[string]*jsonschema
 
 	fields := []Types{}
 	for key, propertie := range properties {
-		fields = append(fields, SchemaToType(ctx, NewName(key), propertie, true, required...))
+		fields = append(fields, schemaToType(ctx, NewName(key), propertie, true, required...))
 	}
 
 	return &Struct{

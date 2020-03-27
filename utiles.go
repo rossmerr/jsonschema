@@ -49,22 +49,33 @@ func KeysString(m map[string]string) string {
 	return strings.Join(keys, ",")
 }
 
-func Fieldname(s string) string {
-
-	name := strings.TrimSuffix(s, filepath.Ext(s))
-
-	// Valid field names must start with a unicode letter
-	if !unicode.IsLetter(rune(name[0])) {
-		name = "A" + name
-	}
-
+// Title returns a copy of the string s with all none alphanumeric characters removed
+// and all the Unicode letters that begin a word mapped to their Unicode title case
+func Title(s string) string {
 	reg, err := regexp.Compile(`[^a-zA-Z0-9]+`)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	clean := reg.ReplaceAllString(name, " ")
+	clean := reg.ReplaceAllString(s, " ")
 	return reg.ReplaceAllString(strings.Title(clean), "")
+}
+
+func Fieldname(s string) string {
+	if s == "" {
+		return "."
+	}
+	if s == "." {
+		return s
+	}
+	name := strings.TrimSuffix(s, filepath.Ext(s))
+
+	// Valid field names must start with a unicode letter
+	if !unicode.IsLetter(rune(name[0])) {
+		name = "No" + name
+	}
+
+	return Title(name)
 }
 
 func Structname(s string) string {

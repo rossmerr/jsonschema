@@ -26,7 +26,7 @@ func NewInterfaceReferenceAllOf(ctx *SchemaContext, name *Name, fieldTag string,
 		}
 		structname := typename + strconv.Itoa(i)
 		types = append(types, structname)
-		t := SchemaToType(ctx, NewName(structname), subschema, false)
+		t := schemaToType(ctx, NewName(structname), subschema, false)
 		ctx.Globals[structname] = PrefixType(t, typename)
 	}
 
@@ -45,7 +45,7 @@ func NewInterfaceReferenceAnyOf(ctx *SchemaContext, name *Name, fieldTag string,
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
-		t := SchemaToType(ctx, NewName(structname), subschema, false)
+		t := schemaToType(ctx, NewName(structname), subschema, false)
 		ctx.Globals[structname] = PrefixType(t, typename)
 		ctx.AddMethods(structname, typename)
 
@@ -72,7 +72,7 @@ func NewInterfaceReferenceOneOf(ctx *SchemaContext, name *Name, fieldTag string,
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
-		t := SchemaToType(ctx, NewName(structname), subschema, false)
+		t := schemaToType(ctx, NewName(structname), subschema, false)
 		ctx.Globals[structname] = PrefixType(t, typename)
 		ctx.AddMethods(structname, typename)
 

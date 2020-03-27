@@ -18,7 +18,7 @@ func TestID_Base(t *testing.T) {
 		{
 			name: "No #",
 			s:    ID("test"),
-			want: ".",
+			want: "test",
 		},
 		{
 			name: "Root ID",
@@ -56,37 +56,37 @@ func TestID_Filename(t *testing.T) {
 		{
 			name: "Empty string",
 			s:    ID(""),
-			want: "",
+			want: ".",
 		},
 		{
 			name: "No #",
 			s:    ID("test"),
-			want: "",
+			want: "test",
 		},
 		{
 			name: "Root ID",
 			s:    ID("#test"),
-			want: "Test",
+			want: ".",
 		},
 		{
 			name: "Defintions",
 			s:    ID("#defintions/test"),
-			want: "Test",
+			want: ".",
 		},
 		{
 			name: "Relative",
-			s:    ID("test.json#defintions/test"),
-			want: "Test",
+			s:    ID("test.json#defintions/hello"),
+			want: "test",
 		},
 		{
 			name: "Absolute",
-			s:    ID("http://www.test.com/test.json#defintions/test"),
-			want: "Test",
+			s:    ID("http://www.sample.com/test.json#defintions/hello"),
+			want: "test",
 		},
 		{
 			name: "Test Case",
 			s:    ID("test.json#defintions/hello_world"),
-			want: "HelloWorld",
+			want: "test",
 		},
 	}
 	for _, tt := range tests {

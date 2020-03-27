@@ -11,42 +11,42 @@ func TestReference_Fragments(t *testing.T) {
 	tests := []struct {
 		name      string
 		s         jsonschema.Reference
-		wantQuery []string
+		wantQuery jsonschema.Pointer
 	}{
 		{
 			name:      "Empty string",
 			s:         jsonschema.NewReference(""),
-			wantQuery: []string{},
+			wantQuery: jsonschema.Pointer{},
 		},
 		{
 			name:      "No pointer",
 			s:         jsonschema.NewReference("test"),
-			wantQuery: []string{},
+			wantQuery: jsonschema.Pointer{},
 		},
 		{
 			name:      "Just pointer",
 			s:         jsonschema.NewReference("#"),
-			wantQuery: []string{},
+			wantQuery: jsonschema.Pointer{},
 		},
 		{
 			name:      "One fragment",
 			s:         jsonschema.NewReference("#test"),
-			wantQuery: []string{"test"},
+			wantQuery: jsonschema.Pointer{"test"},
 		},
 		{
 			name:      "Two fragment",
 			s:         jsonschema.NewReference("#hello/world"),
-			wantQuery: []string{"hello", "world"},
+			wantQuery: jsonschema.Pointer{"hello", "world"},
 		},
 		{
 			name:      "Relative",
 			s:         jsonschema.NewReference("test.json#hello/world"),
-			wantQuery: []string{"hello", "world"},
+			wantQuery: jsonschema.Pointer{"hello", "world"},
 		},
 		{
 			name:      "Relative",
 			s:         jsonschema.NewReference("http://www.sample.com/test.json#hello/world"),
-			wantQuery: []string{"hello", "world"},
+			wantQuery: jsonschema.Pointer{"hello", "world"},
 		},
 	}
 	for _, tt := range tests {

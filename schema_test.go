@@ -4,13 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
-	"reflect"
+	"os"
 	"testing"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/interpreter"
 	"github.com/RossMerr/jsonschema/parser"
-	"github.com/RossMerr/jsonschema/traversal"
 )
 
 func TestSchemas_Generate(t *testing.T) {
@@ -82,6 +81,7 @@ func TestSchemas_Generate(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		os.MkdirAll("output/", 0755)
 		t.Run(tt.name, func(t *testing.T) {
 
 			p := parser.NewParser(context.Background(), "main")
@@ -95,6 +95,12 @@ func TestSchemas_Generate(t *testing.T) {
 			}
 		})
 	}
+
+	t.Cleanup(func() {
+		if err := os.RemoveAll("output/"); err != nil {
+			t.Error("error resetting:", err)
+		}
+	})
 }
 
 func loadRawSchema(filename string) *jsonschema.Schema {
@@ -110,50 +116,4 @@ func loadRawSchema(filename string) *jsonschema.Schema {
 	}
 
 	return &doc
-}
-
-func TestSchema_Traverse(t *testing.T) {
-	type args struct {
-		query []string
-	}
-	tests := []struct {
-		name   string
-		schema *jsonschema.Schema
-		query  []string
-		want   *jsonschema.Schema
-	}{
-		{
-			name:   "Empty",
-			schema: &jsonschema.Schema{},
-			query:  []string{},
-			want:   nil,
-		},
-		{
-			name: "Definitions",
-			schema: &jsonschema.Schema{
-				Definitions: map[string]*jsonschema.Schema{
-					"test": &jsonschema.Schema{ID: jsonschema.ID("test")},
-				},
-			},
-			query: []string{"Definitions", "test"},
-			want:  &jsonschema.Schema{ID: jsonschema.ID("test")},
-		},
-		{
-			name: "OneOf",
-			schema: &jsonschema.Schema{
-				OneOf: []*jsonschema.Schema{
-					&jsonschema.Schema{ID: jsonschema.ID("test")},
-				},
-			},
-			query: []string{"Oneof", "test"},
-			want:  &jsonschema.Schema{ID: jsonschema.ID("test")},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := traversal.Traverse(tt.schema, tt.query); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Traverse() = %v, want %v", got, tt.want)
-			}
-		})
-	}
 }
