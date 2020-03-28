@@ -3,6 +3,7 @@ package parser
 import (
 	"context"
 	"strings"
+	"unicode"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/tags"
@@ -47,11 +48,21 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 			for typename, def := range schema.Defs {
 				definitions = append(definitions, definition(s.ctx.SetParent(schema), NewName(typename), def))
 			}
-			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct, definitions, schema.ID.ToFilename())
+			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct, definitions, toFilename(schema.ID))
 		}
 	}
 
 	return parse
+}
+
+// toFilename returns the file name from the ID.
+func toFilename(s jsonschema.ID) string {
+	name := s.ToTypename()
+
+	if len(name) > 0 {
+		return string(unicode.ToLower(rune(name[0]))) + name[1:]
+	}
+	return name
 }
 
 func buildReferences(ctx *SchemaContext, schemas map[jsonschema.ID]*jsonschema.Schema) {

@@ -32,7 +32,7 @@ func walkSchema(val reflect.Value, uri map[jsonschema.ID]*jsonschema.Schema) map
 			field := val.Field(i)
 			if field.Kind() == reflect.String {
 				if field.Type().Name() == "ID" {
-					id := jsonschema.ID(jsonschema.CanonicalURI(field.String()))
+					id := jsonschema.NewID(field.String())
 					if id != "." {
 						i := val.Addr().Interface()
 						uri[id] = i.(*jsonschema.Schema)

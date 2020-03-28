@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestID_Filename(t *testing.T) {
+func TestID_ToTypename(t *testing.T) {
 	tests := []struct {
 		name string
 		s    ID
@@ -18,7 +18,7 @@ func TestID_Filename(t *testing.T) {
 		{
 			name: "No #",
 			s:    ID("test"),
-			want: "test",
+			want: "Test",
 		},
 		{
 			name: "Root ID",
@@ -33,22 +33,22 @@ func TestID_Filename(t *testing.T) {
 		{
 			name: "Relative",
 			s:    ID("test.json#defintions/hello"),
-			want: "test",
+			want: "Test",
 		},
 		{
 			name: "Absolute",
 			s:    ID("http://www.sample.com/test.json#defintions/hello"),
-			want: "test",
+			want: "Test",
 		},
 		{
 			name: "Test Case",
 			s:    ID("test.json#defintions/hello_world"),
-			want: "test",
+			want: "Test",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.s.ToFilename(); got != tt.want {
+			if got := tt.s.ToTypename(); got != tt.want {
 				t.Errorf("ToTypename() = %v, want %v", got, tt.want)
 			}
 		})
@@ -63,38 +63,38 @@ func TestID_CanonicalURI(t *testing.T) {
 	}{
 		{
 			name: "Empty",
-			s: ID(""),
+			s: NewID(""),
 			want:".",
 		},
 		{
 			name: "Fragment",
-			s: ID("#test"),
+			s: NewID("#test"),
 			want:".",
 		},
 		{
 			name: "Relative",
-			s: ID("/test/#test"),
+			s: NewID("/test/#test"),
 			want:".",
 		},
 		{
 			name: "Absolute",
-			s: ID("http://www.sample.com"),
+			s: NewID("http://www.sample.com"),
 			want:"http://www.sample.com",
 		},
 		{
 			name: "Absolute with path",
-			s: ID("http://www.sample.com/foo/bar/"),
+			s: NewID("http://www.sample.com/foo/bar/"),
 			want:"http://www.sample.com/foo/bar",
 		},
 		{
 			name: "Absolute with path and fragment",
-			s: ID("http://www.sample.com/foo#test"),
+			s: NewID("http://www.sample.com/foo#test"),
 			want:"http://www.sample.com/foo",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CanonicalURI(tt.s.String()); got != tt.want {
+			if got := tt.s.String(); got != tt.want {
 				t.Errorf("CanonicalURI() = %v, want %v", got, tt.want)
 			}
 		})
