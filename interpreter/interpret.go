@@ -9,7 +9,7 @@ import (
 )
 
 type Interpret interface {
-	ToFile(output string) error
+	ToFile(output string) ([]string, error)
 }
 
 type interpret struct {
@@ -32,32 +32,34 @@ func NewInterpretDefaults(root *parser.Parse) (Interpret, error) {
 	return NewInterpret(root, templates), nil
 }
 
-func (s *interpret) ToFile(output string) error {
+func (s *interpret) ToFile(output string) ([]string, error) {
+	files := []string{}
 	for _, obj := range s.root.Structs {
 		filename := path.Join(output, obj.Filename+".go")
 		_, err := os.Stat(filename)
 		if !os.IsNotExist(err) {
 			err = os.Remove(filename)
 			if err != nil {
-				return err
+				return files, err
 			}
 		}
 
 		file, err := os.Create(filename)
 		if err != nil {
-			return err
+			return files, err
 		}
+		files = append(files, filename)
 
 		err = s.templateStruct.Execute(file, obj)
 		if err != nil {
-			return err
+			return files, err
 		}
 
 		cmd := exec.Command("gofmt", "-w", filename)
 		if err := cmd.Run(); err != nil {
-			return err
+			return files, err
 		}
 	}
 
-	return nil
+	return files, nil
 }

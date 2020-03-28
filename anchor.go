@@ -4,6 +4,7 @@ import (
 	"strings"
 )
 
+// Anchor
 type Anchor string
 
 func NewAnchor(s string) Anchor {

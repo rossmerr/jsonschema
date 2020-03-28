@@ -7,6 +7,8 @@ import (
 	"github.com/RossMerr/jsonschema"
 )
 
+// Traverse, walks the Schema looking for the matching reference,
+// follows the basic ideas of a JSON Pointer
 func Traverse(s *jsonschema.Schema, reference jsonschema.Reference) *jsonschema.Schema {
 	if reference == jsonschema.EmptyString {
 		return nil
@@ -20,7 +22,12 @@ func Traverse(s *jsonschema.Schema, reference jsonschema.Reference) *jsonschema.
 	return traverse(val, path)
 }
 
+// walkSchema, search down the entire schema looking for the first matching ID field,
+// a ID field can be on any type but if the type does not end on a Schema then any Path should!
 func walkSchema(val reflect.Value, pointer jsonschema.Pointer) (reflect.Value, bool) {
+	if pointer == "" {
+		return val, false
+	}
 	switch val.Kind() {
 	case reflect.Struct:
 		for i := 0; i < val.NumField(); i++ {
@@ -47,11 +54,12 @@ func walkSchema(val reflect.Value, pointer jsonschema.Pointer) (reflect.Value, b
 	case reflect.Slice:
 		if !val.IsNil() {
 			i := val.Interface()
-			arr := i.([]*jsonschema.Schema)
-			for _, v := range arr {
-				val := reflect.ValueOf(v).Elem()
-				if schema, ok := walkSchema(val, pointer); ok {
-					return schema, ok
+			if arr, ok := i.([]*jsonschema.Schema); ok {
+				for _, v := range arr {
+					val := reflect.ValueOf(v).Elem()
+					if schema, ok := walkSchema(val, pointer); ok {
+						return schema, ok
+					}
 				}
 			}
 
@@ -64,6 +72,8 @@ func walkSchema(val reflect.Value, pointer jsonschema.Pointer) (reflect.Value, b
 	return reflect.Value{}, false
 }
 
+// traverse, from the val search down each fragment of the path until all parts are matched.
+// Path fragment must match there json tag names to revolve JSON Pointers and end on a schema.
 func traverse(val reflect.Value, path jsonschema.Path) *jsonschema.Schema {
 	if len(path) == 0 {
 		i := val.Interface()

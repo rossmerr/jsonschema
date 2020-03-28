@@ -13,6 +13,9 @@ import (
 )
 
 func TestSchemas_Generate(t *testing.T) {
+
+	os.MkdirAll("output/", 0755)
+
 	type fields struct {
 		documents map[jsonschema.ID]*jsonschema.Schema
 	}
@@ -21,7 +24,6 @@ func TestSchemas_Generate(t *testing.T) {
 		fields  fields
 		wantErr bool
 	}{
-
 		{
 			name: "Basic",
 			fields: fields{
@@ -81,24 +83,34 @@ func TestSchemas_Generate(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		os.MkdirAll("output/", 0755)
 		t.Run(tt.name, func(t *testing.T) {
 
+			files := []string{}
 			p := parser.NewParser(context.Background(), "main")
 			parse := p.Parse(tt.fields.documents)
 			interpret, err := interpreter.NewInterpretDefaults(parse)
 			if err != nil {
 				t.Error(err)
+
 			}
-			if err := interpret.ToFile("output/"); (err != nil) != tt.wantErr {
+			if files, err = interpret.ToFile("output/"); (err != nil) != tt.wantErr {
 				t.Errorf("Schemas.Generate() error = %v, wantErr %v", err, tt.wantErr)
+				files = []string{}
 			}
+
+			t.Cleanup(func() {
+				for _, file := range files {
+					if err := os.Remove(file); err != nil {
+						t.Error("error resetting:", err)
+					}
+				}
+			})
 		})
 	}
 
 	t.Cleanup(func() {
-		if err := os.RemoveAll("output/"); err != nil {
-			t.Error("error resetting:", err)
+		if !t.Failed() {
+			os.RemoveAll("output/")
 		}
 	})
 }

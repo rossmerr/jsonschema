@@ -66,7 +66,7 @@ func main() {
 	if err != nil {
 		report(err)
 	}
-	err = interpret.ToFile(*output)
+	_, err = interpret.ToFile(*output)
 	if err != nil {
 		report(err)
 	}

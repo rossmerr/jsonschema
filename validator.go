@@ -21,6 +21,8 @@ func (s *validator) ValidateSchema(schema Schema) error {
 		return nil
 	case "http://json-schema.org/draft-07/schema#":
 		return nil
+	case "http://json-schema.org/draft-2019-09-16/schema#":
+		return nil
 	default:
 		return fmt.Errorf("Unknown schema %v, do you need to define a schema flag", schema.Schema)
 	}
