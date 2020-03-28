@@ -3,6 +3,7 @@ package jsonschema_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -24,63 +25,71 @@ func TestSchemas_Generate(t *testing.T) {
 		fields  fields
 		wantErr bool
 	}{
+		// {
+		// 	name: "Basic",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"http://example.com/basic.json": loadRawSchema("samples/basic.json"),
+		// 		},
+		// 	},
+		// },
 		{
-			name: "Basic",
+			name: "Enum",
 			fields: fields{
 				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"basicBasic": loadRawSchema("samples/basic.json"),
+					"http://example.com/enum.json": loadRawSchema("samples/enum.json"),
 				},
 			},
 		},
-		{
-			name: "Nesting data structures",
-			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"productNesting": loadRawSchema("samples/nesting.json"),
-				},
-			},
-		},
-		{
-			name: "References inside the schema",
-			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/reference.json": loadRawSchema("samples/reference.json"),
-				},
-			},
-		},
-		{
-			name: "References outside the schema",
-			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"https://example.com/reference-outside.schema.json": loadRawSchema("samples/reference-outside.schema.json"),
-					"http://example.com/reference-outside.json":         loadRawSchema("samples/reference-outside.json"),
-				},
-			},
-		},
-		{
-			name: "Oneof",
-			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/oneof.json": loadRawSchema("samples/oneof.json"),
-				},
-			},
-		},
-		{
-			name: "AnyOf",
-			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/anyof.json": loadRawSchema("samples/anyof.json"),
-				},
-			},
-		},
-		{
-			name: "AllOf",
-			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/allof.json": loadRawSchema("samples/allof.json"),
-				},
-			},
-		},
+		// {
+		// 	name: "Nesting data structures",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"http://example.com/nesting.json": loadRawSchema("samples/nesting.json"),
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	name: "References inside the schema",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"http://example.com/reference.json": loadRawSchema("samples/reference.json"),
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	name: "References outside the schema",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"https://example.com/reference-outside.schema.json": loadRawSchema("samples/reference-outside.schema.json"),
+		// 			"http://example.com/reference-outside.json":         loadRawSchema("samples/reference-outside.json"),
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	name: "Oneof",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"http://example.com/oneof.json": loadRawSchema("samples/oneof.json"),
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	name: "AnyOf",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"http://example.com/anyof.json": loadRawSchema("samples/anyof.json"),
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	name: "AllOf",
+		// 	fields: fields{
+		// 		documents: map[jsonschema.ID]*jsonschema.Schema{
+		// 			"http://example.com/allof.json": loadRawSchema("samples/allof.json"),
+		// 		},
+		// 	},
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -100,19 +109,20 @@ func TestSchemas_Generate(t *testing.T) {
 
 			t.Cleanup(func() {
 				for _, file := range files {
-					if err := os.Remove(file); err != nil {
-						t.Error("error resetting:", err)
-					}
+					fmt.Printf("%v", file)
+					// if err := os.Remove(file); err != nil {
+					// 	t.Error("error resetting:", err)
+					// }
 				}
 			})
 		})
 	}
 
-	t.Cleanup(func() {
-		if !t.Failed() {
-			os.RemoveAll("output/")
-		}
-	})
+	// t.Cleanup(func() {
+	// 	if !t.Failed() {
+	// 		os.RemoveAll("output/")
+	// 	}
+	// })
 }
 
 func loadRawSchema(filename string) *jsonschema.Schema {

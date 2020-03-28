@@ -1,7 +1,7 @@
 package parser
 
 type Document struct {
-	*CustomType
+	*Type
 	ID          string
 	Definitions []Types
 	Filename    string
@@ -35,11 +35,12 @@ package main
 // ID: {{.ID}}
 {{ end }}
 
-{{ if .CustomType -}}
-	{{template "customtype" .CustomType }}
+{{ if .Type -}}
+	{{template "customtype" .Type }}
 {{end -}}
+
 {{range $key, $definition := .Definitions -}}
-	{{template "customtype" $definition  }}
+	{{template "type" $definition  }}
 {{end -}}
 
 {{range $key, $global := .Globals -}}

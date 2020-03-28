@@ -14,10 +14,7 @@ Basic support for JSON Schema 2019-09, featuring:
   * Can resolve to any point in the document or another local file using a JSON Pointer.
   
   `"#/definitions/address"`
-  
-  `"definitions.json#/address"`
-  
-  * External files are not supported!
+    
   
   `"http://www.sample.com/definitions.json#/address"`
 
