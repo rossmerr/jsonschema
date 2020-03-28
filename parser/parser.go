@@ -8,6 +8,7 @@ import (
 	"github.com/RossMerr/jsonschema/tags"
 	"github.com/RossMerr/jsonschema/tags/json"
 	"github.com/RossMerr/jsonschema/tags/validate"
+	"github.com/RossMerr/jsonschema/traversal"
 )
 
 type Parser interface {
@@ -33,7 +34,7 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 		switch schema.Type {
 		case jsonschema.Object:
 
-			anonymousStruct := NewStruct(s.ctx.SetParent(schema), NewName(schema.ID.Filename()), schema.Properties, schema.Description, "", schema.Required...)
+			anonymousStruct := NewStruct(s.ctx.SetParent(schema), NameFromID(schema.ID), schema.Properties, schema.Description, "", schema.Required...)
 
 			if schema.Defs == nil {
 				schema.Defs = map[string]*jsonschema.Schema{}
@@ -46,7 +47,7 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 			for typename, def := range schema.Defs {
 				definitions = append(definitions, definition(s.ctx.SetParent(schema), NewName(typename), def))
 			}
-			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct, definitions, schema.ID.Filename())
+			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct, definitions, schema.ID.ToFilename())
 		}
 	}
 
@@ -55,8 +56,10 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
 
 func buildReferences(ctx *SchemaContext, schemas map[jsonschema.ID]*jsonschema.Schema) {
 	for _, schema := range schemas {
-		key := schema.ID.Base()
-		ctx.References[key] = schema
+		uris := traversal.WalkSchema(schema)
+		for k, v := range uris {
+			ctx.References[k] =v
+		}
 	}
 }
 

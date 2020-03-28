@@ -6,7 +6,10 @@
 
 
 
-Basic support to generate go struct's, featuring:
+Basic support for JSON Schema 2019-09, featuring:
+##### $id
+  * Top level $id must follow the absolute-URI convention of being a canonical URL. The old 'id' field is not supported.
+  
 ##### $ref 
   * Can resolve to any point in the document or another local file using a JSON Pointer.
   
@@ -17,10 +20,7 @@ Basic support to generate go struct's, featuring:
   * External files are not supported!
   
   `"http://www.sample.com/definitions.json#/address"`
-  
-##### $id
-  * Top level $id must follow the absolute-URI convention. The old 'id' field is not supported.
-  
+
 ##### $def
    * The old 'definitions' field is still supported but merged into the new $def field.
    

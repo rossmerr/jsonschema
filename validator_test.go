@@ -17,13 +17,13 @@ func Test_validator_ValidateSchema(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "Draft 06",
-			args:    args{schema: Schema{Schema: "http://json-schema.org/draft-06/schema#"}},
+			name:    "Draft 2019-09",
+			args:    args{schema: Schema{Schema: "https://json-schema.org/2019-09/schema"}},
 			wantErr: false,
 		},
 		{
-			name:    "Draft 07",
-			args:    args{schema: Schema{Schema: "http://json-schema.org/draft-07/schema#"}},
+			name:    "Draft 08 (Old name)",
+			args:    args{schema: Schema{Schema: "http://json-schema.org/draft-08/schema#"}},
 			wantErr: false,
 		},
 	}

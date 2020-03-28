@@ -15,13 +15,12 @@ type InterfaceReference struct {
 func NewInterfaceReferenceAllOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) Types {
 	parent := ctx.Parent()
 
-	filename := parent.ID.Filename()
-	typename := jsonschema.Structname(filename) + name.Fieldname()
+	typename := parent.ID.ToTypename() + name.Fieldname()
 
 	types := []string{}
 	for i, subschema := range subschemas {
 		if subschema.Ref.IsNotEmpty() {
-			types = append(types, subschema.Ref.Fieldname())
+			types = append(types, subschema.Ref.ToTypename())
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
@@ -36,12 +35,11 @@ func NewInterfaceReferenceAllOf(ctx *SchemaContext, name *Name, fieldTag string,
 func NewInterfaceReferenceAnyOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) *InterfaceReference {
 	parent := ctx.Parent()
 
-	filename := parent.ID.Filename()
-	typename := jsonschema.Structname(filename) + name.Fieldname()
+	typename := parent.ID.ToTypename()+ name.Fieldname()
 
 	for i, subschema := range subschemas {
 		if subschema.Ref.IsNotEmpty() {
-			ctx.AddMethods(subschema.Ref.Fieldname(), typename)
+			ctx.AddMethods(subschema.Ref.ToTypename(), typename)
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
@@ -63,12 +61,11 @@ func NewInterfaceReferenceAnyOf(ctx *SchemaContext, name *Name, fieldTag string,
 func NewInterfaceReferenceOneOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) *InterfaceReference {
 	parent := ctx.Parent()
 
-	filename := parent.ID.Filename()
-	typename := jsonschema.Structname(filename) + name.Fieldname()
+	typename := parent.ID.ToTypename() + name.Fieldname()
 
 	for i, subschema := range subschemas {
 		if subschema.Ref.IsNotEmpty() {
-			ctx.AddMethods(subschema.Ref.Fieldname(), typename)
+			ctx.AddMethods(subschema.Ref.ToTypename(), typename)
 			continue
 		}
 		structname := typename + strconv.Itoa(i)

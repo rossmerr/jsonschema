@@ -61,13 +61,11 @@ func Title(s string) string {
 	return reg.ReplaceAllString(strings.Title(clean), "")
 }
 
-func Fieldname(s string) string {
-	if s == "" {
+func ToTypename(s string) string {
+	if s == "" || s == "." {
 		return "."
 	}
-	if s == "." {
-		return s
-	}
+
 	name := strings.TrimSuffix(s, filepath.Ext(s))
 
 	// Valid field names must start with a unicode letter
@@ -76,8 +74,4 @@ func Fieldname(s string) string {
 	}
 
 	return Title(name)
-}
-
-func Structname(s string) string {
-	return Fieldname(s)
 }

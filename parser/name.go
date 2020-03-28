@@ -9,8 +9,15 @@ type Name struct {
 
 func NewName(name string) *Name {
 	return &Name{
-		fieldname: jsonschema.Structname(name),
+		fieldname: jsonschema.ToTypename(name),
 		tagname:   name,
+	}
+}
+
+func NameFromID(id jsonschema.ID) *Name {
+	return &Name{
+		fieldname: id.ToTypename(),
+		tagname:   id.ToTypename(),
 	}
 }
 

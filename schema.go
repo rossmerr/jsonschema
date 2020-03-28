@@ -41,7 +41,7 @@ func (s *Schema) IsEnum() bool {
 }
 
 func (s *Schema) Structname() string {
-	structname := s.ID.Filename()
+	structname := s.ID.ToTypename()
 	if structname == EmptyString {
 		structname = s.Type.String()
 	}
@@ -51,7 +51,7 @@ func (s *Schema) Structname() string {
 func (s *Schema) ArrayType() string {
 	arrType := string(s.Items.Type)
 	if s.Items.Ref.IsNotEmpty() {
-		arrType = s.Items.Ref.Fieldname()
+		arrType = s.Items.Ref.ToTypename()
 	}
 	return arrType
 }

@@ -2,7 +2,6 @@ package jsonschema
 
 import (
 	"net/url"
-	"path/filepath"
 	"strings"
 )
 
@@ -16,29 +15,9 @@ func (s Reference) String() string {
 	return string(s)
 }
 
-func (s Reference) Pointer() Pointer {
+func (s Reference) ID() ID {
 	raw := string(s)
-	if len(raw) < 1 {
-		return Pointer("")
-	}
-
-	uri, err := url.Parse(raw)
-	if err != nil {
-		return Pointer("")
-	}
-
-	if uri.Fragment == EmptyString {
-		return Pointer("")
-	}
-	parts := uri.Fragment
-
-	if strings.HasPrefix(parts, "/") {
-		return Pointer("")
-	}
-
-	query := strings.Split(parts, "/")
-
-	return Pointer(query[0])
+	return NewID(raw)
 }
 
 func (s Reference) Path() Path {
@@ -70,29 +49,8 @@ func (s Reference) Path() Path {
 	return query
 }
 
-// Base reports the file this ID references
-func (s Reference) Base() string {
-	raw := string(s)
-	if len(raw) < 1 {
-		return "."
-	}
 
-	index := strings.Index(raw, "#")
-
-	if index >= 0 {
-		raw = raw[:index]
-	}
-
-	uri, err := url.Parse(raw)
-	if err != nil {
-		return "."
-	}
-
-	file := filepath.Base(uri.Path)
-	return file
-}
-
-func (s Reference) Fieldname() string {
+func (s Reference) ToTypename() string {
 	path := s.Path()
 
 	if len(path) == 0 {
@@ -105,8 +63,4 @@ func (s Reference) Fieldname() string {
 
 func (s Reference) IsNotEmpty() bool {
 	return s != EmptyString
-}
-
-func (s Reference) Stat() (Pointer, Path) {
-	return s.Pointer(), s.Path()
 }

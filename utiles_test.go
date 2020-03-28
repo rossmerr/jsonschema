@@ -167,7 +167,7 @@ func TestTitle(t *testing.T) {
 	}
 }
 
-func TestStructname(t *testing.T) {
+func TestToTypename(t *testing.T) {
 	type args struct {
 		s string
 	}
@@ -199,7 +199,7 @@ func TestStructname(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Structname(tt.args.s); got != tt.want {
+			if got := ToTypename(tt.args.s); got != tt.want {
 				t.Errorf("Structname() = %v, want %v", got, tt.want)
 			}
 		})

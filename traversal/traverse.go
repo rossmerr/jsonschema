@@ -7,49 +7,45 @@ import (
 	"github.com/RossMerr/jsonschema"
 )
 
-// Traverse, walks the Schema looking for the matching reference,
-// follows the basic ideas of a JSON Pointer
-func Traverse(s *jsonschema.Schema, reference jsonschema.Reference) *jsonschema.Schema {
-	if reference == jsonschema.EmptyString {
-		return nil
+// Traverse, walks the Schema looking for the matching reference (case sensitive),
+// follows the basic ideas of a JSON ID
+func Traverse(s *jsonschema.Schema, path jsonschema.Path) *jsonschema.Schema {
+	if len(path) == 0 {
+		return s
 	}
-
 	val := reflect.ValueOf(s)
-	pointer, path := reference.Stat()
-	if schema, ok := walkSchema(val, pointer); ok {
-		return traverse(schema, path)
-	}
 	return traverse(val, path)
 }
 
-// walkSchema, search down the entire schema looking for the first matching ID field,
+// WalkSchema, finds all ID's and resolve there URI's
+func WalkSchema(s *jsonschema.Schema) map[jsonschema.ID]*jsonschema.Schema {
+	val := reflect.ValueOf(s)
+	return walkSchema(val, map[jsonschema.ID]*jsonschema.Schema{})
+}
+
+// walk, search down the entire schema looking for the first matching ID field,
 // a ID field can be on any type but if the type does not end on a Schema then any Path should!
-func walkSchema(val reflect.Value, pointer jsonschema.Pointer) (reflect.Value, bool) {
-	if pointer == "" {
-		return val, false
-	}
+func walkSchema(val reflect.Value, uri map[jsonschema.ID]*jsonschema.Schema) map[jsonschema.ID]*jsonschema.Schema {
 	switch val.Kind() {
 	case reflect.Struct:
 		for i := 0; i < val.NumField(); i++ {
 			field := val.Field(i)
 			if field.Kind() == reflect.String {
 				if field.Type().Name() == "ID" {
-					id := field.String()
-					if id == pointer.String() {
-						return val.Addr(), true
+					id := jsonschema.ID(jsonschema.CanonicalURI(field.String()))
+					if id != "." {
+						i := val.Addr().Interface()
+						uri[id] = i.(*jsonschema.Schema)
 					}
 				}
+				continue
 			}
-			if schema, ok := walkSchema(field, pointer); ok {
-				return schema, ok
-			}
+			return walkSchema(field, uri)
 		}
 	case reflect.Map:
-		for _, k := range val.MapKeys() {
-			val := val.MapIndex(k)
-			if schema, ok := walkSchema(val, pointer); ok {
-				return schema, ok
-			}
+		for _, v := range val.MapKeys() {
+			val := val.MapIndex(v)
+			uri = walkSchema(val, uri)
 		}
 	case reflect.Slice:
 		if !val.IsNil() {
@@ -57,19 +53,16 @@ func walkSchema(val reflect.Value, pointer jsonschema.Pointer) (reflect.Value, b
 			if arr, ok := i.([]*jsonschema.Schema); ok {
 				for _, v := range arr {
 					val := reflect.ValueOf(v).Elem()
-					if schema, ok := walkSchema(val, pointer); ok {
-						return schema, ok
-					}
+					uri = walkSchema(val, uri)
 				}
 			}
-
 		}
 	case reflect.Ptr:
-		return walkSchema(val.Elem(), pointer)
+		uri = walkSchema(val.Elem(), uri)
 	default:
-		return reflect.Value{}, false
+		return uri
 	}
-	return reflect.Value{}, false
+	return uri
 }
 
 // traverse, from the val search down each fragment of the path until all parts are matched.
@@ -84,7 +77,7 @@ func traverse(val reflect.Value, path jsonschema.Path) *jsonschema.Schema {
 
 	}
 
-	segment := strings.ToLower(path[0])
+	segment := path[0]
 
 	switch val.Kind() {
 	case reflect.Struct:
@@ -100,7 +93,7 @@ func traverse(val reflect.Value, path jsonschema.Path) *jsonschema.Schema {
 		}
 	case reflect.Map:
 		for _, k := range val.MapKeys() {
-			if strings.ToLower(k.String()) == segment {
+			if k.String() == segment {
 				val := val.MapIndex(k)
 				return traverse(val, path[1:])
 			}

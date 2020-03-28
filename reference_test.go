@@ -34,7 +34,7 @@ func TestReference_Fragments(t *testing.T) {
 			wantQuery: jsonschema.Path{},
 		},
 		{
-			name:      "Pointer followed by fragments",
+			name:      "ID followed by fragments",
 			s:         jsonschema.NewReference("#test/hello/world"),
 			wantQuery: jsonschema.Path{"hello", "world"},
 		},
@@ -63,98 +63,53 @@ func TestReference_Fragments(t *testing.T) {
 	}
 }
 
-func TestReference_Base(t *testing.T) {
-	tests := []struct {
-		name string
-		s    jsonschema.Reference
-		want string
-	}{
-		{
-			name: "Empty string",
-			s:    jsonschema.NewReference(""),
-			want: ".",
-		},
-		{
-			name: "No pointer",
-			s:    jsonschema.NewReference("test"),
-			want: "test",
-		},
-		{
-			name: "Just pointer",
-			s:    jsonschema.NewReference("#"),
-			want: ".",
-		},
-		{
-			name: "One fragment",
-			s:    jsonschema.NewReference("#test"),
-			want: ".",
-		},
-		{
-			name: "Two fragment",
-			s:    jsonschema.NewReference("#hello/world"),
-			want: ".",
-		},
-		{
-			name: "Relative",
-			s:    jsonschema.NewReference("test.json#hello/world"),
-			want: "test.json",
-		},
-		{
-			name: "Relative",
-			s:    jsonschema.NewReference("http://www.sample.com/test.json#hello/world"),
-			want: "test.json",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.s.Base(); got != tt.want {
-				t.Errorf("Base() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func TestReference_Pointer(t *testing.T) {
 	tests := []struct {
 		name string
 		s    jsonschema.Reference
-		want jsonschema.Pointer
+		want jsonschema.ID
 	}{
 		{
 			name: "Empty string",
 			s:    jsonschema.NewReference(""),
-			want: jsonschema.Pointer(""),
+			want: jsonschema.ID("."),
 		},
 		{
 			name: "No pointer",
 			s:    jsonschema.NewReference("test"),
-			want: jsonschema.Pointer(""),
+			want: jsonschema.ID("."),
 		},
 		{
 			name: "Just pointer",
 			s:    jsonschema.NewReference("#"),
-			want: jsonschema.Pointer(""),
+			want: jsonschema.ID("."),
 		},
 		{
-			name: "Pointer",
+			name: "ID",
 			s:    jsonschema.NewReference("#test"),
-			want: jsonschema.Pointer("test"),
+			want: jsonschema.ID("."),
 		},
 		{
 			name: "One fragment no pointer",
 			s:    jsonschema.NewReference("#/test"),
-			want: jsonschema.Pointer(""),
+			want: jsonschema.ID("."),
 		},
 		{
-			name: "Pointer followed by two fragment",
+			name: "ID followed by two fragment",
 			s:    jsonschema.NewReference("#test/hello/world"),
-			want: jsonschema.Pointer("test"),
+			want: jsonschema.ID("."),
+		},
+		{
+			name: "ID followed by two fragment",
+			s:    jsonschema.NewReference("https://www.sample.com/#test/hello/world"),
+			want: jsonschema.ID("https://www.sample.com"),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.s.Pointer(); got != tt.want {
-				t.Errorf("Pointer() = %v, want %v", got, tt.want)
+			if got := tt.s.ID(); got != tt.want {
+				t.Errorf("ID() = %v, want %v", got, tt.want)
 			}
 		})
 	}
