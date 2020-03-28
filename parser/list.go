@@ -15,8 +15,8 @@ func (s *List) Name() string {
 
 const ListTemplate = `
 {{- define "list" -}}
-{{range $key, $value := .Values -}}
-	{{template "type" $definition  }}
+{{range $key, $value := . -}}
+	{{template "kind" $value  }}
 {{end}}
 {{end -}}
 `

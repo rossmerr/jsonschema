@@ -29,6 +29,6 @@ const ConstTemplate = `
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-const {{ title .Name }} {{ .Type }} = "{{ .Value }}"
+const {{ .Type }}_{{ title .Name }} {{ .Type }} = "{{ .Value }}"
 {{end -}}
 `

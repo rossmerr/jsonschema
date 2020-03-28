@@ -84,10 +84,9 @@ func schemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, ren
 	case kind == jsonschema.Boolean:
 		return NewBoolean(name, schema.Description, fieldTag, isReference)
 	case kind == jsonschema.String:
-		// if len(schema.Enum) > 0 {
-		// 	return NewEnum(ctx, name,schema.Description,fieldTag, isReference,schema.Enum)
-		// }
-
+		if len(schema.Enum) > 0 {
+			return NewEnum(ctx, name,schema.Description,fieldTag, isReference,schema.Enum)
+		}
 		return NewString(name, schema.Description, fieldTag)
 	case kind == jsonschema.Integer:
 		return NewInteger(name, schema.Description, fieldTag, isReference)

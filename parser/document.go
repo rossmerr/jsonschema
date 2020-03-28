@@ -36,7 +36,7 @@ package main
 {{ end }}
 
 {{ if .Type -}}
-	{{template "customtype" .Type }}
+	{{template "type" .Type }}
 {{end -}}
 
 {{range $key, $definition := .Definitions -}}

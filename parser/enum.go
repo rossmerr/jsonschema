@@ -1,5 +1,7 @@
 package parser
 
+import "strings"
+
 type Enum struct {
 	comment   string
 	name      string
@@ -18,16 +20,16 @@ func NewEnum(ctx *SchemaContext, name *Name, description, fieldTag string, isRef
 
 	typename := parent.ID.ToTypename() + name.Fieldname()
 
-//	list := List{
-		//NewCustomType(typename, "string"),
-//	}
+	list := List{
+		NewCustomType(typename, "string"),
+	}
 
-	// for _, value := range values  {
-	// 	c := NewConst(strings.Title(value), typename, value)
-	// 	list = append(list, c)
-	// }
+	for _, value := range values  {
+		c := NewConst(strings.Title(value), typename, value)
+		list = append(list, c)
+	}
 
-	//ctx.Globals[typename] = &list
+	ctx.Globals[typename] = &list
 
 	return &Enum{
 		comment:   description,
@@ -49,9 +51,10 @@ func (s *Enum) Name() string {
 
 const EnumTemplate = `
 {{- define "enum" -}}
-{{ if .Comment -}}
-// {{.Comment}}
-{{end -}}
 {{ .Name}} {{ .Type }} {{ .FieldTag }}
 {{end -}}
 `
+
+// {{ if .Comment -}}
+// // {{.Comment}}
+// {{end -}}

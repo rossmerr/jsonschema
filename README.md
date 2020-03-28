@@ -54,8 +54,4 @@ Which you can then use for any custom validators.
 
 ##### Conditionally
   * If, Then and Else are not supported 
-  
-#### Coming soon
-
-* Enum support for strings
-* Validation feedback before parsing 
+ 
