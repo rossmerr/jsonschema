@@ -28,7 +28,15 @@ func TestSchemas_Generate(t *testing.T) {
 			name: "Basic",
 			fields: fields{
 				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"basicBasic": loadRawSchema("samples/basic.json"),
+					"http://example.com/basic.json": loadRawSchema("samples/basic.json"),
+				},
+			},
+		},
+		{
+			name: "Enum",
+			fields: fields{
+				documents: map[jsonschema.ID]*jsonschema.Schema{
+					"http://example.com/enum.json": loadRawSchema("samples/enum.json"),
 				},
 			},
 		},
@@ -36,7 +44,7 @@ func TestSchemas_Generate(t *testing.T) {
 			name: "Nesting data structures",
 			fields: fields{
 				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"productNesting": loadRawSchema("samples/nesting.json"),
+					"http://example.com/nesting.json": loadRawSchema("samples/nesting.json"),
 				},
 			},
 		},

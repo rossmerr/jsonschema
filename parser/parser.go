@@ -63,7 +63,7 @@ func buildReferences(ctx *SchemaContext, schemas map[jsonschema.ID]*jsonschema.S
 	}
 }
 
-func definition(ctx *SchemaContext, name *Name, schema *jsonschema.Schema) *CustomType {
+func definition(ctx *SchemaContext, name *Name, schema *jsonschema.Schema) *Type {
 	t := schemaToType(ctx, name, schema, false)
 	arr := ctx.GetMethods(name.Fieldname())
 	return PrefixType(t, arr...)
@@ -84,6 +84,9 @@ func schemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, ren
 	case kind == jsonschema.Boolean:
 		return NewBoolean(name, schema.Description, fieldTag, isReference)
 	case kind == jsonschema.String:
+		if len(schema.Enum) > 0 {
+			return NewEnum(ctx, name,schema.Description,fieldTag, isReference,schema.Enum)
+		}
 		return NewString(name, schema.Description, fieldTag)
 	case kind == jsonschema.Integer:
 		return NewInteger(name, schema.Description, fieldTag, isReference)

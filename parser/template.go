@@ -17,8 +17,13 @@ func Template() (*template.Template, error) {
 		"isReference":          IsReference,
 		"isEmbeddedStruct":     IsEmbeddedStruct,
 		"isInterfaceReference": IsInterfaceReference,
+		"isType":               IsType,
+		"isEnum":               IsEnum,
+		"isList":               IsList,
 		"isCustomType":         IsCustomType,
+		"isConst":              IsConst,
 		"mixedCase":            MixedCase,
+		"title":                strings.Title,
 	}).Parse(DocumentTemplate)
 	tmpl, err = tmpl.Parse(StructTemplate)
 	if err != nil {
@@ -64,7 +69,7 @@ func Template() (*template.Template, error) {
 	if err != nil {
 		return nil, err
 	}
-	tmpl, err = tmpl.Parse(CustomTypeTemplate)
+	tmpl, err = tmpl.Parse(TypeTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +77,20 @@ func Template() (*template.Template, error) {
 	if err != nil {
 		return nil, err
 	}
+	tmpl, err = tmpl.Parse(ListTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(CustomTypeTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(ConstTemplate)
+	if err != nil {
+		return nil, err
+	}
 	return tmpl, nil
+
 }
 
 func IsStruct(obj interface{}) bool {
@@ -125,8 +143,28 @@ func IsInterfaceReference(obj interface{}) bool {
 	return ok
 }
 
+func IsType(obj interface{}) bool {
+	_, ok := obj.(*Type)
+	return ok
+}
+
+func IsEnum(obj interface{}) bool {
+	_, ok := obj.(*Enum)
+	return ok
+}
+
+func IsList(obj interface{}) bool {
+	_, ok := obj.(*List)
+	return ok
+}
+
 func IsCustomType(obj interface{}) bool {
 	_, ok := obj.(*CustomType)
+	return ok
+}
+
+func IsConst(obj interface{}) bool {
+	_, ok := obj.(*Const)
 	return ok
 }
 

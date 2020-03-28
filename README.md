@@ -14,10 +14,7 @@ Basic support for JSON Schema 2019-09, featuring:
   * Can resolve to any point in the document or another local file using a JSON Pointer.
   
   `"#/definitions/address"`
-  
-  `"definitions.json#/address"`
-  
-  * External files are not supported!
+    
   
   `"http://www.sample.com/definitions.json#/address"`
 
@@ -57,8 +54,4 @@ Which you can then use for any custom validators.
 
 ##### Conditionally
   * If, Then and Else are not supported 
-  
-#### Coming soon
-
-* Enum support for strings
-* Validation feedback before parsing 
+ 
