@@ -3,18 +3,16 @@ package parser
 type Document struct {
 	*Type
 	ID          string
-	Definitions []Types
 	Filename    string
 	Package     string
 	Globals     map[string]Types
 }
 
-func NewDocument(ctx *SchemaContext, id string, anonymousStruct Types, definitions []Types, filename string) *Document {
+func NewDocument(ctx *SchemaContext, id string, anonymousStruct Types, filename string) *Document {
 	s := PrefixType(anonymousStruct)
 	return &Document{
 		s,
 		id,
-		definitions,
 		filename,
 		ctx.Package,
 		ctx.Globals,
@@ -39,9 +37,6 @@ package main
 	{{template "type" .Type }}
 {{end -}}
 
-{{range $key, $definition := .Definitions -}}
-	{{template "type" $definition  }}
-{{end -}}
 
 {{range $key, $global := .Globals -}}
 	{{- template "kind" $global -}}

@@ -2,6 +2,7 @@ package jsonschema_test
 
 import (
 	"context"
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -87,12 +88,14 @@ func TestSchemas_Generate(t *testing.T) {
 					panic(err)
 				}
 
-				schema, refs, err := jsonschema.UnmarshalSchema(data)
+				var schema jsonschema.Schema
+				err = json.Unmarshal(data, &schema)
 				if err != nil {
 					panic(err)
 				}
+				refs := jsonschema.ResolveIDs(data)
 
-				documents[schema.ID] = schema
+				documents[schema.ID] = &schema
 				for k, v := range refs {
 					references[k] = v
 				}

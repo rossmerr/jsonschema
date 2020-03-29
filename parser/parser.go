@@ -43,11 +43,11 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references 
 				schema.Defs[k] = v
 			}
 
-			definitions := make([]Types, 0)
 			for typename, def := range schema.Defs {
-				definitions = append(definitions, definition(s.ctx.SetParent(schema), NewName(typename), def))
+				s.ctx.Globals[typename] = definition(s.ctx.SetParent(schema), NewName(typename), def)
 			}
-			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct, definitions, toFilename(schema.ID))
+
+			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct, toFilename(schema.ID))
 		}
 	}
 

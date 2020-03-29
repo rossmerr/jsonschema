@@ -1,11 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"go/scanner"
 	"os"
+	"os/user"
 	"path/filepath"
 	"strings"
 
+	"github.com/gookit/color"
+	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 
 	"github.com/RossMerr/jsonschema/interpreter"
@@ -14,15 +18,19 @@ import (
 var (
 	packagename = flag.StringP("package", "p", "main", "Go package name to use")
 	output      = flag.StringP("output", "o", ".", "Output folder")
+	loglevel      = flag.StringP("loglevel", "l", "warn", "Standard logger level")
+
 )
 
 var (
 	exitCode = 0
 	files    []string
+	red = color.FgRed.Render
+
 )
 
 func report(err error) {
-	scanner.PrintError(os.Stderr, err)
+	scanner.PrintError(os.Stderr, fmt.Errorf(red("✗") +" %v\n", err))
 	exitCode = 2
 }
 
@@ -42,6 +50,17 @@ func visitFile(path string, f os.FileInfo, err error) error {
 	return nil
 }
 
+func expandHome(path string) string {
+	if strings.HasPrefix(path, "~/") {
+		usr, _ := user.Current()
+		dir := usr.HomeDir
+		// Use strings.HasPrefix so we don't match paths like
+		// "/something/~/something/"
+		return filepath.Join(dir, path[2:])
+	}
+	return path
+}
+
 func walkDir(path string) {
 	filepath.Walk(path, visitFile)
 }
@@ -49,8 +68,19 @@ func walkDir(path string) {
 func main() {
 	flag.Parse()
 
+	log.SetFormatter(&log.TextFormatter{
+		FullTimestamp: true,
+	})
+
+	level, err := log.ParseLevel(*loglevel)
+	if err != nil {
+		level = log.InfoLevel
+	}
+	log.SetLevel(level)
+
 	for i := 0; i < flag.NArg(); i++ {
 		path := flag.Arg(i)
+		path = expandHome(path)
 		switch dir, err := os.Stat(path); {
 		case err != nil:
 			report(err)
@@ -64,11 +94,13 @@ func main() {
 	interpreter := interpreter.NewInterpreterDefaults(*packagename)
 	interpret, err := interpreter.Interpret(files)
 	if err != nil {
-		report(err)
+		log.Error(err)
+		os.Exit(2)
 	}
 	_, err = interpret.ToFile(*output)
 	if err != nil {
-		report(err)
+		log.Error(err)
+		os.Exit(2)
 	}
 	os.Exit(exitCode)
 }
