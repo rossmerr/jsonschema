@@ -21,14 +21,12 @@ func Walk(s *jsonschema.Schema, path jsonschema.Path) *jsonschema.Schema {
 	return recordSchema.match
 }
 
-
 type recordSchema struct {
 	match *jsonschema.Schema
-	path jsonschema.Path
+	path  jsonschema.Path
 }
 
-func(s *recordSchema) Record() {}
-
+func (s *recordSchema) Record() {}
 
 func fieldFunc(structField reflect.StructField, field, val reflect.Value, record traversal.Record) traversal.State {
 
@@ -64,7 +62,6 @@ func fieldFunc(structField reflect.StructField, field, val reflect.Value, record
 	}
 	return traversal.MatchReturn
 }
-
 
 func mapKeyFunc(field, val reflect.Value, record traversal.Record) traversal.State {
 

@@ -6,7 +6,6 @@ import (
 	"github.com/RossMerr/jsonschema"
 )
 
-
 type FieldFunc func(structField reflect.StructField, field, val reflect.Value, record Record) State
 
 type MapKeyFunc func(field, val reflect.Value, record Record) State

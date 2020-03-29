@@ -161,8 +161,8 @@ func TestTitle(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Title(tt.args.s); got != tt.want {
-				t.Errorf("Title() = %v, want %v", got, tt.want)
+			if got := title(tt.args.s); got != tt.want {
+				t.Errorf("title() = %v, want %v", got, tt.want)
 			}
 		})
 	}

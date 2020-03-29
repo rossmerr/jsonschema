@@ -24,7 +24,7 @@ func NewEnum(ctx *SchemaContext, name *Name, description, fieldTag string, isRef
 		NewCustomType(typename, "string"),
 	}
 
-	for _, value := range values  {
+	for _, value := range values {
 		c := NewConst(strings.Title(value), typename, value)
 		list = append(list, c)
 	}

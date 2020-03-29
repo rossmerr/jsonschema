@@ -49,7 +49,6 @@ func (s Reference) Path() Path {
 	return query
 }
 
-
 func (s Reference) ToTypename() string {
 	path := s.Path()
 
@@ -58,7 +57,7 @@ func (s Reference) ToTypename() string {
 	}
 	name := path[len(path)-1]
 
-	return Title(name)
+	return title(name)
 }
 
 func (s Reference) IsNotEmpty() bool {

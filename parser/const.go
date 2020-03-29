@@ -1,16 +1,16 @@
 package parser
 
 type Const struct {
-	comment   string
-	name      string
-	Type string
-	Value string
+	comment string
+	name    string
+	Type    string
+	Value   string
 }
 
-func NewConst(name, typename, value string ) *Const {
+func NewConst(name, typename, value string) *Const {
 	return &Const{
-		name:name,
-		Type:typename,
+		name:  name,
+		Type:  typename,
 		Value: value,
 	}
 }
@@ -22,7 +22,6 @@ func (s *Const) Comment() string {
 func (s *Const) Name() string {
 	return s.name
 }
-
 
 const ConstTemplate = `
 {{- define "const" -}}

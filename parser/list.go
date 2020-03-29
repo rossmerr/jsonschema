@@ -12,7 +12,6 @@ func (s *List) Name() string {
 	return jsonschema.EmptyString
 }
 
-
 const ListTemplate = `
 {{- define "list" -}}
 {{range $key, $value := . -}}

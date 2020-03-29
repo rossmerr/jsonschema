@@ -63,7 +63,6 @@ func TestReference_Fragments(t *testing.T) {
 	}
 }
 
-
 func TestReference_Pointer(t *testing.T) {
 	tests := []struct {
 		name string

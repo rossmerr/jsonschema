@@ -49,9 +49,9 @@ func KeysString(m map[string]string) string {
 	return strings.Join(keys, ",")
 }
 
-// Title returns a copy of the string s with all none alphanumeric characters removed
+// title returns a copy of the string s with all none alphanumeric characters removed
 // and all the Unicode letters that begin a word mapped to their Unicode title case
-func Title(s string) string {
+func title(s string) string {
 	reg, err := regexp.Compile(`[^a-zA-Z0-9]+`)
 	if err != nil {
 		log.Fatal(err)
@@ -73,5 +73,5 @@ func ToTypename(s string) string {
 		name = "No" + name
 	}
 
-	return Title(name)
+	return title(name)
 }

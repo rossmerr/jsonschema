@@ -15,7 +15,6 @@ func (s ID) String() string {
 	return string(s)
 }
 
-
 func (s ID) ToTypename() string {
 	raw := string(s)
 	if len(raw) < 1 {
@@ -29,7 +28,6 @@ func (s ID) ToTypename() string {
 	} else {
 		basename = filepath.Base(raw[:index])
 	}
-
 
 	return ToTypename(basename)
 }
@@ -49,9 +47,13 @@ func canonicalURI(s string) string {
 		return "."
 	}
 
-	if strings.HasSuffix(s,"/") {
+	if strings.HasSuffix(s, "/") {
 		s = s[:len(s)-1]
 	}
 
 	return s
+}
+
+func (s ID) IsNotEmpty() bool {
+	return s != EmptyString
 }

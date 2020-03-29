@@ -63,33 +63,33 @@ func TestID_CanonicalURI(t *testing.T) {
 	}{
 		{
 			name: "Empty",
-			s: NewID(""),
-			want:".",
+			s:    NewID(""),
+			want: ".",
 		},
 		{
 			name: "Fragment",
-			s: NewID("#test"),
-			want:".",
+			s:    NewID("#test"),
+			want: ".",
 		},
 		{
 			name: "Relative",
-			s: NewID("/test/#test"),
-			want:".",
+			s:    NewID("/test/#test"),
+			want: ".",
 		},
 		{
 			name: "Absolute",
-			s: NewID("http://www.sample.com"),
-			want:"http://www.sample.com",
+			s:    NewID("http://www.sample.com"),
+			want: "http://www.sample.com",
 		},
 		{
 			name: "Absolute with path",
-			s: NewID("http://www.sample.com/foo/bar/"),
-			want:"http://www.sample.com/foo/bar",
+			s:    NewID("http://www.sample.com/foo/bar/"),
+			want: "http://www.sample.com/foo/bar",
 		},
 		{
 			name: "Absolute with path and fragment",
-			s: NewID("http://www.sample.com/foo#test"),
-			want:"http://www.sample.com/foo",
+			s:    NewID("http://www.sample.com/foo#test"),
+			want: "http://www.sample.com/foo",
 		},
 	}
 	for _, tt := range tests {

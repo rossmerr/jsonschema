@@ -6,7 +6,6 @@ type Type struct {
 	Methods []string
 }
 
-
 func PrefixType(t Types, methods ...string) *Type {
 	return &Type{
 		comment: t.Comment(),

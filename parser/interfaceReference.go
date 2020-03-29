@@ -35,7 +35,7 @@ func NewInterfaceReferenceAllOf(ctx *SchemaContext, name *Name, fieldTag string,
 func NewInterfaceReferenceAnyOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) *InterfaceReference {
 	parent := ctx.Parent()
 
-	typename := parent.ID.ToTypename()+ name.Fieldname()
+	typename := parent.ID.ToTypename() + name.Fieldname()
 
 	for i, subschema := range subschemas {
 		if subschema.Ref.IsNotEmpty() {

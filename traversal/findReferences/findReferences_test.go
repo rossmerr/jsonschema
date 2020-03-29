@@ -18,44 +18,43 @@ func TestWalk(t *testing.T) {
 	}{
 		{
 			name: "Schema identification",
-			args:args{s:
-			&jsonschema.Schema{
-				ID:"http://example.com/root.json",
+			args: args{s: &jsonschema.Schema{
+				ID: "http://example.com/root.json",
 				Defs: map[string]*jsonschema.Schema{
 					"A": &jsonschema.Schema{
-						ID:"https://example.com/foo",
+						ID: "https://example.com/foo",
 					},
-					"B":&jsonschema.Schema{
-						ID:"other.json",
+					"B": &jsonschema.Schema{
+						ID: "other.json",
 						Defs: map[string]*jsonschema.Schema{
-							"X": &jsonschema.Schema{ID:"#bar"},
+							"X": &jsonschema.Schema{ID: "#bar"},
 							"Y": &jsonschema.Schema{ID: "https://example.com/bar#test"},
 						},
 					},
 				},
 			},
 			},
-			want:map[jsonschema.ID]*jsonschema.Schema{
+			want: map[jsonschema.ID]*jsonschema.Schema{
 				jsonschema.ID("http://example.com/root.json"): &jsonschema.Schema{
-					ID:"http://example.com/root.json",
+					ID: "http://example.com/root.json",
 					Defs: map[string]*jsonschema.Schema{
 						"A": &jsonschema.Schema{
-							ID:"https://example.com/foo",
+							ID: "https://example.com/foo",
 						},
-						"B":&jsonschema.Schema{
-							ID:"other.json",
+						"B": &jsonschema.Schema{
+							ID: "other.json",
 							Defs: map[string]*jsonschema.Schema{
-								"X": &jsonschema.Schema{ID:"#bar"},
+								"X": &jsonschema.Schema{ID: "#bar"},
 								"Y": &jsonschema.Schema{ID: "https://example.com/bar#test"},
 							},
 						},
 					},
 				},
-				jsonschema.ID("https://example.com/bar"):&jsonschema.Schema{
-					ID:"https://example.com/bar#test",
+				jsonschema.ID("https://example.com/bar"): &jsonschema.Schema{
+					ID: "https://example.com/bar#test",
 				},
 				jsonschema.ID("https://example.com/foo"): &jsonschema.Schema{
-					ID:"https://example.com/foo",
+					ID: "https://example.com/foo",
 				},
 			},
 		},
@@ -65,7 +64,7 @@ func TestWalk(t *testing.T) {
 			result := Walk(tt.args.s)
 			for k, want := range tt.want {
 				got := result[k]
-				if  !reflect.DeepEqual(got, want) {
+				if !reflect.DeepEqual(got, want) {
 					t.Errorf("Walk() = %v, want %v", got, want)
 				}
 			}

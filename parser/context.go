@@ -34,7 +34,7 @@ func (ctx *SchemaContext) SetParent(schema *jsonschema.Schema) *SchemaContext {
 	if schema == nil {
 		return ctx
 	}
-	if schema.ID != jsonschema.EmptyString {
+	if schema.ID.IsNotEmpty() {
 		ctx.parentSchema = schema
 	}
 	return ctx

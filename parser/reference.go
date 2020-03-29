@@ -31,7 +31,7 @@ func (s *Reference) Name() string {
 
 func ResolvePointer(ctx *SchemaContext, ref jsonschema.Reference) string {
 	path := ref.Path()
-	if fieldname := path.Fieldname(); fieldname != "."{
+	if fieldname := path.ToFieldname(); fieldname != "." {
 		return fieldname
 	}
 

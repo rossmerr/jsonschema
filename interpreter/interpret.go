@@ -36,6 +36,7 @@ func (s *interpret) ToFile(output string) ([]string, error) {
 	files := []string{}
 	for _, obj := range s.root.Structs {
 		filename := path.Join(output, obj.Filename+".go")
+
 		_, err := os.Stat(filename)
 		if !os.IsNotExist(err) {
 			err = os.Remove(filename)

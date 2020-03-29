@@ -69,7 +69,7 @@ func buildReferences(ctx *SchemaContext, schemas map[jsonschema.ID]*jsonschema.S
 	for _, schema := range schemas {
 		uris := findReferences.Walk(schema)
 		for k, v := range uris {
-			ctx.References[k] =v
+			ctx.References[k] = v
 		}
 	}
 }
@@ -96,7 +96,7 @@ func schemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, ren
 		return NewBoolean(name, schema.Description, fieldTag, isReference)
 	case kind == jsonschema.String:
 		if len(schema.Enum) > 0 {
-			return NewEnum(ctx, name,schema.Description,fieldTag, isReference,schema.Enum)
+			return NewEnum(ctx, name, schema.Description, fieldTag, isReference, schema.Enum)
 		}
 		return NewString(name, schema.Description, fieldTag)
 	case kind == jsonschema.Integer:
@@ -104,7 +104,7 @@ func schemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, ren
 	case kind == jsonschema.Number:
 		return NewNumber(name, schema.Description, fieldTag, isReference)
 	case kind == jsonschema.Array:
-		return NewArray(name, schema.Description, fieldTag, schema.ArrayType())
+		return NewArray(name, schema.Description, fieldTag, ArrayType(schema))
 	case ref.IsNotEmpty():
 		return NewReference(ctx, schema.Ref, name, fieldTag)
 	case len(oneOf) > 0:
@@ -116,4 +116,12 @@ func schemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, ren
 	default:
 		return NewStruct(ctx, name, schema.Properties, schema.Description, fieldTag, schema.Required...)
 	}
+}
+
+func ArrayType(s *jsonschema.Schema) string {
+	arrType := string(s.Items.Type)
+	if s.Items.Ref.IsNotEmpty() {
+		arrType = s.Items.Ref.ToTypename()
+	}
+	return arrType
 }

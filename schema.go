@@ -5,7 +5,7 @@ type Schema struct {
 	Schema      string             `json:"$schema,omitempty"`
 	Ref         Reference          `json:"$ref,omitempty"`
 	Defs        map[string]*Schema `json:"$defs,omitempty"`
-	Anchor      Anchor             `json:"$anchor,omitempty"`
+	Anchor      string             `json:"$anchor,omitempty"`
 	Description string             `json:"description,omitempty"`
 	Title       string             `json:"title,omitempty"`
 	Type        Kind               `json:"type,omitempty"`
@@ -34,26 +34,6 @@ type Schema struct {
 	Minimum          *int32  `json:"minimum,omitempty"`
 	ExclusiveMinimum *int32  `json:"exclusiveminimum,omitempty"`
 	Pattern          string  `json:"pattern,omitempty"`
-}
-
-func (s *Schema) IsEnum() bool {
-	return s.Enum != nil
-}
-
-func (s *Schema) Structname() string {
-	structname := s.ID.ToTypename()
-	if structname == EmptyString {
-		structname = s.Type.String()
-	}
-	return structname
-}
-
-func (s *Schema) ArrayType() string {
-	arrType := string(s.Items.Type)
-	if s.Items.Ref.IsNotEmpty() {
-		arrType = s.Items.Ref.ToTypename()
-	}
-	return arrType
 }
 
 func (s *Schema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema) {

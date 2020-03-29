@@ -20,7 +20,7 @@ func TestWalk(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				s:         &jsonschema.Schema{},
+				s:    &jsonschema.Schema{},
 				path: jsonschema.Path{},
 			},
 			want: &jsonschema.Schema{},
