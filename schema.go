@@ -1,5 +1,13 @@
 package jsonschema
 
+import (
+	"encoding/json"
+	"net/url"
+	"strings"
+
+	"github.com/RossMerr/jsonschema/tokens"
+)
+
 type Schema struct {
 	ID          ID                 `json:"$id,omitempty"`
 	Schema      string             `json:"$schema,omitempty"`
@@ -38,4 +46,59 @@ type Schema struct {
 
 func (s *Schema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema) {
 	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf
+}
+
+func UnmarshalSchema(data []byte) (*Schema, map[ID]*Schema, error) {
+	var schema Schema
+	references := map[ID]*Schema{}
+
+	err := json.Unmarshal(data, &schema)
+	if err != nil {
+		return &schema, references, err
+	}
+
+	references = resolveIDs(data, []string{}, references)
+
+	return &schema, references, err
+}
+
+func resolveIDs(b []byte, path []string, references map[ID]*Schema) map[ID]*Schema {
+	m := map[string]json.RawMessage{}
+	json.Unmarshal(b, &m)
+
+	switch raw, ok := m[tokens.ID]; {
+	case ok:
+		var id string
+		if err := json.Unmarshal(raw, &id); err != nil {
+			break
+		}
+
+		uri, err := url.Parse(id)
+		if err != nil {
+			break
+		}
+
+		if uri.IsAbs() {
+			path = []string{}
+		}
+
+		path = append(path, id)
+		var schema Schema
+
+		err = json.Unmarshal(b, &schema)
+		if err != nil {
+			break
+		}
+
+		references[ID(strings.Join(path, "/"))] = &schema
+	}
+
+	for key, raw := range m {
+		if key != tokens.ID {
+			for k, v := range resolveIDs(raw, append(path, key), references) {
+				references[k] = v
+			}
+		}
+	}
+	return references
 }

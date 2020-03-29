@@ -2,7 +2,6 @@ package jsonschema_test
 
 import (
 	"context"
-	"encoding/json"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -18,6 +17,7 @@ func TestSchemas_Generate(t *testing.T) {
 
 	type fields struct {
 		documents map[jsonschema.ID]*jsonschema.Schema
+		paths     []string
 	}
 	tests := []struct {
 		name    string
@@ -27,66 +27,49 @@ func TestSchemas_Generate(t *testing.T) {
 		{
 			name: "Basic",
 			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/basic.json": loadRawSchema("samples/basic.json"),
-				},
+				paths: []string{"samples/basic.json"},
 			},
 		},
 		{
 			name: "Enum",
 			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/enum.json": loadRawSchema("samples/enum.json"),
-				},
+				paths: []string{"samples/enum.json"},
 			},
 		},
 		{
 			name: "Nesting data structures",
 			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/nesting.json": loadRawSchema("samples/nesting.json"),
-				},
+				paths: []string{"samples/nesting.json"},
 			},
 		},
 		{
 			name: "References inside the schema",
 			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/reference.json": loadRawSchema("samples/reference.json"),
-				},
+				paths: []string{"samples/reference.json"},
 			},
 		},
 		{
 			name: "References outside the schema",
 			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"https://example.com/reference-outside.schema.json": loadRawSchema("samples/reference-outside.schema.json"),
-					"http://example.com/reference-outside.json":         loadRawSchema("samples/reference-outside.json"),
-				},
+				paths: []string{"samples/reference-outside.schema.json", "samples/reference-outside.json"},
 			},
 		},
 		{
 			name: "Oneof",
 			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/oneof.json": loadRawSchema("samples/oneof.json"),
-				},
+				paths: []string{"samples/oneof.json"},
 			},
 		},
 		{
 			name: "AnyOf",
 			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/anyof.json": loadRawSchema("samples/anyof.json"),
-				},
+				paths: []string{"samples/anyof.json"},
 			},
 		},
 		{
 			name: "AllOf",
 			fields: fields{
-				documents: map[jsonschema.ID]*jsonschema.Schema{
-					"http://example.com/allof.json": loadRawSchema("samples/allof.json"),
-				},
+				paths: []string{"samples/allof.json"},
 			},
 		},
 	}
@@ -95,7 +78,27 @@ func TestSchemas_Generate(t *testing.T) {
 
 			files := []string{}
 			p := parser.NewParser(context.Background(), "main")
-			parse := p.Parse(tt.fields.documents)
+
+			documents := map[jsonschema.ID]*jsonschema.Schema{}
+			references := map[jsonschema.ID]*jsonschema.Schema{}
+			for _, path := range tt.fields.paths {
+				data, err := ioutil.ReadFile(path)
+				if err != nil {
+					panic(err)
+				}
+
+				schema, refs, err := jsonschema.UnmarshalSchema(data)
+				if err != nil {
+					panic(err)
+				}
+
+				documents[schema.ID] = schema
+				for k, v := range refs {
+					references[k] = v
+				}
+			}
+
+			parse := p.Parse(documents, references)
 			interpret, err := interpreter.NewInterpretDefaults(parse)
 			if err != nil {
 				t.Error(err)
@@ -121,19 +124,4 @@ func TestSchemas_Generate(t *testing.T) {
 			os.RemoveAll("output/")
 		}
 	})
-}
-
-func loadRawSchema(filename string) *jsonschema.Schema {
-	data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		panic(err)
-	}
-
-	var doc jsonschema.Schema
-	err = json.Unmarshal(data, &doc)
-	if err != nil {
-		panic(err)
-	}
-
-	return &doc
 }

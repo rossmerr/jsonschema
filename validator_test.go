@@ -4,7 +4,7 @@ import "testing"
 
 func Test_validator_ValidateSchema(t *testing.T) {
 	type args struct {
-		schema Schema
+		schema *Schema
 	}
 	tests := []struct {
 		name    string
@@ -13,17 +13,17 @@ func Test_validator_ValidateSchema(t *testing.T) {
 	}{
 		{
 			name:    "Random Schema",
-			args:    args{schema: Schema{Schema: "http://www.sample.com"}},
+			args:    args{schema: &Schema{Schema: "http://www.sample.com"}},
 			wantErr: true,
 		},
 		{
 			name:    "Draft 2019-09",
-			args:    args{schema: Schema{Schema: "https://json-schema.org/2019-09/schema"}},
+			args:    args{schema: &Schema{Schema: "https://json-schema.org/2019-09/schema"}},
 			wantErr: false,
 		},
 		{
 			name:    "Draft 08 (Old name)",
-			args:    args{schema: Schema{Schema: "http://json-schema.org/draft-08/schema#"}},
+			args:    args{schema: &Schema{Schema: "http://json-schema.org/draft-08/schema#"}},
 			wantErr: false,
 		},
 	}

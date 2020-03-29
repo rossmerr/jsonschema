@@ -9,11 +9,10 @@ import (
 	"github.com/RossMerr/jsonschema/tags"
 	"github.com/RossMerr/jsonschema/tags/json"
 	"github.com/RossMerr/jsonschema/tags/validate"
-	"github.com/RossMerr/jsonschema/traversal/findReferences"
 )
 
 type Parser interface {
-	Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse
+	Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) *Parse
 }
 
 type parser struct {
@@ -26,10 +25,10 @@ func NewParser(ctx context.Context, packageName string) Parser {
 	}
 }
 
-func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema) *Parse {
+func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) *Parse {
 	parse := NewParse()
 
-	buildReferences(s.ctx, schemas)
+	s.ctx.References = references
 
 	for _, schema := range schemas {
 		switch schema.Type {
@@ -63,15 +62,6 @@ func toFilename(s jsonschema.ID) string {
 		return string(unicode.ToLower(rune(name[0]))) + name[1:]
 	}
 	return name
-}
-
-func buildReferences(ctx *SchemaContext, schemas map[jsonschema.ID]*jsonschema.Schema) {
-	for _, schema := range schemas {
-		uris := findReferences.Walk(schema)
-		for k, v := range uris {
-			ctx.References[k] = v
-		}
-	}
 }
 
 func definition(ctx *SchemaContext, name *Name, schema *jsonschema.Schema) *Type {

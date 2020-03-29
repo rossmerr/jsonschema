@@ -2,7 +2,6 @@ package interpreter
 
 import (
 	"context"
-	"encoding/json"
 	"io/ioutil"
 
 	"github.com/RossMerr/jsonschema"
@@ -27,7 +26,7 @@ func NewInterpreterDefaults(packagename string) *Interpreter {
 
 func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 	schemas := map[jsonschema.ID]*jsonschema.Schema{}
-
+	references := map[jsonschema.ID]*jsonschema.Schema{}
 	for _, filename := range files {
 
 		data, err := ioutil.ReadFile(filename)
@@ -35,18 +34,23 @@ func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 			return nil, err
 		}
 
-		var schema jsonschema.Schema
-		json.Unmarshal(data, &schema)
+		schema, refs, err := jsonschema.UnmarshalSchema(data)
+		if err != nil {
+			return nil, err
+		}
+		for k, v := range refs {
+			references[k] = v
+		}
 
 		err = s.validator.ValidateSchema(schema)
 		if err != nil {
 			return nil, err
 		}
 
-		schemas[schema.ID] = &schema
+		schemas[schema.ID] = schema
 	}
 
-	root := s.parser.Parse(schemas)
+	root := s.parser.Parse(schemas, references)
 
 	return NewInterpretDefaults(root)
 }
