@@ -2,7 +2,7 @@ package parser
 
 import (
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/traversal"
+	"github.com/RossMerr/jsonschema/traversal/traverse"
 )
 
 type Reference struct {
@@ -40,7 +40,7 @@ func ResolvePointer(ctx *SchemaContext, ref jsonschema.Reference) string {
 		base = ctx.References[id]
 	}
 
-	def := traversal.Traverse(base, path)
+	def := traverse.Walk(base, path)
 	return def.ID.ToTypename()
 }
 

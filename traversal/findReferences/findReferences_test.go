@@ -1,4 +1,4 @@
-package traversal
+package findReferences
 
 import (
 	"reflect"
@@ -7,49 +7,7 @@ import (
 	"github.com/RossMerr/jsonschema"
 )
 
-func TestTraverse(t *testing.T) {
-	type args struct {
-		s         *jsonschema.Schema
-		path jsonschema.Path
-	}
-	tests := []struct {
-		name string
-		args args
-		want *jsonschema.Schema
-	}{
-		{
-			name: "Empty",
-			args: args{
-				s:         &jsonschema.Schema{},
-				path: jsonschema.Path{},
-			},
-			want: &jsonschema.Schema{},
-		},
-		{
-			name: "Definitions",
-			args: args{
-				s: &jsonschema.Schema{
-					Definitions: map[string]*jsonschema.Schema{
-						"test": &jsonschema.Schema{ID: jsonschema.ID("test")},
-					},
-				},
-				path: jsonschema.Path{"definitions", "test"},
-			},
-			want: &jsonschema.Schema{ID: jsonschema.ID("test")},
-		},
-	}
-	{
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				if got := Traverse(tt.args.s, tt.args.path); !reflect.DeepEqual(got, tt.want) {
-					t.Errorf("Traverse() = %v, want %v", got, tt.want)
-				}
-			})
-		}
-	}
-}
-
-func TestWalkSchema(t *testing.T) {
+func TestWalk(t *testing.T) {
 	type args struct {
 		s *jsonschema.Schema
 	}
@@ -61,7 +19,7 @@ func TestWalkSchema(t *testing.T) {
 		{
 			name: "Schema identification",
 			args:args{s:
-				&jsonschema.Schema{
+			&jsonschema.Schema{
 				ID:"http://example.com/root.json",
 				Defs: map[string]*jsonschema.Schema{
 					"A": &jsonschema.Schema{
@@ -104,12 +62,11 @@ func TestWalkSchema(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := WalkSchema(tt.args.s)
+			result := Walk(tt.args.s)
 			for k, want := range tt.want {
 				got := result[k]
-
-				if !reflect.DeepEqual(got, want) {
-					t.Errorf("WalkSchema() = %v, want %v", got, want)
+				if  !reflect.DeepEqual(got, want) {
+					t.Errorf("Walk() = %v, want %v", got, want)
 				}
 			}
 		})

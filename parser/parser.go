@@ -9,7 +9,7 @@ import (
 	"github.com/RossMerr/jsonschema/tags"
 	"github.com/RossMerr/jsonschema/tags/json"
 	"github.com/RossMerr/jsonschema/tags/validate"
-	"github.com/RossMerr/jsonschema/traversal"
+	"github.com/RossMerr/jsonschema/traversal/findReferences"
 )
 
 type Parser interface {
@@ -67,7 +67,7 @@ func toFilename(s jsonschema.ID) string {
 
 func buildReferences(ctx *SchemaContext, schemas map[jsonschema.ID]*jsonschema.Schema) {
 	for _, schema := range schemas {
-		uris := traversal.WalkSchema(schema)
+		uris := findReferences.Walk(schema)
 		for k, v := range uris {
 			ctx.References[k] =v
 		}
