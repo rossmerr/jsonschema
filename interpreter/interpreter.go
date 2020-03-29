@@ -32,27 +32,30 @@ func NewInterpreterDefaults(packagename string) *Interpreter {
 func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 	schemas := map[jsonschema.ID]*jsonschema.Schema{}
 	references := map[jsonschema.ID]*jsonschema.Schema{}
-	green := color.FgGreen.Render
+	green := color.FgCyan.Render
+	red := color.FgRed.Render
 
 	rawFiles := map[string][]byte{}
 	for _, filename := range files {
 
 		data, err := ioutil.ReadFile(filename)
 		if err != nil {
+			fmt.Printf(red("🗴") + "Reading file\n")
 			return nil, err
 		}
 
 		log.Infof("Found file %v", filename)
-		rawFiles[filename]=data
+		rawFiles[filename] = data
 	}
 
-	fmt.Printf(green("✓") +" Found %v files\n", len(rawFiles))
+	fmt.Printf(green("✓")+" Found %v files\n", len(rawFiles))
 
 	i := 0
-	for _, data := range rawFiles  {
+	for _, data := range rawFiles {
 		var schema jsonschema.Schema
 		err := json.Unmarshal(data, &schema)
 		if err != nil {
+			fmt.Printf(red("🗴") + "Unmarshalling\n")
 			return nil, err
 		} else {
 			i++
@@ -62,9 +65,9 @@ func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 		schemas[schema.ID] = &schema
 	}
 
-	fmt.Printf(green("✓") +" Unmarshalled %v schemas\n", i)
+	fmt.Printf(green("✓")+" Unmarshalled %v schemas\n", i)
 
-	for _, data := range rawFiles  {
+	for _, data := range rawFiles {
 
 		refs := jsonschema.ResolveIDs(data)
 
@@ -74,16 +77,17 @@ func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 		}
 	}
 
-	fmt.Printf(green("✓") +" Found %v references\n", len(references))
+	fmt.Printf(green("✓")+" Found %v references\n", len(references))
 
 	for id, schema := range schemas {
 		err := s.validator.ValidateSchema(id, schema)
 		if err != nil {
+			fmt.Printf(red("🗴") + "Validating schemas\n")
 			return nil, err
 		}
 	}
 
-	fmt.Printf(green("✓") +" Valid schemas")
+	fmt.Printf(green("✓") + " Schemas valid \n")
 
 	root := s.parser.Parse(schemas, references)
 

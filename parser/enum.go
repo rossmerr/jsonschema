@@ -1,6 +1,8 @@
 package parser
 
-import "strings"
+import (
+	"github.com/RossMerr/jsonschema"
+)
 
 type Enum struct {
 	comment   string
@@ -25,7 +27,7 @@ func NewEnum(ctx *SchemaContext, name *Name, description, fieldTag string, isRef
 	}
 
 	for _, value := range values {
-		c := NewConst(strings.Title(value), typename, value)
+		c := NewConst(jsonschema.ToTypename(value), typename, value)
 		list = append(list, c)
 	}
 

@@ -197,6 +197,11 @@ func TestToTypename(t *testing.T) {
 			args: args{s: "1 foo bar"},
 			want: "No1FooBar",
 		},
+		{
+			name: "Testing dash",
+			args: args{s: "foo-bar"},
+			want: "FooBar",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

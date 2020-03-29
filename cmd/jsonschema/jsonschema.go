@@ -18,19 +18,17 @@ import (
 var (
 	packagename = flag.StringP("package", "p", "main", "Go package name to use")
 	output      = flag.StringP("output", "o", ".", "Output folder")
-	loglevel      = flag.StringP("loglevel", "l", "warn", "Standard logger level")
-
+	loglevel    = flag.StringP("loglevel", "l", "warn", "Standard logger level")
 )
 
 var (
 	exitCode = 0
 	files    []string
-	red = color.FgRed.Render
-
+	red      = color.FgRed.Render
 )
 
 func report(err error) {
-	scanner.PrintError(os.Stderr, fmt.Errorf(red("✗") +" %v\n", err))
+	scanner.PrintError(os.Stderr, fmt.Errorf(red("✗")+" %v\n", err))
 	exitCode = 2
 }
 
@@ -69,7 +67,9 @@ func main() {
 	flag.Parse()
 
 	log.SetFormatter(&log.TextFormatter{
-		FullTimestamp: true,
+		FullTimestamp:          true,
+		DisableLevelTruncation: true,
+		PadLevelText:           true,
 	})
 
 	level, err := log.ParseLevel(*loglevel)

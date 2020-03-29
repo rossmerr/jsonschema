@@ -30,7 +30,7 @@ func Test_validator_ValidateSchema(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &validator{}
-			if err := s.ValidateSchema(tt.args.schema); (err != nil) != tt.wantErr {
+			if err := s.ValidateSchema("", tt.args.schema); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateSchema() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
