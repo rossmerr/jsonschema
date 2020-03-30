@@ -1,21 +1,22 @@
 package jsonschema
 
 import (
+	"encoding/json"
 	"net/url"
 	"strings"
 )
 
 type Reference string
 
-func NewReference(s string) Reference {
-	return Reference(s)
+func NewReference(s string) (Reference, error) {
+	return Reference(s), nil
 }
 
 func (s Reference) String() string {
 	return string(s)
 }
 
-func (s Reference) ID() ID {
+func (s Reference) ID() (ID, error) {
 	raw := string(s)
 	return NewID(raw)
 }
@@ -62,4 +63,15 @@ func (s Reference) ToTypename() string {
 
 func (s Reference) IsNotEmpty() bool {
 	return s != EmptyString
+}
+
+func (s *Reference) UnmarshalJSON(b []byte) error {
+	var v string
+	err := json.Unmarshal(b, &v)
+	if err != nil {
+		return err
+	}
+
+	*s = Reference(v)
+	return nil
 }

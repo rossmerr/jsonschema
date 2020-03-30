@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/tags"
+	"github.com/RossMerr/jsonschema/parser/tags"
 )
 
 type SchemaContext struct {
@@ -47,12 +47,14 @@ func (ctx *SchemaContext) Parent() *jsonschema.Schema {
 func (ctx *SchemaContext) AddMethods(structname string, methods ...string) {
 	if structname != jsonschema.EmptyString {
 		structname = strings.ToLower(structname)
-		arr := ctx.implementations[structname]
-		if arr == nil {
+		switch arr, ok := ctx.implementations[structname]; {
+		case !ok:
 			arr = []string{}
+			fallthrough
+		default:
+			arr = append(arr, methods...)
+			ctx.implementations[structname] = arr
 		}
-		arr = append(arr, methods...)
-		ctx.implementations[structname] = arr
 	}
 }
 

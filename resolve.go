@@ -17,7 +17,7 @@ func resolveIDs(b []byte, path []string, references map[ID]*Schema) map[ID]*Sche
 	m := map[string]json.RawMessage{}
 	json.Unmarshal(b, &m)
 
-	switch raw, ok := m[tokens.ID]; {
+	switch raw, ok := m[tokens.ID.String()]; {
 	case ok:
 		var id string
 		if err := json.Unmarshal(raw, &id); err != nil {
@@ -45,7 +45,7 @@ func resolveIDs(b []byte, path []string, references map[ID]*Schema) map[ID]*Sche
 	}
 
 	for key, raw := range m {
-		if key != tokens.ID {
+		if key != tokens.ID.String() {
 			for k, v := range resolveIDs(raw, append(path, key), references) {
 				references[k] = v
 			}

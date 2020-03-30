@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/tags"
+	"github.com/RossMerr/jsonschema/parser/tags"
 )
 
 type validate struct {

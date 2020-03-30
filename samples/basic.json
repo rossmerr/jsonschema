@@ -1,6 +1,6 @@
 {
     "$id": "https://example.com/basic.json",
-    "$schema": "http://json-schema.org/2019-09/schema#",
+    "$schema": "https://json-schema.org/2019-09/schema",
     "title": "PersonBasic",
     "type": "object",
     "properties": {

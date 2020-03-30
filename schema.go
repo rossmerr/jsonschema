@@ -2,7 +2,7 @@ package jsonschema
 
 type Schema struct {
 	ID          ID                 `json:"$id,omitempty"`
-	Schema      string             `json:"$schema,omitempty"`
+	Schema      MetaSchema         `json:"$schema,omitempty"`
 	Ref         Reference          `json:"$ref,omitempty"`
 	Defs        map[string]*Schema `json:"$defs,omitempty"`
 	Anchor      string             `json:"$anchor,omitempty"`

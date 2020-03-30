@@ -14,19 +14,17 @@ import (
 )
 
 type Interpreter struct {
-	validator jsonschema.Validator
-	parser    parser.Parser
+	parser parser.Parser
 }
 
-func NewInterpreter(validator jsonschema.Validator, parser parser.Parser) *Interpreter {
+func NewInterpreter(parser parser.Parser) *Interpreter {
 	return &Interpreter{
-		validator: validator,
-		parser:    parser,
+		parser: parser,
 	}
 }
 
 func NewInterpreterDefaults(packagename string) *Interpreter {
-	return NewInterpreter(jsonschema.NewValidator(), parser.NewParser(context.Background(), packagename))
+	return NewInterpreter(parser.NewParser(context.Background(), packagename))
 }
 
 func (s *Interpreter) Interpret(files []string) (Interpret, error) {
@@ -72,24 +70,22 @@ func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 		refs := jsonschema.ResolveIDs(data)
 
 		for k, v := range refs {
-			references[k] = v
+			if _, ok := references[k]; !ok {
+				references[k] = v
+			} else {
+				fmt.Printf(red("🗴") + "References\n")
+
+				return nil, fmt.Errorf("Reference keys need to be unique found %v more than once", k)
+			}
 			log.Infof("Found reference %v", k)
 		}
 	}
 
 	fmt.Printf(green("✓")+" Found %v references\n", len(references))
 
-	for id, schema := range schemas {
-		err := s.validator.ValidateSchema(id, schema)
-		if err != nil {
-			fmt.Printf(red("🗴") + "Validating schemas\n")
-			return nil, err
-		}
+	root, err := s.parser.Parse(schemas, references)
+	if err != nil {
+		return nil, err
 	}
-
-	fmt.Printf(green("✓") + " Schemas valid \n")
-
-	root := s.parser.Parse(schemas, references)
-
 	return NewInterpretDefaults(root)
 }

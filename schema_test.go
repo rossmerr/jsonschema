@@ -101,11 +101,14 @@ func TestSchemas_Generate(t *testing.T) {
 				}
 			}
 
-			parse := p.Parse(documents, references)
+			parse, err := p.Parse(documents, references)
+			if err != nil {
+				t.Error(err)
+			}
+
 			interpret, err := interpreter.NewInterpretDefaults(parse)
 			if err != nil {
 				t.Error(err)
-
 			}
 			if files, err = interpret.ToFile("output/"); (err != nil) != tt.wantErr {
 				t.Errorf("Schemas.Generate() error = %v, wantErr %v", err, tt.wantErr)

@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/RossMerr/jsonschema"
@@ -12,7 +13,7 @@ type InterfaceReference struct {
 	FieldTag string
 }
 
-func NewInterfaceReferenceAllOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) Types {
+func NewInterfaceReferenceAllOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) (Types, error) {
 	parent := ctx.Parent()
 
 	typename := parent.ID.ToTypename() + name.Fieldname()
@@ -25,14 +26,21 @@ func NewInterfaceReferenceAllOf(ctx *SchemaContext, name *Name, fieldTag string,
 		}
 		structname := typename + strconv.Itoa(i)
 		types = append(types, structname)
-		t := schemaToType(ctx, NewName(structname), subschema, false)
-		ctx.Globals[structname] = PrefixType(t, typename)
+		t, err := schemaToType(ctx, NewName(structname), subschema, false)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := ctx.Globals[structname]; !ok {
+			ctx.Globals[structname] = PrefixType(t, typename)
+		} else {
+			return nil, fmt.Errorf("Global keys need to be unique found %v more than once, in %v", structname, parent.ID)
+		}
 	}
 
-	return NewEmbeddedStruct(name.Fieldname(), fieldTag, types...)
+	return NewEmbeddedStruct(name.Fieldname(), fieldTag, types...), nil
 }
 
-func NewInterfaceReferenceAnyOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) *InterfaceReference {
+func NewInterfaceReferenceAnyOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) (*InterfaceReference, error) {
 	parent := ctx.Parent()
 
 	typename := parent.ID.ToTypename() + name.Fieldname()
@@ -43,8 +51,15 @@ func NewInterfaceReferenceAnyOf(ctx *SchemaContext, name *Name, fieldTag string,
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
-		t := schemaToType(ctx, NewName(structname), subschema, false)
-		ctx.Globals[structname] = PrefixType(t, typename)
+		t, err := schemaToType(ctx, NewName(structname), subschema, false)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := ctx.Globals[structname]; !ok {
+			ctx.Globals[structname] = PrefixType(t, typename)
+		} else {
+			return nil, fmt.Errorf("Global keys need to be unique found %v more than once, in %v", structname, parent.ID)
+		}
 		ctx.AddMethods(structname, typename)
 
 	}
@@ -55,10 +70,10 @@ func NewInterfaceReferenceAnyOf(ctx *SchemaContext, name *Name, fieldTag string,
 		Type:     "[]" + typename,
 		name:     name.Fieldname(),
 		FieldTag: fieldTag,
-	}
+	}, nil
 }
 
-func NewInterfaceReferenceOneOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) *InterfaceReference {
+func NewInterfaceReferenceOneOf(ctx *SchemaContext, name *Name, fieldTag string, subschemas []*jsonschema.Schema) (*InterfaceReference, error) {
 	parent := ctx.Parent()
 
 	typename := parent.ID.ToTypename() + name.Fieldname()
@@ -69,8 +84,15 @@ func NewInterfaceReferenceOneOf(ctx *SchemaContext, name *Name, fieldTag string,
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
-		t := schemaToType(ctx, NewName(structname), subschema, false)
-		ctx.Globals[structname] = PrefixType(t, typename)
+		t, err := schemaToType(ctx, NewName(structname), subschema, false)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := ctx.Globals[structname]; !ok {
+			ctx.Globals[structname] = PrefixType(t, typename)
+		} else {
+			return nil, fmt.Errorf("Global keys need to be unique found %v more than once, in %v", structname, parent.ID)
+		}
 		ctx.AddMethods(structname, typename)
 
 	}
@@ -81,7 +103,7 @@ func NewInterfaceReferenceOneOf(ctx *SchemaContext, name *Name, fieldTag string,
 		Type:     typename,
 		name:     name.Fieldname(),
 		FieldTag: fieldTag,
-	}
+	}, nil
 }
 
 func (s *InterfaceReference) Comment() string {

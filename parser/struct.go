@@ -11,11 +11,15 @@ type Struct struct {
 	StructTag string
 }
 
-func NewStruct(ctx *SchemaContext, name *Name, properties map[string]*jsonschema.Schema, comment, fieldTag string, required ...string) Types {
+func NewStruct(ctx *SchemaContext, name *Name, properties map[string]*jsonschema.Schema, comment, fieldTag string, required ...string) (Types, error) {
 
 	fields := []Types{}
 	for key, propertie := range properties {
-		fields = append(fields, schemaToType(ctx, NewName(key), propertie, true, required...))
+		s, err := schemaToType(ctx, NewName(key), propertie, true, required...)
+		if err != nil {
+			return nil, err
+		}
+		fields = append(fields, s)
 	}
 
 	return &Struct{
@@ -23,7 +27,7 @@ func NewStruct(ctx *SchemaContext, name *Name, properties map[string]*jsonschema
 		name:      name.Fieldname(),
 		Fields:    fields,
 		StructTag: fieldTag,
-	}
+	}, nil
 }
 
 func (s *Struct) Comment() string {

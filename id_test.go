@@ -1,48 +1,50 @@
-package jsonschema
+package jsonschema_test
 
 import (
 	"testing"
+
+	"github.com/RossMerr/jsonschema"
 )
 
 func TestID_ToTypename(t *testing.T) {
 	tests := []struct {
 		name string
-		s    ID
+		s    jsonschema.ID
 		want string
 	}{
 		{
 			name: "Empty string",
-			s:    ID(""),
+			s:    jsonschema.ID(""),
 			want: ".",
 		},
 		{
 			name: "No #",
-			s:    ID("test"),
+			s:    jsonschema.ID("test"),
 			want: "Test",
 		},
 		{
 			name: "Root ID",
-			s:    ID("#test"),
+			s:    jsonschema.ID("#test"),
 			want: ".",
 		},
 		{
 			name: "Defintions",
-			s:    ID("#defintions/test"),
+			s:    jsonschema.ID("#defintions/test"),
 			want: ".",
 		},
 		{
 			name: "Relative",
-			s:    ID("test.json#defintions/hello"),
+			s:    jsonschema.ID("test.json#defintions/hello"),
 			want: "Test",
 		},
 		{
 			name: "Absolute",
-			s:    ID("http://www.sample.com/test.json#defintions/hello"),
+			s:    jsonschema.ID("http://www.sample.com/test.json#defintions/hello"),
 			want: "Test",
 		},
 		{
 			name: "Test Case",
-			s:    ID("test.json#defintions/hello_world"),
+			s:    jsonschema.ID("test.json#defintions/hello_world"),
 			want: "Test",
 		},
 	}
@@ -56,45 +58,56 @@ func TestID_ToTypename(t *testing.T) {
 }
 
 func TestID_CanonicalURI(t *testing.T) {
+	type args struct {
+		id  jsonschema.ID
+		err error
+	}
+
+	newArgs := func(id jsonschema.ID, err error) args {
+		return args{
+			id:  id,
+			err: err,
+		}
+	}
 	tests := []struct {
 		name string
-		s    ID
+		s    args
 		want string
 	}{
 		{
 			name: "Empty",
-			s:    NewID(""),
+			s:    newArgs(jsonschema.NewID("")),
 			want: ".",
 		},
 		{
 			name: "Fragment",
-			s:    NewID("#test"),
+			s:    newArgs(jsonschema.NewID("#test")),
 			want: ".",
 		},
 		{
 			name: "Relative",
-			s:    NewID("/test/#test"),
+			s:    newArgs(jsonschema.NewID("/test/#test")),
 			want: ".",
 		},
 		{
 			name: "Absolute",
-			s:    NewID("http://www.sample.com"),
+			s:    newArgs(jsonschema.NewID("http://www.sample.com")),
 			want: "http://www.sample.com",
 		},
 		{
 			name: "Absolute with path",
-			s:    NewID("http://www.sample.com/foo/bar/"),
+			s:    newArgs(jsonschema.NewID("http://www.sample.com/foo/bar/")),
 			want: "http://www.sample.com/foo/bar",
 		},
 		{
 			name: "Absolute with path and fragment",
-			s:    NewID("http://www.sample.com/foo#test"),
+			s:    newArgs(jsonschema.NewID("http://www.sample.com/foo#test")),
 			want: "http://www.sample.com/foo",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.s.String(); got != tt.want {
+			if got := tt.s.id.String(); got != tt.want {
 				t.Errorf("CanonicalURI() = %v, want %v", got, tt.want)
 			}
 		})

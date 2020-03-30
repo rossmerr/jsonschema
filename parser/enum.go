@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/RossMerr/jsonschema"
 )
 
@@ -13,14 +15,14 @@ type Enum struct {
 	Reference string
 }
 
-func NewEnum(ctx *SchemaContext, name *Name, description, fieldTag string, isReference bool, values []string) *Enum {
+func NewEnum(ctx *SchemaContext, name *Name, description, fieldTag string, isReference bool, values []string) (*Enum, error) {
 	reference := ""
 	if isReference {
 		reference = "*"
 	}
 	parent := ctx.Parent()
 
-	typename := parent.ID.ToTypename() + name.Fieldname()
+	typename := parent.ID.ToTypename() + name.Fieldname() + "Enum"
 
 	list := List{
 		NewCustomType(typename, "string"),
@@ -31,7 +33,11 @@ func NewEnum(ctx *SchemaContext, name *Name, description, fieldTag string, isRef
 		list = append(list, c)
 	}
 
-	ctx.Globals[typename] = &list
+	if _, ok := ctx.Globals[typename]; !ok {
+		ctx.Globals[typename] = &list
+	} else {
+		return nil, fmt.Errorf("Global keys need to be unique found %v more than once, in %v", typename, parent.ID)
+	}
 
 	return &Enum{
 		comment:   description,
@@ -40,7 +46,7 @@ func NewEnum(ctx *SchemaContext, name *Name, description, fieldTag string, isRef
 		FieldTag:  fieldTag,
 		Reference: reference,
 		Values:    values,
-	}
+	}, nil
 }
 
 func (s *Enum) Comment() string {

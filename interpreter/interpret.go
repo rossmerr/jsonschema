@@ -58,20 +58,20 @@ func (s *interpret) ToFile(output string) ([]string, error) {
 			err = os.MkdirAll(path, 0777)
 		}
 		if err != nil {
-			fmt.Printf(red("🗴") +"Making %v\n", path)
+			fmt.Printf(red("🗴")+"Making %v\n", path)
 			return files, err
 		}
 
 		file, err := os.Create(filename)
 		if err != nil {
-			fmt.Printf(red("🗴") +"Create %v\n", filename)
+			fmt.Printf(red("🗴")+"Create %v\n", filename)
 			return files, err
 		}
 		files = append(files, filename)
 
 		err = s.templateStruct.Execute(file, obj)
 		if err != nil {
-			fmt.Printf(red("🗴") +"Execute template for %v\n", filename)
+			fmt.Printf(red("🗴")+"Execute template for %v\n", filename)
 			return files, err
 		}
 

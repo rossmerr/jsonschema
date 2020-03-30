@@ -1,6 +1,6 @@
 {
   "$id": "http://example.com/oneof.json",
-  "$schema": "http://json-schema.org/2019-09/schema#",
+  "$schema": "https://json-schema.org/2019-09/schema",
   "description": "JSON Schema for an fstab entry",
   "type": "object",
   "required": [

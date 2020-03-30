@@ -1,12 +1,17 @@
-## Installation
-
 ![Go](https://github.com/RossMerr/jsonschema/workflows/Go/badge.svg)
+
+# jsonschema
+
+Code generation from json schemas.
+
+
+## Installation
 
 * `go get -u github.com/RossMerr/jsonschema/cmd/jsonschema`
 
 
 
-Basic support for JSON Schema 2019-09, featuring:
+Basic support for JSON Schema 2019-09:
 ##### $id
   * Top level $id must follow the absolute-URI convention of being a canonical URL. The old 'id' field is not supported.
   
