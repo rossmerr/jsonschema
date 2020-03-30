@@ -34,6 +34,8 @@ func (s *MetaSchema) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
+	v = strings.TrimRight(v, "#")
+
 	if !Contains(MetaSchemasToString(), v) {
 		return fmt.Errorf("unsupported schema found %v\n\nTry using one of:\n%v\n", v, strings.Join(MetaSchemasToString(), ", "))
 	}

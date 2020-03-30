@@ -3,7 +3,7 @@ package tokens
 type Keyword string
 
 const (
-	ID     Keyword = "$id"
+	ID Keyword = "$id"
 )
 
 func (s Keyword) String() string {

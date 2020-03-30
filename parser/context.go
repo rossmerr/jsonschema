@@ -53,7 +53,7 @@ func (ctx *SchemaContext) AddMethods(structname string, methods ...string) {
 			fallthrough
 		default:
 			arr = append(arr, methods...)
-			ctx.implementations[structname] = arr
+			ctx.implementations[structname] = jsonschema.Unique(arr)
 		}
 	}
 }

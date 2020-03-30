@@ -49,6 +49,18 @@ func KeysString(m map[string]string) string {
 	return strings.Join(keys, ",")
 }
 
+func Unique(slice []string) []string {
+	keys := make(map[string]bool)
+	list := []string{}
+	for _, entry := range slice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}
+
 // title returns a copy of the string s with all none alphanumeric characters removed
 // and all the Unicode letters that begin a word mapped to their Unicode title case
 func title(s string) string {

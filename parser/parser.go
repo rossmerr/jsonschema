@@ -60,6 +60,7 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references 
 			}
 
 			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct, toFilename(schema.ID))
+			s.ctx.Globals = map[string]Types{}
 		}
 	}
 
