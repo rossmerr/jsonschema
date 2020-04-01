@@ -34,8 +34,34 @@ type Schema struct {
 	Minimum          *int32  `json:"minimum,omitempty"`
 	ExclusiveMinimum *int32  `json:"exclusiveminimum,omitempty"`
 	Pattern          string  `json:"pattern,omitempty"`
+
+	Parent *Schema `json:"-"`
 }
 
-func (s *Schema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema) {
-	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf
+func (s *Schema) AllDefinitions() map[string]*Schema {
+	definitions := map[string]*Schema{}
+	for key, def := range s.Definitions {
+		definitions[key] = def
+	}
+
+	for key, def := range s.Defs {
+		definitions[key] = def
+	}
+	return definitions
+}
+
+func (s *Schema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool) {
+	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf, s.Enum, false
+}
+
+type RootSchema struct {
+	*Schema
+}
+
+func (s *RootSchema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool) {
+	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf, s.Enum, true
+}
+
+type JsonSchema interface {
+	Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool)
 }

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/RossMerr/jsonschema/parser"
+	"github.com/RossMerr/jsonschema/parser/types"
 	"github.com/gookit/color"
 	log "github.com/sirupsen/logrus"
 )
@@ -29,7 +30,7 @@ func NewInterpret(root *parser.Parse, templateStruct Template) Interpret {
 }
 
 func NewInterpretDefaults(root *parser.Parse) (Interpret, error) {
-	templates, err := parser.Template()
+	templates, err := types.Template()
 	if err != nil {
 		return nil, err
 	}

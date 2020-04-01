@@ -1,8 +1,8 @@
 package jsonschema_test
 
 import (
-	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -10,6 +10,7 @@ import (
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/interpreter"
 	"github.com/RossMerr/jsonschema/parser"
+	"github.com/RossMerr/jsonschema/parser/types"
 )
 
 func TestSchemas_Generate(t *testing.T) {
@@ -78,17 +79,29 @@ func TestSchemas_Generate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			files := []string{}
-			p := parser.NewParser(context.Background(), "main")
+			p := parser.NewParser("main")
+			p.HandlerFunc(parser.Boolean, types.HandleBoolean)
+			p.HandlerFunc(parser.OneOf, types.HandleOneOf)
+			p.HandlerFunc(parser.AnyOf, types.HandleAnyOf)
+			p.HandlerFunc(parser.AllOf, types.HandleAllOf)
+			p.HandlerFunc(parser.Enum, types.HandleEnum)
+			p.HandlerFunc(parser.Array, types.HandleArray)
+			p.HandlerFunc(parser.Reference, types.HandleReference)
+			p.HandlerFunc(parser.Object, types.HandleObject)
+			p.HandlerFunc(parser.Number, types.HandleNumber)
+			p.HandlerFunc(parser.Interger, types.HandleInteger)
+			p.HandlerFunc(parser.String, types.HandleString)
+			p.HandlerFunc(parser.RootObject, types.HandleRoot)
 
-			documents := map[jsonschema.ID]*jsonschema.Schema{}
-			references := map[jsonschema.ID]*jsonschema.Schema{}
+			documents := map[jsonschema.ID]jsonschema.JsonSchema{}
+			references := map[jsonschema.ID]jsonschema.JsonSchema{}
 			for _, path := range tt.fields.paths {
 				data, err := ioutil.ReadFile(path)
 				if err != nil {
 					panic(err)
 				}
 
-				var schema jsonschema.Schema
+				var schema jsonschema.RootSchema
 				err = json.Unmarshal(data, &schema)
 				if err != nil {
 					panic(err)
@@ -117,17 +130,18 @@ func TestSchemas_Generate(t *testing.T) {
 
 			t.Cleanup(func() {
 				for _, file := range files {
-					if err := os.Remove(file); err != nil {
-						t.Error("error resetting:", err)
-					}
+					fmt.Printf("%v", file)
+					// if err := os.Remove(file); err != nil {
+					// 	t.Error("error resetting:", err)
+					// }
 				}
 			})
 		})
 	}
 
-	t.Cleanup(func() {
-		if !t.Failed() {
-			os.RemoveAll("output/")
-		}
-	})
+	// t.Cleanup(func() {
+	// 	if !t.Failed() {
+	// 		os.RemoveAll("output/")
+	// 	}
+	// })
 }

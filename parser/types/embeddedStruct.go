@@ -1,8 +1,11 @@
-package parser
+package types
 
 import (
 	"github.com/RossMerr/jsonschema"
+	"github.com/RossMerr/jsonschema/parser/document"
 )
+
+var _ document.Types = (*EmbeddedStruct)(nil)
 
 type EmbeddedStruct struct {
 	name      string
@@ -16,6 +19,14 @@ func NewEmbeddedStruct(typename string, fieldTag string, types ...string) *Embed
 		StructTag: fieldTag,
 		Types:     types,
 	}
+}
+
+func (s *EmbeddedStruct) WithReference(ref bool) document.Types {
+	return s
+}
+
+func (s *EmbeddedStruct) WithFieldTag(tags string) document.Types {
+	return s
 }
 
 func (s *EmbeddedStruct) Comment() string {

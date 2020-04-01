@@ -20,17 +20,6 @@
             }
           }
         },
-        {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "speed": {
-              "type": "integer"
-            }
-          }
-        },
         { "$ref" : "#/definitions/test2"}
       ]
     }

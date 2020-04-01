@@ -1,8 +1,10 @@
-package parser
+package types
 
 import (
 	"strings"
 	"text/template"
+
+	"github.com/RossMerr/jsonschema/parser/document"
 )
 
 func Template() (*template.Template, error) {
@@ -19,12 +21,12 @@ func Template() (*template.Template, error) {
 		"isInterfaceReference": IsInterfaceReference,
 		"isType":               IsType,
 		"isEnum":               IsEnum,
-		"isList":               IsList,
 		"isCustomType":         IsCustomType,
 		"isConst":              IsConst,
+		"isRoot":               IsRoot,
 		"mixedCase":            MixedCase,
 		"title":                strings.Title,
-	}).Parse(DocumentTemplate)
+	}).Parse(document.DocumentTemplate)
 	tmpl, err = tmpl.Parse(StructTemplate)
 	if err != nil {
 		return nil, err
@@ -77,15 +79,15 @@ func Template() (*template.Template, error) {
 	if err != nil {
 		return nil, err
 	}
-	tmpl, err = tmpl.Parse(ListTemplate)
-	if err != nil {
-		return nil, err
-	}
 	tmpl, err = tmpl.Parse(CustomTypeTemplate)
 	if err != nil {
 		return nil, err
 	}
 	tmpl, err = tmpl.Parse(ConstTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(RootTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -153,11 +155,6 @@ func IsEnum(obj interface{}) bool {
 	return ok
 }
 
-func IsList(obj interface{}) bool {
-	_, ok := obj.(*List)
-	return ok
-}
-
 func IsCustomType(obj interface{}) bool {
 	_, ok := obj.(*CustomType)
 	return ok
@@ -165,6 +162,11 @@ func IsCustomType(obj interface{}) bool {
 
 func IsConst(obj interface{}) bool {
 	_, ok := obj.(*Const)
+	return ok
+}
+
+func IsRoot(obj interface{}) bool {
+	_, ok := obj.(*Root)
 	return ok
 }
 

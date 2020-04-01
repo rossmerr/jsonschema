@@ -9,15 +9,15 @@ import (
 )
 
 // Walk, walks the Schema looking for the matching reference (case sensitive),
-func Walk(s *jsonschema.Schema, path jsonschema.Path) *jsonschema.Schema {
+func Walk(s jsonschema.JsonSchema, path jsonschema.Path) *jsonschema.Schema {
 	if len(path) == 0 {
-		return s
+		return s.(*jsonschema.Schema)
 	}
 	recordSchema := &recordSchema{
 		match: nil,
 		path:  path,
 	}
-	traversal.WalkSchema(s, fieldFunc, mapKeyFunc, recordSchema)
+	traversal.WalkSchema(s.(*jsonschema.Schema), fieldFunc, mapKeyFunc, recordSchema)
 	return recordSchema.match
 }
 

@@ -1,70 +1,94 @@
 package parser
 
 import (
-	"context"
 	"fmt"
-	"strings"
 	"unicode"
 
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/tags"
-	"github.com/RossMerr/jsonschema/parser/tags/json"
-	"github.com/RossMerr/jsonschema/parser/tags/validate"
+	"github.com/RossMerr/jsonschema/parser/document"
 )
 
 type Parser interface {
-	Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (*Parse, error)
+	Parse(schemas map[jsonschema.ID]jsonschema.JsonSchema, references map[jsonschema.ID]jsonschema.JsonSchema) (*Parse, error)
+	HandlerFunc(kind Kind, handler document.HandleSchemaFunc)
 }
 
 type parser struct {
-	ctx *SchemaContext
+	handlers    map[Kind]document.HandleSchemaFunc
+	packageName string
 }
 
-func NewParser(ctx context.Context, packageName string) Parser {
-	return &parser{
-		ctx: NewContext(ctx, packageName, tags.NewFieldTag([]tags.StructTag{json.NewJSONTags(), validate.NewValidateTags()})),
+func NewParser(packageName string) Parser {
+	parser := &parser{
+		packageName: packageName,
+		handlers:    map[Kind]document.HandleSchemaFunc{},
 	}
+	return parser
 }
 
-func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (*Parse, error) {
+func (s *parser) Parse(schemas map[jsonschema.ID]jsonschema.JsonSchema, references map[jsonschema.ID]jsonschema.JsonSchema) (*Parse, error) {
 	parse := NewParse()
 
-	s.ctx.References = references
-
-	for _, schema := range schemas {
+	for _, root := range schemas {
+		schema := root.(*jsonschema.RootSchema)
 		switch schema.Type {
 		case jsonschema.Object:
+			ctx := document.NewDocumentContext(s.packageName, s.Process, references, schema)
 
-			anonymousStruct, err := NewStruct(s.ctx.SetParent(schema), NameFromID(schema.ID), schema.Properties, schema.Description, "", schema.Required...)
+			anonymousStruct, err := ctx.Process(schema.ID.ToTypename(), root)
 			if err != nil {
 				return nil, err
 			}
 
-			if schema.Defs == nil {
-				schema.Defs = map[string]*jsonschema.Schema{}
-			}
-			for k, v := range schema.Definitions {
-				schema.Defs[k] = v
-			}
-
-			for typename, def := range schema.Defs {
-				d, err := definition(s.ctx.SetParent(schema), NewName(typename), def)
-				if err != nil {
-					return nil, err
-				}
-				if _, ok := s.ctx.Globals[typename]; !ok {
-					s.ctx.Globals[typename] = d
-				} else {
-					return nil, fmt.Errorf("Global keys need to be unique found %v more than once, last references was in %v", typename, schema.ID)
-				}
-			}
-
-			parse.Structs[schema.ID] = NewDocument(s.ctx, schema.ID.String(), anonymousStruct, toFilename(schema.ID))
-			s.ctx.Globals = map[string]Types{}
+			parse.Structs[schema.ID] = document.NewDocument(ctx, schema.ID.String(), anonymousStruct, toFilename(schema.ID))
 		}
 	}
 
 	return parse, nil
+}
+
+func (s *parser) HandlerFunc(kind Kind, handler document.HandleSchemaFunc) {
+	if _, ok := s.handlers[kind]; ok {
+		panic(fmt.Sprintf("parser: multiple registrations for %v", kind))
+	} else {
+		s.handlers[kind] = handler
+	}
+}
+
+func (s *parser) Process(name string, schema jsonschema.JsonSchema) document.HandleSchemaFunc {
+	var handler document.HandleSchemaFunc
+	switch kind, ref, oneOf, anyOf, allOf, enum, isParent := schema.Stat(); {
+	case kind == jsonschema.Boolean:
+		handler = s.handlers[Boolean]
+	case len(enum) > 0:
+		handler = s.handlers[Enum]
+	case kind == jsonschema.String:
+		handler = s.handlers[String]
+	case kind == jsonschema.Integer:
+		handler = s.handlers[Interger]
+	case kind == jsonschema.Number:
+		handler = s.handlers[Number]
+	case kind == jsonschema.Array:
+		handler = s.handlers[Array]
+	case ref.IsNotEmpty():
+		handler = s.handlers[Reference]
+	case len(oneOf) > 0:
+		handler = s.handlers[OneOf]
+	case len(anyOf) > 0:
+		handler = s.handlers[AnyOf]
+	case len(allOf) > 0:
+		handler = s.handlers[AllOf]
+	case isParent:
+		handler = s.handlers[RootObject]
+	default:
+		handler = s.handlers[Object]
+	}
+
+	if handler == nil {
+		panic("parser: no matching handler was found")
+	}
+
+	return handler
 }
 
 // toFilename returns the file name from the ID.
@@ -75,59 +99,4 @@ func toFilename(s jsonschema.ID) string {
 		return string(unicode.ToLower(rune(name[0]))) + name[1:]
 	}
 	return name
-}
-
-func definition(ctx *SchemaContext, name *Name, schema *jsonschema.Schema) (*Type, error) {
-	t, err := schemaToType(ctx, name, schema, false)
-	if err != nil {
-		return nil, err
-	}
-	arr := ctx.GetMethods(name.Fieldname())
-	return PrefixType(t, arr...), nil
-}
-
-func schemaToType(ctx *SchemaContext, name *Name, schema *jsonschema.Schema, renderFieldTags bool, required ...string) (Types, error) {
-	fieldTag := ""
-	if renderFieldTags {
-		fieldTag = ctx.Tags.ToFieldTag(name.Tagname(), schema, required)
-	}
-
-	isReference := true
-	if jsonschema.Contains(required, strings.ToLower(name.Tagname())) {
-		isReference = false
-	}
-
-	switch kind, ref, oneOf, anyOf, allOf := schema.Stat(); {
-	case kind == jsonschema.Boolean:
-		return NewBoolean(name, schema.Description, fieldTag, isReference), nil
-	case kind == jsonschema.String:
-		if len(schema.Enum) > 0 {
-			return NewEnum(ctx, name, schema.Description, fieldTag, isReference, schema.Enum)
-		}
-		return NewString(name, schema.Description, fieldTag), nil
-	case kind == jsonschema.Integer:
-		return NewInteger(name, schema.Description, fieldTag, isReference), nil
-	case kind == jsonschema.Number:
-		return NewNumber(name, schema.Description, fieldTag, isReference), nil
-	case kind == jsonschema.Array:
-		return NewArray(name, schema.Description, fieldTag, ArrayType(schema)), nil
-	case ref.IsNotEmpty():
-		return NewReference(ctx, schema.Ref, name, fieldTag)
-	case len(oneOf) > 0:
-		return NewInterfaceReferenceOneOf(ctx, name, fieldTag, oneOf)
-	case len(anyOf) > 0:
-		return NewInterfaceReferenceAnyOf(ctx, name, fieldTag, anyOf)
-	case len(allOf) > 0:
-		return NewInterfaceReferenceAllOf(ctx, name, fieldTag, allOf)
-	default:
-		return NewStruct(ctx, name, schema.Properties, schema.Description, fieldTag, schema.Required...)
-	}
-}
-
-func ArrayType(s *jsonschema.Schema) string {
-	arrType := string(s.Items.Type)
-	if s.Items.Ref.IsNotEmpty() {
-		arrType = s.Items.Ref.ToTypename()
-	}
-	return arrType
 }

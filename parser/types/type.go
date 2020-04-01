@@ -1,17 +1,31 @@
-package parser
+package types
 
+import "github.com/RossMerr/jsonschema/parser/document"
+
+var _ document.Types = (*Type)(nil)
+
+// Obsolete
 type Type struct {
 	comment string
-	Type    Types
+	Type    document.Types
 	Methods []string
 }
 
-func PrefixType(t Types, methods ...string) *Type {
+// Obsolete
+func PrefixType(t document.Types, methods ...string) *Type {
 	return &Type{
 		comment: t.Comment(),
 		Methods: methods,
 		Type:    t,
 	}
+}
+
+func (s *Type) WithReference(ref bool) document.Types {
+	return s
+}
+
+func (s *Type) WithFieldTag(tags string) document.Types {
+	return s
 }
 
 func (s *Type) Comment() string {

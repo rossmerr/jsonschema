@@ -1,17 +1,16 @@
-package parser
+package document
 
 type Document struct {
-	*Type
+	Type     Types
 	ID       string
 	Filename string
 	Package  string
 	Globals  map[string]Types
 }
 
-func NewDocument(ctx *SchemaContext, id string, anonymousStruct Types, filename string) *Document {
-	s := PrefixType(anonymousStruct)
+func NewDocument(ctx *DocumentContext, id string, anonymousStruct Types, filename string) *Document {
 	return &Document{
-		s,
+		anonymousStruct,
 		id,
 		filename,
 		ctx.Package,
@@ -34,7 +33,7 @@ package main
 {{ end }}
 
 {{ if .Type -}}
-	{{template "type" .Type }}
+	{{template "kind" .Type }}
 {{end -}}
 
 

@@ -1,13 +1,13 @@
 package interpreter
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
+	"github.com/RossMerr/jsonschema/parser/types"
 	"github.com/gookit/color"
 
 	log "github.com/sirupsen/logrus"
@@ -24,12 +24,26 @@ func NewInterpreter(parser parser.Parser) *Interpreter {
 }
 
 func NewInterpreterDefaults(packagename string) *Interpreter {
-	return NewInterpreter(parser.NewParser(context.Background(), packagename))
+	p := parser.NewParser(packagename)
+	p.HandlerFunc(parser.Boolean, types.HandleBoolean)
+	p.HandlerFunc(parser.OneOf, types.HandleOneOf)
+	p.HandlerFunc(parser.AnyOf, types.HandleAnyOf)
+	p.HandlerFunc(parser.AllOf, types.HandleAllOf)
+	p.HandlerFunc(parser.Enum, types.HandleEnum)
+	p.HandlerFunc(parser.Array, types.HandleArray)
+	p.HandlerFunc(parser.Reference, types.HandleReference)
+	p.HandlerFunc(parser.Object, types.HandleObject)
+	p.HandlerFunc(parser.Number, types.HandleNumber)
+	p.HandlerFunc(parser.Interger, types.HandleInteger)
+	p.HandlerFunc(parser.String, types.HandleString)
+	p.HandlerFunc(parser.RootObject, types.HandleRoot)
+
+	return NewInterpreter(p)
 }
 
 func (s *Interpreter) Interpret(files []string) (Interpret, error) {
-	schemas := map[jsonschema.ID]*jsonschema.Schema{}
-	references := map[jsonschema.ID]*jsonschema.Schema{}
+	schemas := map[jsonschema.ID]jsonschema.JsonSchema{}
+	references := map[jsonschema.ID]jsonschema.JsonSchema{}
 	green := color.FgCyan.Render
 	red := color.FgRed.Render
 
