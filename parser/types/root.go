@@ -1,33 +1,34 @@
 package types
 
 import (
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ document.Types = (*Root)(nil)
+var _ parser.Types = (*Root)(nil)
 
 type Root struct {
 	comment string
-	Type    document.Types
+	Type    parser.Types
 	Methods []string
 }
 
-func NewRoot(comment string, t document.Types) document.Types {
+func NewRoot(comment string, t parser.Types, methods ...string) parser.Types {
 	return &Root{
 		comment: comment,
 		Type:    t,
+		Methods: methods,
 	}
 }
 
-func (s *Root) WithMethods(methods ...string) document.Types {
-	s.Methods = methods
+func (s *Root) WithMethods(methods ...string) parser.Types {
+	s.Methods = append(s.Methods, methods...)
 	return s
 }
-func (s *Root) WithReference(ref bool) document.Types {
+func (s *Root) WithReference(ref bool) parser.Types {
 	return s
 }
 
-func (s *Root) WithFieldTag(tags string) document.Types {
+func (s *Root) WithFieldTag(tags string) parser.Types {
 	return s
 }
 

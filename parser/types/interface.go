@@ -1,8 +1,10 @@
 package types
 
-import "github.com/RossMerr/jsonschema/parser/document"
+import (
+	"github.com/RossMerr/jsonschema/parser"
+)
 
-var _ document.Types = (*Interface)(nil)
+var _ parser.Types = (*Interface)(nil)
 
 type Interface struct {
 	comment                string
@@ -16,11 +18,11 @@ func NewInterface(typename string) *Interface {
 	}
 }
 
-func (s *Interface) WithReference(ref bool) document.Types {
+func (s *Interface) WithReference(ref bool) parser.Types {
 	return s
 }
 
-func (s *Interface) WithFieldTag(tags string) document.Types {
+func (s *Interface) WithFieldTag(tags string) parser.Types {
 	return s
 }
 

@@ -1,18 +1,20 @@
 package types
 
-import "github.com/RossMerr/jsonschema/parser/document"
+import (
+	"github.com/RossMerr/jsonschema/parser"
+)
 
-var _ document.Types = (*List)(nil)
+var _ parser.Types = (*List)(nil)
 
 type List struct {
-	Items []document.Types
+	Items []parser.Types
 }
 
-func (s *List) WithReference(ref bool) document.Types {
+func (s *List) WithReference(ref bool) parser.Types {
 	return s
 }
 
-func (s *List) WithFieldTag(tags string) document.Types {
+func (s *List) WithFieldTag(tags string) parser.Types {
 	return s
 }
 

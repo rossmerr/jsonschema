@@ -1,9 +1,11 @@
-package document
+package parser
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/RossMerr/jsonschema"
+	"github.com/RossMerr/jsonschema/traversal/traverse"
 )
 
 type Process func(name string, schema *jsonschema.Schema) (Types, error)
@@ -16,9 +18,9 @@ type Document struct {
 	Globals  map[string]Types
 	Filename string
 
-	References      map[jsonschema.ID]*jsonschema.Schema
+	references      map[jsonschema.ID]*jsonschema.Schema
 	implementations map[string][]string
-	RootSchema      *jsonschema.Schema
+	rootSchema      *jsonschema.Schema
 	resolve         Resolve
 }
 
@@ -28,9 +30,9 @@ func NewDocument(id, packageName, filename string, root *jsonschema.Schema, reso
 		Package:         packageName,
 		Globals:         map[string]Types{},
 		Filename:        filename,
-		References:      references,
+		references:      references,
 		implementations: map[string][]string{},
-		RootSchema:      root,
+		rootSchema:      root,
 		resolve:         resolve,
 	}
 }
@@ -40,7 +42,7 @@ func (ctx *Document) WithType(t Types) *Document {
 	return ctx
 }
 func (ctx *Document) Root() *jsonschema.Schema {
-	return ctx.RootSchema
+	return ctx.rootSchema
 }
 
 func (ctx *Document) AddMethods(structname string, methods ...string) {
@@ -65,6 +67,29 @@ func (ctx *Document) GetMethods(structname string) []string {
 func (ctx *Document) Process(name string, schema *jsonschema.Schema) (Types, error) {
 	handler := ctx.resolve(name, schema)
 	return handler(ctx, name, schema)
+}
+
+func (ctx *Document) ResolvePointer(ref jsonschema.Reference) (string, error) {
+	path := ref.Path()
+	if fieldname := path.ToFieldname(); fieldname != "." {
+		return fieldname, nil
+	}
+
+	var base *jsonschema.Schema
+	base = ctx.Root()
+	if id, err := ref.ID(); err == nil {
+		if err != nil {
+			return ".", fmt.Errorf("resolvepointer: %w", err)
+
+		}
+		base = ctx.references[id]
+	}
+
+	def := traverse.Walk(base, path)
+	if def == nil {
+		return ".", fmt.Errorf("resolvepointer: path not found %v", path)
+	}
+	return def.ID.ToTypename(), nil
 }
 
 const DocumentTemplate = `

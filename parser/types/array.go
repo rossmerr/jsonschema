@@ -2,10 +2,10 @@ package types
 
 import (
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ document.Types = (*Array)(nil)
+var _ parser.Types = (*Array)(nil)
 
 type Array struct {
 	comment  string
@@ -22,11 +22,11 @@ func NewArray(name, comment, arrType string) *Array {
 	}
 
 }
-func (s *Array) WithReference(ref bool) document.Types {
+func (s *Array) WithReference(ref bool) parser.Types {
 	return s
 }
 
-func (s *Array) WithFieldTag(tags string) document.Types {
+func (s *Array) WithFieldTag(tags string) parser.Types {
 	s.FieldTag = tags
 	return s
 }

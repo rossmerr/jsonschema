@@ -38,19 +38,19 @@ type Schema struct {
 	Pattern          string  `json:"pattern,omitempty"`
 
 	Parent *Schema `json:"-"`
-	Key string `json:"-"`
+	Key    string  `json:"-"`
 }
 
-func (s *Schema) SetParent(key string, parent *Schema)  {
+func (s *Schema) SetParent(key string, parent *Schema) {
 	s.Parent = parent
 	s.Key = key
-	for k, subschema := range s.Properties  {
+	for k, subschema := range s.Properties {
 		subschema.SetParent(k, s)
 	}
-	for k, subschema := range s.Defs  {
+	for k, subschema := range s.Defs {
 		subschema.SetParent(k, s)
 	}
-	for k, subschema := range s.Definitions  {
+	for k, subschema := range s.Definitions {
 		subschema.SetParent(k, s)
 	}
 }
@@ -66,7 +66,6 @@ func (s *Schema) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &aux); err != nil {
 		return err
 	}
-
 
 	return nil
 }

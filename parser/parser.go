@@ -5,34 +5,33 @@ import (
 	"unicode"
 
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
 )
 
 type Parser interface {
-	Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]*document.Document, error)
-	HandlerFunc(kind Kind, handler document.HandleSchemaFunc)
+	Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]*Document, error)
+	HandlerFunc(kind Kind, handler HandleSchemaFunc)
 }
 
 type parser struct {
-	handlers    map[Kind]document.HandleSchemaFunc
+	handlers    map[Kind]HandleSchemaFunc
 	packageName string
 }
 
 func NewParser(packageName string) Parser {
 	parser := &parser{
 		packageName: packageName,
-		handlers:    map[Kind]document.HandleSchemaFunc{},
+		handlers:    map[Kind]HandleSchemaFunc{},
 	}
 	return parser
 }
 
-func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]*document.Document, error) {
-	documents := map[jsonschema.ID]*document.Document{}
+func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]*Document, error) {
+	documents := map[jsonschema.ID]*Document{}
 
 	for _, schema := range schemas {
 		switch schema.Type {
 		case jsonschema.Object:
-			doc := document.NewDocument(schema.ID.String(), s.packageName, toFilename(schema.ID), schema, s.Process, references)
+			doc := NewDocument(schema.ID.String(), s.packageName, toFilename(schema.ID), schema, s.Process, references)
 
 			s, err := doc.Process(schema.ID.ToTypename(), schema)
 			if err != nil {
@@ -48,7 +47,7 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references 
 	return documents, nil
 }
 
-func (s *parser) HandlerFunc(kind Kind, handler document.HandleSchemaFunc) {
+func (s *parser) HandlerFunc(kind Kind, handler HandleSchemaFunc) {
 	if _, ok := s.handlers[kind]; ok {
 		panic(fmt.Sprintf("parser: multiple registrations for %v", kind))
 	} else {
@@ -56,8 +55,8 @@ func (s *parser) HandlerFunc(kind Kind, handler document.HandleSchemaFunc) {
 	}
 }
 
-func (s *parser) Process(name string, schema *jsonschema.Schema) document.HandleSchemaFunc {
-	var handler document.HandleSchemaFunc
+func (s *parser) Process(name string, schema *jsonschema.Schema) HandleSchemaFunc {
+	var handler HandleSchemaFunc
 	switch kind, ref, oneOf, anyOf, allOf, enum, isParent := schema.Stat(); {
 	case kind == jsonschema.Boolean:
 		handler = s.handlers[Boolean]

@@ -4,16 +4,16 @@ import (
 	"strings"
 
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 	"github.com/RossMerr/jsonschema/parser/tags"
 	"github.com/RossMerr/jsonschema/parser/tags/json"
 	"github.com/RossMerr/jsonschema/parser/tags/validate"
 	"github.com/RossMerr/jsonschema/parser/types"
 )
 
-func HandleObject(doc *document.Document, name string, schema *jsonschema.Schema) (document.Types, error) {
+func HandleObject(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 
-	fields := []document.Types{}
+	fields := []parser.Types{}
 	for key, propertie := range schema.Properties {
 		s, err := doc.Process(key, propertie)
 		if err != nil {
@@ -27,7 +27,7 @@ func HandleObject(doc *document.Document, name string, schema *jsonschema.Schema
 
 		s.WithFieldTag(fieldTag).WithReference(ref)
 
-		if _, ok  := s.(*types.Root); ok {
+		if _, ok := s.(*types.Root); ok {
 			continue
 		}
 

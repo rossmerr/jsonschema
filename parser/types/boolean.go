@@ -2,10 +2,10 @@ package types
 
 import (
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ document.Types = (*Boolean)(nil)
+var _ parser.Types = (*Boolean)(nil)
 
 type Boolean struct {
 	comment   string
@@ -21,7 +21,7 @@ func NewBoolean(name, comment string) *Boolean {
 	}
 }
 
-func (s *Boolean) WithReference(ref bool) document.Types {
+func (s *Boolean) WithReference(ref bool) parser.Types {
 	if ref {
 		s.Reference = "*"
 	} else {
@@ -30,7 +30,7 @@ func (s *Boolean) WithReference(ref bool) document.Types {
 	return s
 }
 
-func (s *Boolean) WithFieldTag(tags string) document.Types {
+func (s *Boolean) WithFieldTag(tags string) parser.Types {
 	s.FieldTag = tags
 	return s
 }

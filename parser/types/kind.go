@@ -11,9 +11,6 @@ const KindTemplate = `
 	{{- if isInterface . -}}
 		{{- template "interface" . -}}
 	{{end -}}
-	{{- if isEmbeddedStruct . -}}
-		{{- template "embeddedStruct" . -}}
-	{{end -}}
 	{{- if isStruct . -}}
 		{{- template "struct" . -}}
 	{{end -}}
@@ -31,9 +28,6 @@ const KindTemplate = `
 	{{end -}}
 	{{- if isBoolean . -}}
 		{{- template "boolean" . -}}
-	{{end -}}
-	{{- if isType . -}}
-		{{- template "type" . -}}
 	{{end -}}
 	{{- if isEnum . -}}
 		{{- template "enum" . -}}

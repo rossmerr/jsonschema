@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 	"github.com/RossMerr/jsonschema/parser/types"
 )
 
@@ -19,7 +19,7 @@ import (
 // ignored in the calling code of HandleStruct, because it will try and add the returned Reference
 // to the global level but as it's name/key will match on the already added Enum name/key bellow it will
 // get ignored
-func HandleEnum(doc *document.Document, name string, schema *jsonschema.Schema) (document.Types, error) {
+func HandleEnum(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	constItems := []*types.ConstItem{}
 
 	for _, value := range schema.Enum {

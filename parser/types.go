@@ -1,4 +1,4 @@
-package document
+package parser
 
 type Types interface {
 	Comment() string

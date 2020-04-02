@@ -4,7 +4,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
 func Template() (*template.Template, error) {
@@ -17,15 +17,13 @@ func Template() (*template.Template, error) {
 		"isInterface":          IsInterface,
 		"isBoolean":            IsBoolean,
 		"isReference":          IsReference,
-		"isEmbeddedStruct":     IsEmbeddedStruct,
 		"isInterfaceReference": IsInterfaceReference,
-		"isType":               IsType,
 		"isEnum":               IsEnum,
 		"isConst":              IsConst,
 		"isRoot":               IsRoot,
 		"mixedCase":            MixedCase,
 		"title":                strings.Title,
-	}).Parse(document.DocumentTemplate)
+	}).Parse(parser.DocumentTemplate)
 	tmpl, err = tmpl.Parse(StructTemplate)
 	if err != nil {
 		return nil, err
@@ -62,15 +60,7 @@ func Template() (*template.Template, error) {
 	if err != nil {
 		return nil, err
 	}
-	tmpl, err = tmpl.Parse(EmbeddedStructTemplate)
-	if err != nil {
-		return nil, err
-	}
 	tmpl, err = tmpl.Parse(InterfaceReferenceTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(TypeTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -130,18 +120,8 @@ func IsReference(obj interface{}) bool {
 	return ok
 }
 
-func IsEmbeddedStruct(obj interface{}) bool {
-	_, ok := obj.(*EmbeddedStruct)
-	return ok
-}
-
 func IsInterfaceReference(obj interface{}) bool {
 	_, ok := obj.(*InterfaceReference)
-	return ok
-}
-
-func IsType(obj interface{}) bool {
-	_, ok := obj.(*Type)
 	return ok
 }
 

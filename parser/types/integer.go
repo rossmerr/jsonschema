@@ -2,10 +2,10 @@ package types
 
 import (
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ document.Types = (*Integer)(nil)
+var _ parser.Types = (*Integer)(nil)
 
 type Integer struct {
 	comment   string
@@ -20,7 +20,7 @@ func NewInteger(name, comment string) *Integer {
 		comment: comment,
 	}
 }
-func (s *Integer) WithReference(ref bool) document.Types {
+func (s *Integer) WithReference(ref bool) parser.Types {
 	if ref {
 		s.Reference = "*"
 	} else {
@@ -29,7 +29,7 @@ func (s *Integer) WithReference(ref bool) document.Types {
 	return s
 }
 
-func (s *Integer) WithFieldTag(tags string) document.Types {
+func (s *Integer) WithFieldTag(tags string) parser.Types {
 	s.FieldTag = tags
 	return s
 }

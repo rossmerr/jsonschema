@@ -5,11 +5,11 @@ import (
 	"strconv"
 
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 	"github.com/RossMerr/jsonschema/parser/types"
 )
 
-func HandleAnyOf(doc *document.Document, name string, schema *jsonschema.Schema) (document.Types, error) {
+func HandleAnyOf(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	parent := doc.Root()
 
 	typename := parent.ID.ToTypename() + jsonschema.ToTypename(name)
@@ -25,7 +25,7 @@ func HandleAnyOf(doc *document.Document, name string, schema *jsonschema.Schema)
 			return nil, err
 		}
 		if _, ok := doc.Globals[structname]; !ok {
-			doc.Globals[structname] = types.PrefixType(t, typename)
+			doc.Globals[structname] = types.NewRoot(subschema.Description, t, typename)
 		} else {
 			return nil, fmt.Errorf("handleanyof: anyOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
 		}

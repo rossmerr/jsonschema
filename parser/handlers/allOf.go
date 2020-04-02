@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
-func HandleAllOf(doc *document.Document, name string, schema *jsonschema.Schema) (document.Types, error) {
+func HandleAllOf(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	properties := map[string]*jsonschema.Schema{}
 
 	for _, subschema := range schema.AllOf {

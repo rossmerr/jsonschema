@@ -2,19 +2,19 @@ package types
 
 import (
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ document.Types = (*Struct)(nil)
+var _ parser.Types = (*Struct)(nil)
 
 type Struct struct {
-	comment   string
-	name      string
-	Fields    []document.Types
-	FieldTag  string
+	comment  string
+	name     string
+	Fields   []parser.Types
+	FieldTag string
 }
 
-func NewStruct(name, comment string, fields []document.Types) document.Types {
+func NewStruct(name, comment string, fields []parser.Types) parser.Types {
 	return &Struct{
 		comment: comment,
 		name:    jsonschema.ToTypename(name),
@@ -22,11 +22,11 @@ func NewStruct(name, comment string, fields []document.Types) document.Types {
 	}
 }
 
-func (s *Struct) WithReference(ref bool) document.Types {
+func (s *Struct) WithReference(ref bool) parser.Types {
 	return s
 }
 
-func (s *Struct) WithFieldTag(tags string) document.Types {
+func (s *Struct) WithFieldTag(tags string) parser.Types {
 	s.FieldTag = tags
 	return s
 }

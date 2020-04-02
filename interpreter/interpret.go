@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 	"github.com/RossMerr/jsonschema/parser/types"
 	"github.com/gookit/color"
 	log "github.com/sirupsen/logrus"
@@ -19,18 +19,18 @@ type Interpret interface {
 }
 
 type interpret struct {
-	documents      map[jsonschema.ID]*document.Document
+	documents      map[jsonschema.ID]*parser.Document
 	templateStruct Template
 }
 
-func NewInterpret(documents map[jsonschema.ID]*document.Document, templateStruct Template) Interpret {
+func NewInterpret(documents map[jsonschema.ID]*parser.Document, templateStruct Template) Interpret {
 	return &interpret{
 		documents:      documents,
 		templateStruct: templateStruct,
 	}
 }
 
-func NewInterpretDefaults(documents map[jsonschema.ID]*document.Document) (Interpret, error) {
+func NewInterpretDefaults(documents map[jsonschema.ID]*parser.Document) (Interpret, error) {
 	templates, err := types.Template()
 	if err != nil {
 		return nil, err

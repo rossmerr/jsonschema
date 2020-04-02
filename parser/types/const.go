@@ -2,10 +2,10 @@ package types
 
 import (
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ document.Types = (*Const)(nil)
+var _ parser.Types = (*Const)(nil)
 
 type Const struct {
 	List []*ConstItem
@@ -23,11 +23,11 @@ func NewConst(list ...*ConstItem) *Const {
 	}
 }
 
-func (s *Const) WithReference(ref bool) document.Types {
+func (s *Const) WithReference(ref bool) parser.Types {
 	return s
 }
 
-func (s *Const) WithFieldTag(tags string) document.Types {
+func (s *Const) WithFieldTag(tags string) parser.Types {
 	return s
 }
 

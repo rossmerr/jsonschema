@@ -2,10 +2,10 @@ package types
 
 import (
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ document.Types = (*Enum)(nil)
+var _ parser.Types = (*Enum)(nil)
 
 type Enum struct {
 	comment   string
@@ -17,7 +17,7 @@ type Enum struct {
 	items     []*ConstItem
 }
 
-func NewEnum(name, comment, typename string, values []string, items []*ConstItem) document.Types {
+func NewEnum(name, comment, typename string, values []string, items []*ConstItem) parser.Types {
 	return &Enum{
 		comment: comment,
 		name:    jsonschema.ToTypename(name),
@@ -27,28 +27,11 @@ func NewEnum(name, comment, typename string, values []string, items []*ConstItem
 	}
 }
 
-func GlobalEnum(ctx *document.Document, enum *Enum, name string) document.Types {
-	typename := name + "_" + enum.name
-	enum.name = typename
-	for _, item := range enum.items {
-		item.Type = typename
-	}
-	ctx.Globals[typename] = PrefixType(enum)
-	ref := &Reference{
-		Type:      enum.name,
-		FieldTag:  enum.FieldTag,
-		Reference: enum.Reference,
-	}
-	ref.name = enum.name
-
-	return ref
-}
-
-func (s *Enum) WithReference(ref bool) document.Types {
+func (s *Enum) WithReference(ref bool) parser.Types {
 	return s
 }
 
-func (s *Enum) WithFieldTag(tags string) document.Types {
+func (s *Enum) WithFieldTag(tags string) parser.Types {
 	s.FieldTag = tags
 	return s
 }

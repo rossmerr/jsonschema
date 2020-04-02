@@ -1,14 +1,11 @@
 package types
 
 import (
-	"fmt"
-
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/parser/document"
-	"github.com/RossMerr/jsonschema/traversal/traverse"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ document.Types = (*Reference)(nil)
+var _ parser.Types = (*Reference)(nil)
 
 type Reference struct {
 	Type      string
@@ -25,7 +22,7 @@ func NewReference(name, comment, typename string) *Reference {
 		Type:    typename,
 	}
 }
-func (s *Reference) WithReference(ref bool) document.Types {
+func (s *Reference) WithReference(ref bool) parser.Types {
 	if ref {
 		s.Reference = "*"
 	} else {
@@ -34,7 +31,7 @@ func (s *Reference) WithReference(ref bool) document.Types {
 	return s
 }
 
-func (s *Reference) WithFieldTag(tags string) document.Types {
+func (s *Reference) WithFieldTag(tags string) parser.Types {
 	s.FieldTag = tags
 	return s
 }
@@ -44,29 +41,6 @@ func (s *Reference) Comment() string {
 
 func (s *Reference) Name() string {
 	return s.name
-}
-
-func ResolvePointer(ctx *document.Document, ref jsonschema.Reference) (string, error) {
-	path := ref.Path()
-	if fieldname := path.ToFieldname(); fieldname != "." {
-		return fieldname, nil
-	}
-
-	var base *jsonschema.Schema
-	base = ctx.Root()
-	if id, err := ref.ID(); err == nil {
-		if err != nil {
-			return ".", fmt.Errorf("resolvepointer: %w", err)
-
-		}
-		base = ctx.References[id]
-	}
-
-	def := traverse.Walk(base, path)
-	if def == nil {
-		return ".", fmt.Errorf("resolvepointer: path not found %v", path)
-	}
-	return def.ID.ToTypename(), nil
 }
 
 const ReferenceTemplate = `
