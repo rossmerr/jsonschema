@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
@@ -12,11 +13,15 @@ import (
 func HandleOneOf(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	parent := doc.Root()
 
-	typename := parent.ID.ToTypename() + name
+	typename := name
+	if schema.Parent != nil {
+		typename = strings.Join([]string{jsonschema.ToTypename(schema.Parent.Key), jsonschema.ToTypename(name)}, "_")
+		typename = strings.TrimLeft(typename, "_")
+	}
 
 	for i, subschema := range schema.OneOf {
 		if subschema.Ref.IsNotEmpty() {
-			doc.AddMethods(subschema.Ref.ToTypename(), typename)
+			doc.AddMethods(subschema.Ref.ToKey(), typename)
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
@@ -25,11 +30,7 @@ func HandleOneOf(doc *parser.Document, name string, schema *jsonschema.Schema) (
 			return nil, err
 		}
 		if _, ok := doc.Globals[structname]; !ok {
-			if r, ok := t.(*types.Root); ok {
-				r.WithMethods(typename)
-			}
-			doc.Globals[structname] = t
-
+			doc.Globals[structname] = types.NewRoot(subschema.Description, t)
 		} else {
 			return nil, fmt.Errorf("handleoneof: oneOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
 		}

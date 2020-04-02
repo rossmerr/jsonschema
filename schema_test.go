@@ -26,54 +26,54 @@ func TestSchemas_Generate(t *testing.T) {
 		fields  fields
 		wantErr bool
 	}{
-		{
-			name: "Basic",
-			fields: fields{
-				paths: []string{"samples/basic.json"},
-			},
-		},
-		{
-			name: "Enum",
-			fields: fields{
-				paths: []string{"samples/enum.json"},
-			},
-		},
-		{
-			name: "Nesting data structures",
-			fields: fields{
-				paths: []string{"samples/nesting.json"},
-			},
-		},
-		{
-			name: "References inside the schema",
-			fields: fields{
-				paths: []string{"samples/reference.json"},
-			},
-		},
-		{
-			name: "References outside the schema",
-			fields: fields{
-				paths: []string{"samples/reference-outside.schema.json", "samples/reference-outside.json"},
-			},
-		},
+		// {
+		// 	name: "Basic",
+		// 	fields: fields{
+		// 		paths: []string{"samples/basic.json"},
+		// 	},
+		// },
+		// {
+		// 	name: "Enum",
+		// 	fields: fields{
+		// 		paths: []string{"samples/enum.json"},
+		// 	},
+		// },
+		// {
+		// 	name: "Nesting data structures",
+		// 	fields: fields{
+		// 		paths: []string{"samples/nesting.json"},
+		// 	},
+		// },
+		// {
+		// 	name: "References inside the schema",
+		// 	fields: fields{
+		// 		paths: []string{"samples/reference.json"},
+		// 	},
+		// },
+		// {
+		// 	name: "References outside the schema",
+		// 	fields: fields{
+		// 		paths: []string{"samples/reference-outside.schema.json", "samples/reference-outside.json"},
+		// 	},
+		// },
 		{
 			name: "Oneof",
 			fields: fields{
 				paths: []string{"samples/oneof.json"},
 			},
 		},
-		{
-			name: "AnyOf",
-			fields: fields{
-				paths: []string{"samples/anyof.json"},
-			},
-		},
-		{
-			name: "AllOf",
-			fields: fields{
-				paths: []string{"samples/allof.json"},
-			},
-		},
+		// {
+		// 	name: "AnyOf",
+		// 	fields: fields{
+		// 		paths: []string{"samples/anyof.json"},
+		// 	},
+		// },
+		// {
+		// 	name: "AllOf",
+		// 	fields: fields{
+		// 		paths: []string{"samples/allof.json"},
+		// 	},
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

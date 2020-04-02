@@ -19,6 +19,9 @@ func NewInterfaceReference(name, typename string) *InterfaceReference {
 		Type: typename,
 	}
 }
+func (s *InterfaceReference)	WithMethods(methods ...string) parser.Types {
+	return s
+}
 
 func (s *InterfaceReference) WithReference(ref bool) parser.Types {
 	return s

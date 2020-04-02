@@ -22,6 +22,11 @@ func NewArray(name, comment, arrType string) *Array {
 	}
 
 }
+
+func (s *Array)	WithMethods(methods ...string) parser.Types {
+	return s
+}
+
 func (s *Array) WithReference(ref bool) parser.Types {
 	return s
 }

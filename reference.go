@@ -50,6 +50,17 @@ func (s Reference) Path() Path {
 	return query
 }
 
+func (s Reference) ToKey() string {
+	path := s.Path()
+
+	if len(path) == 0 {
+		return EmptyString
+	}
+	name := path[len(path)-1]
+
+	return name
+}
+
 func (s Reference) ToTypename() string {
 	path := s.Path()
 

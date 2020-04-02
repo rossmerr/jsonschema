@@ -23,8 +23,10 @@ import (
 func HandleEnum(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	constItems := []*types.ConstItem{}
 
-	name = strings.Join([]string{jsonschema.ToTypename(schema.Parent.Key), jsonschema.ToTypename(name)}, "_")
-	name = strings.TrimLeft(name, "_")
+	if schema.Parent != nil {
+		name = strings.Join([]string{jsonschema.ToTypename(schema.Parent.Key), jsonschema.ToTypename(name)}, "_")
+		name = strings.TrimLeft(name, "_")
+	}
 
 	for _, value := range schema.Enum {
 		c := types.ConstItem{

@@ -21,6 +21,11 @@ func NewBoolean(name, comment string) *Boolean {
 	}
 }
 
+func (s *Boolean)	WithMethods(methods ...string) parser.Types {
+	return s
+}
+
+
 func (s *Boolean) WithReference(ref bool) parser.Types {
 	if ref {
 		s.Reference = "*"

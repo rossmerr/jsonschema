@@ -2,7 +2,6 @@ package parser
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/traversal/traverse"
@@ -47,7 +46,6 @@ func (ctx *Document) Root() *jsonschema.Schema {
 
 func (ctx *Document) AddMethods(structname string, methods ...string) {
 	if structname != jsonschema.EmptyString {
-		structname = strings.ToLower(structname)
 		switch arr, ok := ctx.implementations[structname]; {
 		case !ok:
 			arr = []string{}
@@ -60,8 +58,10 @@ func (ctx *Document) AddMethods(structname string, methods ...string) {
 }
 
 func (ctx *Document) GetMethods(structname string) []string {
-	structname = strings.ToLower(structname)
-	return ctx.implementations[structname]
+	if arr, ok := ctx.implementations[structname]; ok {
+		return arr
+	}
+	return []string{}
 }
 
 func (ctx *Document) Process(name string, schema *jsonschema.Schema) (Types, error) {

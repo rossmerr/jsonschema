@@ -25,6 +25,9 @@ func NewEnum(name, comment, typename string, values []string, items []*ConstItem
 		items:   items,
 	}
 }
+func (s *Enum)	WithMethods(methods ...string) parser.Types {
+	return s
+}
 
 func (s *Enum) WithReference(ref bool) parser.Types {
 	return s

@@ -23,6 +23,11 @@ func NewConst(list ...*ConstItem) *Const {
 	}
 }
 
+func (s *Const)	WithMethods(methods ...string) parser.Types {
+	return s
+}
+
+
 func (s *Const) WithReference(ref bool) parser.Types {
 	return s
 }

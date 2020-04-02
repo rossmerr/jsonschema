@@ -21,6 +21,12 @@ func NewString(name, comment string) *String {
 		comment: comment,
 	}
 }
+
+func (s *String)	WithMethods(methods ...string) parser.Types {
+	return s
+}
+
+
 func (s *String) WithReference(ref bool) parser.Types {
 	if ref {
 		s.Reference = "*"

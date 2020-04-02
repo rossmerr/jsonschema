@@ -53,12 +53,20 @@ func (s *Schema) SetParent(key string, parent *Schema) {
 	for k, subschema := range s.Definitions {
 		subschema.SetParent(k, s)
 	}
+	for _, subschema := range s.AllOf {
+		subschema.SetParent(key, s)
+	}
+	for _, subschema := range s.AnyOf {
+		subschema.SetParent(key, s)
+	}
+	for _, subschema := range s.OneOf {
+		subschema.SetParent(key, s)
+	}
 }
 
 func (s *Schema) UnmarshalJSON(b []byte) error {
 	type Alias Schema
 	aux := &struct {
-		SomeCustomType int64 `json:"someCustomType"`
 		*Alias
 	}{
 		Alias: (*Alias)(s),
@@ -85,34 +93,3 @@ func (s *Schema) AllDefinitions() map[string]*Schema {
 func (s *Schema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool) {
 	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf, s.Enum, s.Parent == nil
 }
-
-// type RootSchema struct {
-// 	*Schema
-// }
-//
-// func (s *RootSchema) UnmarshalJSON(b []byte) error {
-// 	type Alias Schema
-// 	aux := &struct {
-// 		SomeCustomType int64 `json:"someCustomType"`
-// 		*Alias
-// 	}{
-// 		Alias: (*Alias)(s.Schema),
-// 	}
-// 	if err := json.Unmarshal(b, &aux); err != nil {
-// 		return err
-// 	}
-// 	//schema := aux.Alias.(*Schema)
-// 	//s.Schema =
-// 	return nil
-//
-// 	//s.Schema = aux.
-// }
-//
-//
-// func (s *RootSchema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool) {
-// 	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf, s.Enum, true
-// }
-//
-// type JsonSchema interface {
-// 	Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool)
-// }

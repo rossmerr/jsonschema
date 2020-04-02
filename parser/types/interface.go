@@ -18,6 +18,10 @@ func NewInterface(typename string) *Interface {
 	}
 }
 
+func (s *Interface)	WithMethods(methods ...string) parser.Types {
+	return s
+}
+
 func (s *Interface) WithReference(ref bool) parser.Types {
 	return s
 }

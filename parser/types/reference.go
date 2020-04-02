@@ -22,6 +22,11 @@ func NewReference(name, comment, typename string) *Reference {
 		Type:    typename,
 	}
 }
+
+func (s *Reference)	WithMethods(methods ...string) parser.Types {
+	return s
+}
+
 func (s *Reference) WithReference(ref bool) parser.Types {
 	if ref {
 		s.Reference = "*"

@@ -20,6 +20,11 @@ func NewNumber(name, comment string) *Number {
 		comment: comment,
 	}
 }
+
+func (s *Number)	WithMethods(methods ...string) parser.Types {
+	return s
+}
+
 func (s *Number) WithReference(ref bool) parser.Types {
 	if ref {
 		s.Reference = "*"

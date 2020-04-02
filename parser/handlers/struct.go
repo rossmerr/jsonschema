@@ -35,13 +35,13 @@ func HandleObject(doc *parser.Document, name string, schema *jsonschema.Schema) 
 	}
 
 	for key, def := range schema.AllDefinitions() {
-		s, err := HandleRoot(doc, key, def)
+		t, err := doc.Process(key, def)
 		if err != nil {
 			return nil, err
 		}
 
 		if _, contains := doc.Globals[key]; !contains {
-			doc.Globals[key] = s
+			doc.Globals[key] = types.NewRoot(schema.Description, t)
 		}
 	}
 
