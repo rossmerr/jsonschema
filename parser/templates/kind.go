@@ -1,4 +1,4 @@
-package types
+package templates
 
 const KindTemplate = `
 {{- define "kind" -}}

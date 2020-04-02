@@ -6,7 +6,7 @@ import (
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
-	"github.com/RossMerr/jsonschema/parser/types"
+	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
 func HandleAnyOf(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
@@ -25,7 +25,7 @@ func HandleAnyOf(doc *parser.Document, name string, schema *jsonschema.Schema) (
 			return nil, err
 		}
 		if _, ok := doc.Globals[structname]; !ok {
-			doc.Globals[structname] = types.NewRoot(subschema.Description, t, typename)
+			doc.Globals[structname] = templates.NewRoot(subschema.Description, t, typename)
 		} else {
 			return nil, fmt.Errorf("handleanyof: anyOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
 		}
@@ -33,7 +33,7 @@ func HandleAnyOf(doc *parser.Document, name string, schema *jsonschema.Schema) (
 
 	}
 
-	doc.Globals[name] = types.NewInterface(typename)
+	doc.Globals[name] = templates.NewInterface(typename)
 
-	return types.NewInterfaceReference(name, "[]"+typename), nil
+	return templates.NewInterfaceReference(name, "[]"+typename), nil
 }

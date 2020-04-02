@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
-	"github.com/RossMerr/jsonschema/parser/types"
+	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
 func HandleRoot(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
@@ -14,5 +14,5 @@ func HandleRoot(doc *parser.Document, name string, schema *jsonschema.Schema) (p
 	if err != nil {
 		return nil, err
 	}
-	return types.NewRoot(schema.Description, t), nil
+	return templates.NewRoot(schema.Description, t), nil
 }

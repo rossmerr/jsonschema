@@ -9,7 +9,7 @@ import (
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
-	"github.com/RossMerr/jsonschema/parser/types"
+	"github.com/RossMerr/jsonschema/parser/templates"
 	"github.com/gookit/color"
 	log "github.com/sirupsen/logrus"
 )
@@ -31,7 +31,7 @@ func NewInterpret(documents map[jsonschema.ID]*parser.Document, templateStruct T
 }
 
 func NewInterpretDefaults(documents map[jsonschema.ID]*parser.Document) (Interpret, error) {
-	templates, err := types.Template()
+	templates, err := templates.Template()
 	if err != nil {
 		return nil, err
 	}

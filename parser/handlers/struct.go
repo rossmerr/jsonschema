@@ -8,7 +8,7 @@ import (
 	"github.com/RossMerr/jsonschema/parser/tags"
 	"github.com/RossMerr/jsonschema/parser/tags/json"
 	"github.com/RossMerr/jsonschema/parser/tags/validate"
-	"github.com/RossMerr/jsonschema/parser/types"
+	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
 func HandleObject(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
@@ -27,7 +27,7 @@ func HandleObject(doc *parser.Document, name string, schema *jsonschema.Schema) 
 
 		s.WithFieldTag(fieldTag).WithReference(ref)
 
-		if _, ok := s.(*types.Root); ok {
+		if _, ok := s.(*templates.Root); ok {
 			continue
 		}
 
@@ -41,9 +41,9 @@ func HandleObject(doc *parser.Document, name string, schema *jsonschema.Schema) 
 		}
 
 		if _, contains := doc.Globals[key]; !contains {
-			doc.Globals[key] = types.NewRoot(schema.Description, t)
+			doc.Globals[key] = templates.NewRoot(schema.Description, t)
 		}
 	}
 
-	return types.NewStruct(name, schema.Description, fields), nil
+	return templates.NewStruct(name, schema.Description, fields), nil
 }

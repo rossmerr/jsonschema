@@ -1,4 +1,4 @@
-package types
+package templates
 
 import (
 	"github.com/RossMerr/jsonschema/parser"

@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
-	"github.com/RossMerr/jsonschema/parser/types"
+	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
 func HandleArray(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
@@ -12,5 +12,5 @@ func HandleArray(doc *parser.Document, name string, schema *jsonschema.Schema) (
 		arrType = schema.Items.Ref.ToTypename()
 	}
 
-	return types.NewArray(name, schema.Description, arrType), nil
+	return templates.NewArray(name, schema.Description, arrType), nil
 }
