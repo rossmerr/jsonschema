@@ -38,9 +38,6 @@ const KindTemplate = `
 	{{- if isEnum . -}}
 		{{- template "enum" . -}}
 	{{end -}}
-	{{- if isCustomType . -}}
-		{{- template "customtype" . -}}
-	{{end -}}
 	{{- if isConst . -}}
 		{{- template "const" . -}}
 	{{end -}}

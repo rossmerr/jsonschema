@@ -7,7 +7,8 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/RossMerr/jsonschema/parser"
+	"github.com/RossMerr/jsonschema"
+	"github.com/RossMerr/jsonschema/parser/document"
 	"github.com/RossMerr/jsonschema/parser/types"
 	"github.com/gookit/color"
 	log "github.com/sirupsen/logrus"
@@ -18,23 +19,23 @@ type Interpret interface {
 }
 
 type interpret struct {
-	root           *parser.Parse
+	documents      map[jsonschema.ID]*document.Document
 	templateStruct Template
 }
 
-func NewInterpret(root *parser.Parse, templateStruct Template) Interpret {
+func NewInterpret(documents map[jsonschema.ID]*document.Document, templateStruct Template) Interpret {
 	return &interpret{
-		root:           root,
+		documents:      documents,
 		templateStruct: templateStruct,
 	}
 }
 
-func NewInterpretDefaults(root *parser.Parse) (Interpret, error) {
+func NewInterpretDefaults(documents map[jsonschema.ID]*document.Document) (Interpret, error) {
 	templates, err := types.Template()
 	if err != nil {
 		return nil, err
 	}
-	return NewInterpret(root, templates), nil
+	return NewInterpret(documents, templates), nil
 }
 
 func (s *interpret) ToFile(output string) ([]string, error) {
@@ -42,7 +43,7 @@ func (s *interpret) ToFile(output string) ([]string, error) {
 	green := color.FgCyan.Render
 	red := color.FgRed.Render
 
-	for _, obj := range s.root.Structs {
+	for _, obj := range s.documents {
 		filename := path.Join(output, obj.Filename+".go")
 
 		_, err := os.Stat(filename)
@@ -87,7 +88,7 @@ func (s *interpret) ToFile(output string) ([]string, error) {
 		}
 	}
 
-	fmt.Printf(green("✓")+" Create %v files\n", len(s.root.Structs))
+	fmt.Printf(green("✓")+" Create %v files\n", len(s.documents))
 
 	return files, nil
 }

@@ -33,7 +33,6 @@ func report(err error) {
 }
 
 func isJsonFile(f os.FileInfo) bool {
-	// ignore non-JSON files
 	name := f.Name()
 	return !f.IsDir() && !strings.HasPrefix(name, ".") && strings.HasSuffix(name, ".json")
 }
@@ -52,8 +51,6 @@ func expandHome(path string) string {
 	if strings.HasPrefix(path, "~/") {
 		usr, _ := user.Current()
 		dir := usr.HomeDir
-		// Use strings.HasPrefix so we don't match paths like
-		// "/something/~/something/"
 		return filepath.Join(dir, path[2:])
 	}
 	return path

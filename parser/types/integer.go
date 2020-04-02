@@ -8,20 +8,18 @@ import (
 var _ document.Types = (*Integer)(nil)
 
 type Integer struct {
-	comment    string
-	name       string
-	Validation string
-	FieldTag   string
-	Reference  string
+	comment   string
+	name      string
+	FieldTag  string
+	Reference string
 }
 
-func HandleInteger(ctx *document.DocumentContext, name string, schema *jsonschema.Schema) (document.Types, error) {
+func NewInteger(name, comment string) *Integer {
 	return &Integer{
-		comment: schema.Description,
 		name:    jsonschema.ToTypename(name),
-	}, nil
+		comment: comment,
+	}
 }
-
 func (s *Integer) WithReference(ref bool) document.Types {
 	if ref {
 		s.Reference = "*"

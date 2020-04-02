@@ -1,7 +1,6 @@
 package types
 
 import (
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser/document"
 )
 
@@ -13,16 +12,11 @@ type Root struct {
 	Methods []string
 }
 
-func HandleRoot(ctx *document.DocumentContext, name string, schema *jsonschema.Schema) (document.Types, error) {
-	return NewRoot(ctx, name, schema)
-}
-
-func NewRoot(ctx *document.DocumentContext, name string, schema *jsonschema.Schema) (document.Types, error) {
-	t, err := ctx.Process(name, schema)
+func NewRoot(comment string, t document.Types) document.Types {
 	return &Root{
-		comment: schema.Description,
+		comment: comment,
 		Type:    t,
-	}, err
+	}
 }
 
 func (s *Root) WithReference(ref bool) document.Types {

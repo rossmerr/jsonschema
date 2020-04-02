@@ -4,14 +4,12 @@ import "github.com/RossMerr/jsonschema/parser/document"
 
 var _ document.Types = (*Type)(nil)
 
-// Obsolete
 type Type struct {
 	comment string
 	Type    document.Types
 	Methods []string
 }
 
-// Obsolete
 func PrefixType(t document.Types, methods ...string) *Type {
 	return &Type{
 		comment: t.Comment(),

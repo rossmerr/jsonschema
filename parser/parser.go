@@ -9,7 +9,7 @@ import (
 )
 
 type Parser interface {
-	Parse(schemas map[jsonschema.ID]jsonschema.JsonSchema, references map[jsonschema.ID]jsonschema.JsonSchema) (*Parse, error)
+	Parse(schemas map[jsonschema.ID]jsonschema.JsonSchema, references map[jsonschema.ID]jsonschema.JsonSchema) (map[jsonschema.ID]*document.Document, error)
 	HandlerFunc(kind Kind, handler document.HandleSchemaFunc)
 }
 
@@ -26,25 +26,27 @@ func NewParser(packageName string) Parser {
 	return parser
 }
 
-func (s *parser) Parse(schemas map[jsonschema.ID]jsonschema.JsonSchema, references map[jsonschema.ID]jsonschema.JsonSchema) (*Parse, error) {
-	parse := NewParse()
+func (s *parser) Parse(schemas map[jsonschema.ID]jsonschema.JsonSchema, references map[jsonschema.ID]jsonschema.JsonSchema) (map[jsonschema.ID]*document.Document, error) {
+	documents := map[jsonschema.ID]*document.Document{}
 
 	for _, root := range schemas {
 		schema := root.(*jsonschema.RootSchema)
 		switch schema.Type {
 		case jsonschema.Object:
-			ctx := document.NewDocumentContext(s.packageName, s.Process, references, schema)
+			doc := document.NewDocument(schema.ID.String(), s.packageName, toFilename(schema.ID), schema, s.Process, references)
 
-			anonymousStruct, err := ctx.Process(schema.ID.ToTypename(), root)
+			s, err := doc.Process(schema.ID.ToTypename(), root)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("parse: %w", err)
 			}
 
-			parse.Structs[schema.ID] = document.NewDocument(ctx, schema.ID.String(), anonymousStruct, toFilename(schema.ID))
+			doc.WithType(s)
+
+			documents[schema.ID] = doc
 		}
 	}
 
-	return parse, nil
+	return documents, nil
 }
 
 func (s *parser) HandlerFunc(kind Kind, handler document.HandleSchemaFunc) {

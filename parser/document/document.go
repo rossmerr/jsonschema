@@ -1,22 +1,78 @@
 package document
 
+import (
+	"fmt"
+	"strings"
+
+	"github.com/RossMerr/jsonschema"
+)
+
+type Process func(name string, schema *jsonschema.Schema) (Types, error)
+type HandleSchemaFunc func(*Document, string, *jsonschema.Schema) (Types, error)
+type Resolve func(name string, schema jsonschema.JsonSchema) HandleSchemaFunc
+
 type Document struct {
-	Type     Types
 	ID       string
-	Filename string
 	Package  string
+	Type     Types
 	Globals  map[string]Types
+	Filename string
+
+	References      map[jsonschema.ID]jsonschema.JsonSchema
+	implementations map[string][]string
+	RootSchema      *jsonschema.RootSchema
+	resolve         Resolve
 }
 
-func NewDocument(ctx *DocumentContext, id string, anonymousStruct Types, filename string) *Document {
+func NewDocument(id, packageName, filename string, root *jsonschema.RootSchema, resolve Resolve, references map[jsonschema.ID]jsonschema.JsonSchema) *Document {
 	return &Document{
-		anonymousStruct,
-		id,
-		filename,
-		ctx.Package,
-		ctx.Globals,
+		ID:              id,
+		Package:         packageName,
+		Globals:         map[string]Types{},
+		Filename:        filename,
+		References:      references,
+		implementations: map[string][]string{},
+		RootSchema:      root,
+		resolve:         resolve,
 	}
+}
 
+func (ctx *Document) WithType(t Types) *Document {
+	ctx.Type = t
+	return ctx
+}
+func (ctx *Document) Root() *jsonschema.RootSchema {
+	return ctx.RootSchema
+}
+
+func (ctx *Document) AddMethods(structname string, methods ...string) {
+	if structname != jsonschema.EmptyString {
+		structname = strings.ToLower(structname)
+		switch arr, ok := ctx.implementations[structname]; {
+		case !ok:
+			arr = []string{}
+			fallthrough
+		default:
+			arr = append(arr, methods...)
+			ctx.implementations[structname] = jsonschema.Unique(arr)
+		}
+	}
+}
+
+func (ctx *Document) GetMethods(structname string) []string {
+	structname = strings.ToLower(structname)
+	return ctx.implementations[structname]
+}
+
+func (ctx *Document) Process(name string, schema jsonschema.JsonSchema) (Types, error) {
+	handler := ctx.resolve(name, schema)
+	switch v := schema.(type) {
+	case *jsonschema.RootSchema:
+		return handler(ctx, name, v.Schema)
+	case *jsonschema.Schema:
+		return handler(ctx, name, v)
+	}
+	return nil, fmt.Errorf("documentcontext: type of schmema not found %v", schema)
 }
 
 const DocumentTemplate = `

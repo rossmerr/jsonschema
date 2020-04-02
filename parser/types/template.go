@@ -21,7 +21,6 @@ func Template() (*template.Template, error) {
 		"isInterfaceReference": IsInterfaceReference,
 		"isType":               IsType,
 		"isEnum":               IsEnum,
-		"isCustomType":         IsCustomType,
 		"isConst":              IsConst,
 		"isRoot":               IsRoot,
 		"mixedCase":            MixedCase,
@@ -76,10 +75,6 @@ func Template() (*template.Template, error) {
 		return nil, err
 	}
 	tmpl, err = tmpl.Parse(KindTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(CustomTypeTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -152,11 +147,6 @@ func IsType(obj interface{}) bool {
 
 func IsEnum(obj interface{}) bool {
 	_, ok := obj.(*Enum)
-	return ok
-}
-
-func IsCustomType(obj interface{}) bool {
-	_, ok := obj.(*CustomType)
 	return ok
 }
 

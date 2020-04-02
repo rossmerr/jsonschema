@@ -15,13 +15,12 @@ type String struct {
 	Reference string
 }
 
-func HandleString(ctx *document.DocumentContext, name string, schema *jsonschema.Schema) (document.Types, error) {
+func NewString(name, comment string) *String {
 	return &String{
-		comment: schema.Description,
 		name:    jsonschema.ToTypename(name),
-	}, nil
+		comment: comment,
+	}
 }
-
 func (s *String) WithReference(ref bool) document.Types {
 	if ref {
 		s.Reference = "*"

@@ -8,20 +8,18 @@ import (
 var _ document.Types = (*Number)(nil)
 
 type Number struct {
-	comment    string
-	name       string
-	Validation string
-	FieldTag   string
-	Reference  string
+	comment   string
+	name      string
+	FieldTag  string
+	Reference string
 }
 
-func HandleNumber(ctx *document.DocumentContext, name string, schema *jsonschema.Schema) (document.Types, error) {
+func NewNumber(name, comment string) *Number {
 	return &Number{
-		comment: schema.Description,
 		name:    jsonschema.ToTypename(name),
-	}, nil
+		comment: comment,
+	}
 }
-
 func (s *Number) WithReference(ref bool) document.Types {
 	if ref {
 		s.Reference = "*"

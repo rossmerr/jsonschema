@@ -7,7 +7,7 @@ import (
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
-	"github.com/RossMerr/jsonschema/parser/types"
+	"github.com/RossMerr/jsonschema/parser/handlers"
 	"github.com/gookit/color"
 
 	log "github.com/sirupsen/logrus"
@@ -25,19 +25,7 @@ func NewInterpreter(parser parser.Parser) *Interpreter {
 
 func NewInterpreterDefaults(packagename string) *Interpreter {
 	p := parser.NewParser(packagename)
-	p.HandlerFunc(parser.Boolean, types.HandleBoolean)
-	p.HandlerFunc(parser.OneOf, types.HandleOneOf)
-	p.HandlerFunc(parser.AnyOf, types.HandleAnyOf)
-	p.HandlerFunc(parser.AllOf, types.HandleAllOf)
-	p.HandlerFunc(parser.Enum, types.HandleEnum)
-	p.HandlerFunc(parser.Array, types.HandleArray)
-	p.HandlerFunc(parser.Reference, types.HandleReference)
-	p.HandlerFunc(parser.Object, types.HandleObject)
-	p.HandlerFunc(parser.Number, types.HandleNumber)
-	p.HandlerFunc(parser.Interger, types.HandleInteger)
-	p.HandlerFunc(parser.String, types.HandleString)
-	p.HandlerFunc(parser.RootObject, types.HandleRoot)
-
+	p = handlers.DefaultHandlers(p)
 	return NewInterpreter(p)
 }
 
@@ -89,7 +77,7 @@ func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 			} else {
 				fmt.Printf(red("🗴") + "References\n")
 
-				return nil, fmt.Errorf("Reference keys need to be unique found %v more than once", k)
+				return nil, fmt.Errorf("interpreter: Reference keys need to be unique found %v more than once", k)
 			}
 			log.Infof("Found reference %v", k)
 		}

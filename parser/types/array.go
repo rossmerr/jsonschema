@@ -14,19 +14,14 @@ type Array struct {
 	FieldTag string
 }
 
-func HandleArray(ctx *document.DocumentContext, name string, schema *jsonschema.Schema) (document.Types, error) {
-	arrType := string(schema.Items.Type)
-	if schema.Items.Ref.IsNotEmpty() {
-		arrType = schema.Items.Ref.ToTypename()
-	}
-
+func NewArray(name, comment, arrType string) *Array {
 	return &Array{
-		comment: schema.Description,
+		comment: comment,
 		name:    jsonschema.ToTypename(name),
 		Type:    arrType,
-	}, nil
-}
+	}
 
+}
 func (s *Array) WithReference(ref bool) document.Types {
 	return s
 }

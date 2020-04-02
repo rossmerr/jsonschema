@@ -1,10 +1,6 @@
 package types
 
 import (
-	"fmt"
-	"strings"
-
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser/document"
 )
 
@@ -20,40 +16,17 @@ type Enum struct {
 	items     []*ConstItem
 }
 
-func HandleEnum(ctx *document.DocumentContext, name string, schema *jsonschema.Schema) (document.Types, error) {
-	reference := "*"
-	if jsonschema.Contains(schema.Required, strings.ToLower(name)) {
-		reference = ""
-	}
-
-	constItems := []*ConstItem{}
-	for _, value := range schema.Enum {
-		c := ConstItem{
-			Name:  jsonschema.ToTypename(value),
-			Type:  name,
-			Value: value,
-		}
-		constItems = append(constItems, &c)
-	}
-	c := NewConst(constItems...)
-	typenameEnum := name + "Enum"
-	if _, ok := ctx.Globals[typenameEnum]; !ok {
-		ctx.Globals[typenameEnum] = c
-	} else {
-		return nil, fmt.Errorf("enum, global keys need to be unique found %v more than once, in %v", name, schema.Parent.ID)
-	}
-
+func NewEnum(name, comment, typename string, values []string, items []*ConstItem) *Enum {
 	return &Enum{
-		comment:   schema.Description,
-		name:      name,
-		Type:      schema.Type.String(),
-		Reference: reference,
-		Values:    schema.Enum,
-		items:     constItems,
-	}, nil
+		comment: comment,
+		name:    name,
+		Type:    typename,
+		Values:  values,
+		items:   items,
+	}
 }
 
-func GlobalEnum(ctx *document.DocumentContext, enum *Enum, name string) document.Types {
+func GlobalEnum(ctx *document.Document, enum *Enum, name string) document.Types {
 	typename := name + "_" + enum.name
 	enum.name = typename
 	for _, item := range enum.items {

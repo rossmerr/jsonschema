@@ -13,6 +13,13 @@ type InterfaceReference struct {
 	FieldTag string
 }
 
+func NewInterfaceReference(name, typename string) *InterfaceReference {
+	return &InterfaceReference{
+		name: jsonschema.ToTypename(name),
+		Type: typename,
+	}
+}
+
 func (s *InterfaceReference) WithReference(ref bool) document.Types {
 	return s
 }

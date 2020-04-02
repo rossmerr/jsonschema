@@ -13,9 +13,9 @@ type EmbeddedStruct struct {
 	Types     []string
 }
 
-func NewEmbeddedStruct(typename string, fieldTag string, types ...string) *EmbeddedStruct {
+func NewEmbeddedStruct(name string, fieldTag string, types ...string) *EmbeddedStruct {
 	return &EmbeddedStruct{
-		name:      typename,
+		name:      name,
 		StructTag: fieldTag,
 		Types:     types,
 	}

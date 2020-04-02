@@ -14,11 +14,11 @@ type Boolean struct {
 	Reference string
 }
 
-func HandleBoolean(ctx *document.DocumentContext, name string, schema *jsonschema.Schema) (document.Types, error) {
+func NewBoolean(name, comment string) *Boolean {
 	return &Boolean{
-		comment: schema.Description,
+		comment: comment,
 		name:    jsonschema.ToTypename(name),
-	}, nil
+	}
 }
 
 func (s *Boolean) WithReference(ref bool) document.Types {

@@ -1,11 +1,11 @@
-package types
+package handlers
 
 import (
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser/document"
 )
 
-func HandleAllOf(ctx *document.DocumentContext, name string, schema *jsonschema.Schema) (document.Types, error) {
+func HandleAllOf(doc *document.Document, name string, schema *jsonschema.Schema) (document.Types, error) {
 	properties := map[string]*jsonschema.Schema{}
 
 	for _, subschema := range schema.AllOf {
@@ -23,5 +23,5 @@ func HandleAllOf(ctx *document.DocumentContext, name string, schema *jsonschema.
 
 	schema.Properties = properties
 
-	return NewStruct(ctx, name, schema)
+	return HandleObject(doc, name, schema)
 }
