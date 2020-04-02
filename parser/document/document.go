@@ -1,7 +1,6 @@
 package document
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/RossMerr/jsonschema"
@@ -9,22 +8,21 @@ import (
 
 type Process func(name string, schema *jsonschema.Schema) (Types, error)
 type HandleSchemaFunc func(*Document, string, *jsonschema.Schema) (Types, error)
-type Resolve func(name string, schema jsonschema.JsonSchema) HandleSchemaFunc
+type Resolve func(name string, schema *jsonschema.Schema) HandleSchemaFunc
 
 type Document struct {
 	ID       string
 	Package  string
-	Type     Types
 	Globals  map[string]Types
 	Filename string
 
-	References      map[jsonschema.ID]jsonschema.JsonSchema
+	References      map[jsonschema.ID]*jsonschema.Schema
 	implementations map[string][]string
-	RootSchema      *jsonschema.RootSchema
+	RootSchema      *jsonschema.Schema
 	resolve         Resolve
 }
 
-func NewDocument(id, packageName, filename string, root *jsonschema.RootSchema, resolve Resolve, references map[jsonschema.ID]jsonschema.JsonSchema) *Document {
+func NewDocument(id, packageName, filename string, root *jsonschema.Schema, resolve Resolve, references map[jsonschema.ID]*jsonschema.Schema) *Document {
 	return &Document{
 		ID:              id,
 		Package:         packageName,
@@ -38,10 +36,10 @@ func NewDocument(id, packageName, filename string, root *jsonschema.RootSchema, 
 }
 
 func (ctx *Document) WithType(t Types) *Document {
-	ctx.Type = t
+	ctx.Globals[""] = t
 	return ctx
 }
-func (ctx *Document) Root() *jsonschema.RootSchema {
+func (ctx *Document) Root() *jsonschema.Schema {
 	return ctx.RootSchema
 }
 
@@ -64,15 +62,9 @@ func (ctx *Document) GetMethods(structname string) []string {
 	return ctx.implementations[structname]
 }
 
-func (ctx *Document) Process(name string, schema jsonschema.JsonSchema) (Types, error) {
+func (ctx *Document) Process(name string, schema *jsonschema.Schema) (Types, error) {
 	handler := ctx.resolve(name, schema)
-	switch v := schema.(type) {
-	case *jsonschema.RootSchema:
-		return handler(ctx, name, v.Schema)
-	case *jsonschema.Schema:
-		return handler(ctx, name, v)
-	}
-	return nil, fmt.Errorf("documentcontext: type of schmema not found %v", schema)
+	return handler(ctx, name, schema)
 }
 
 const DocumentTemplate = `
@@ -87,11 +79,6 @@ package main
 {{ if .ID -}}
 // ID: {{.ID}}
 {{ end }}
-
-{{ if .Type -}}
-	{{template "kind" .Type }}
-{{end -}}
-
 
 {{range $key, $global := .Globals -}}
 	{{- template "kind" $global -}}

@@ -11,7 +11,6 @@ type Struct struct {
 	comment   string
 	name      string
 	Fields    []document.Types
-	StructTag string
 	FieldTag  string
 }
 
@@ -50,5 +49,5 @@ const StructTemplate = `
 {{range $key, $propertie := .Fields -}}
 	{{template "kind" $propertie }}
 {{end -}}
-} {{ .StructTag }}
+} {{ .FieldTag }}
 {{- end -}}`

@@ -81,19 +81,22 @@ func TestSchemas_Generate(t *testing.T) {
 			files := []string{}
 			p := parser.NewParser("main")
 			p = handlers.DefaultHandlers(p)
-			documents := map[jsonschema.ID]jsonschema.JsonSchema{}
-			references := map[jsonschema.ID]jsonschema.JsonSchema{}
+			documents := map[jsonschema.ID]*jsonschema.Schema{}
+			references := map[jsonschema.ID]*jsonschema.Schema{}
 			for _, path := range tt.fields.paths {
 				data, err := ioutil.ReadFile(path)
 				if err != nil {
 					panic(err)
 				}
 
-				var schema jsonschema.RootSchema
+				var schema jsonschema.Schema
 				err = json.Unmarshal(data, &schema)
 				if err != nil {
 					panic(err)
 				}
+
+				schema.SetParent(schema.ID.ToTypename(), nil)
+
 				refs := jsonschema.ResolveIDs(data)
 
 				documents[schema.ID] = &schema

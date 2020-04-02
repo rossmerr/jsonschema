@@ -27,8 +27,7 @@ func HandleObject(doc *document.Document, name string, schema *jsonschema.Schema
 
 		s.WithFieldTag(fieldTag).WithReference(ref)
 
-		if enum, ok := s.(*types.Enum); ok {
-			fields = append(fields, types.GlobalEnum(doc, enum, name))
+		if _, ok  := s.(*types.Root); ok {
 			continue
 		}
 
@@ -41,7 +40,9 @@ func HandleObject(doc *document.Document, name string, schema *jsonschema.Schema
 			return nil, err
 		}
 
-		doc.Globals[key] = s
+		if _, contains := doc.Globals[key]; !contains {
+			doc.Globals[key] = s
+		}
 	}
 
 	return types.NewStruct(name, schema.Description, fields), nil

@@ -12,5 +12,14 @@
         "green"
       ]
     }
+  },
+  "definitions": {
+    "length": {
+      "type": "string",
+      "enum": [
+        "meters",
+        "feet"
+      ]
+    }
   }
 }

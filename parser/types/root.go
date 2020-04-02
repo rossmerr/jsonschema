@@ -19,6 +19,10 @@ func NewRoot(comment string, t document.Types) document.Types {
 	}
 }
 
+func (s *Root) WithMethods(methods ...string) document.Types {
+	s.Methods = methods
+	return s
+}
 func (s *Root) WithReference(ref bool) document.Types {
 	return s
 }

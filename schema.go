@@ -1,5 +1,7 @@
 package jsonschema
 
+import "encoding/json"
+
 type Schema struct {
 	ID          ID                 `json:"$id,omitempty"`
 	Schema      MetaSchema         `json:"$schema,omitempty"`
@@ -36,6 +38,37 @@ type Schema struct {
 	Pattern          string  `json:"pattern,omitempty"`
 
 	Parent *Schema `json:"-"`
+	Key string `json:"-"`
+}
+
+func (s *Schema) SetParent(key string, parent *Schema)  {
+	s.Parent = parent
+	s.Key = key
+	for k, subschema := range s.Properties  {
+		subschema.SetParent(k, s)
+	}
+	for k, subschema := range s.Defs  {
+		subschema.SetParent(k, s)
+	}
+	for k, subschema := range s.Definitions  {
+		subschema.SetParent(k, s)
+	}
+}
+
+func (s *Schema) UnmarshalJSON(b []byte) error {
+	type Alias Schema
+	aux := &struct {
+		SomeCustomType int64 `json:"someCustomType"`
+		*Alias
+	}{
+		Alias: (*Alias)(s),
+	}
+	if err := json.Unmarshal(b, &aux); err != nil {
+		return err
+	}
+
+
+	return nil
 }
 
 func (s *Schema) AllDefinitions() map[string]*Schema {
@@ -51,17 +84,36 @@ func (s *Schema) AllDefinitions() map[string]*Schema {
 }
 
 func (s *Schema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool) {
-	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf, s.Enum, false
+	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf, s.Enum, s.Parent == nil
 }
 
-type RootSchema struct {
-	*Schema
-}
-
-func (s *RootSchema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool) {
-	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf, s.Enum, true
-}
-
-type JsonSchema interface {
-	Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool)
-}
+// type RootSchema struct {
+// 	*Schema
+// }
+//
+// func (s *RootSchema) UnmarshalJSON(b []byte) error {
+// 	type Alias Schema
+// 	aux := &struct {
+// 		SomeCustomType int64 `json:"someCustomType"`
+// 		*Alias
+// 	}{
+// 		Alias: (*Alias)(s.Schema),
+// 	}
+// 	if err := json.Unmarshal(b, &aux); err != nil {
+// 		return err
+// 	}
+// 	//schema := aux.Alias.(*Schema)
+// 	//s.Schema =
+// 	return nil
+//
+// 	//s.Schema = aux.
+// }
+//
+//
+// func (s *RootSchema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool) {
+// 	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf, s.Enum, true
+// }
+//
+// type JsonSchema interface {
+// 	Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool)
+// }

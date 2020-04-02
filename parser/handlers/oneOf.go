@@ -25,7 +25,11 @@ func HandleOneOf(doc *document.Document, name string, schema *jsonschema.Schema)
 			return nil, err
 		}
 		if _, ok := doc.Globals[structname]; !ok {
-			doc.Globals[structname] = types.PrefixType(t, typename)
+			if r, ok := t.(*types.Root); ok {
+				r.WithMethods(typename)
+			}
+			doc.Globals[structname] = t
+
 		} else {
 			return nil, fmt.Errorf("handleoneof: oneOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
 		}

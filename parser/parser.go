@@ -9,7 +9,7 @@ import (
 )
 
 type Parser interface {
-	Parse(schemas map[jsonschema.ID]jsonschema.JsonSchema, references map[jsonschema.ID]jsonschema.JsonSchema) (map[jsonschema.ID]*document.Document, error)
+	Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]*document.Document, error)
 	HandlerFunc(kind Kind, handler document.HandleSchemaFunc)
 }
 
@@ -26,16 +26,15 @@ func NewParser(packageName string) Parser {
 	return parser
 }
 
-func (s *parser) Parse(schemas map[jsonschema.ID]jsonschema.JsonSchema, references map[jsonschema.ID]jsonschema.JsonSchema) (map[jsonschema.ID]*document.Document, error) {
+func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]*document.Document, error) {
 	documents := map[jsonschema.ID]*document.Document{}
 
-	for _, root := range schemas {
-		schema := root.(*jsonschema.RootSchema)
+	for _, schema := range schemas {
 		switch schema.Type {
 		case jsonschema.Object:
 			doc := document.NewDocument(schema.ID.String(), s.packageName, toFilename(schema.ID), schema, s.Process, references)
 
-			s, err := doc.Process(schema.ID.ToTypename(), root)
+			s, err := doc.Process(schema.ID.ToTypename(), schema)
 			if err != nil {
 				return nil, fmt.Errorf("parse: %w", err)
 			}
@@ -57,7 +56,7 @@ func (s *parser) HandlerFunc(kind Kind, handler document.HandleSchemaFunc) {
 	}
 }
 
-func (s *parser) Process(name string, schema jsonschema.JsonSchema) document.HandleSchemaFunc {
+func (s *parser) Process(name string, schema *jsonschema.Schema) document.HandleSchemaFunc {
 	var handler document.HandleSchemaFunc
 	switch kind, ref, oneOf, anyOf, allOf, enum, isParent := schema.Stat(); {
 	case kind == jsonschema.Boolean:

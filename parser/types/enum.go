@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser/document"
 )
 
@@ -16,10 +17,10 @@ type Enum struct {
 	items     []*ConstItem
 }
 
-func NewEnum(name, comment, typename string, values []string, items []*ConstItem) *Enum {
+func NewEnum(name, comment, typename string, values []string, items []*ConstItem) document.Types {
 	return &Enum{
 		comment: comment,
-		name:    name,
+		name:    jsonschema.ToTypename(name),
 		Type:    typename,
 		Values:  values,
 		items:   items,

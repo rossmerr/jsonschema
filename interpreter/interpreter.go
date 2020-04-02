@@ -30,8 +30,8 @@ func NewInterpreterDefaults(packagename string) *Interpreter {
 }
 
 func (s *Interpreter) Interpret(files []string) (Interpret, error) {
-	schemas := map[jsonschema.ID]jsonschema.JsonSchema{}
-	references := map[jsonschema.ID]jsonschema.JsonSchema{}
+	schemas := map[jsonschema.ID]*jsonschema.Schema{}
+	references := map[jsonschema.ID]*jsonschema.Schema{}
 	green := color.FgCyan.Render
 	red := color.FgRed.Render
 

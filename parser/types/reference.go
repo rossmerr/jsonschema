@@ -52,7 +52,7 @@ func ResolvePointer(ctx *document.Document, ref jsonschema.Reference) (string, e
 		return fieldname, nil
 	}
 
-	var base jsonschema.JsonSchema
+	var base *jsonschema.Schema
 	base = ctx.Root()
 	if id, err := ref.ID(); err == nil {
 		if err != nil {
