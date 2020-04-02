@@ -25,12 +25,12 @@ func TestID_ToTypename(t *testing.T) {
 		{
 			name: "Root ID",
 			s:    jsonschema.ID("#test"),
-			want: ".",
+			want: "",
 		},
 		{
 			name: "Defintions",
 			s:    jsonschema.ID("#defintions/test"),
-			want: ".",
+			want: "",
 		},
 		{
 			name: "Relative",

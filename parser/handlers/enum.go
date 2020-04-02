@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
@@ -22,10 +23,13 @@ import (
 func HandleEnum(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	constItems := []*types.ConstItem{}
 
+	name = strings.Join([]string{jsonschema.ToTypename(schema.Parent.Key), jsonschema.ToTypename(name)}, "_")
+	name = strings.TrimLeft(name, "_")
+
 	for _, value := range schema.Enum {
 		c := types.ConstItem{
 			Name:  jsonschema.ToTypename(value),
-			Type:  jsonschema.ToTypename(name),
+			Type:  name,
 			Value: value,
 		}
 		constItems = append(constItems, &c)

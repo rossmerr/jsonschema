@@ -4,7 +4,7 @@
   "title": "Colors",
   "type": "object",
   "properties": {
-    "color": {
+    "type": {
       "type": "string",
       "enum": [
         "red",

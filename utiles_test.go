@@ -180,12 +180,12 @@ func TestToTypename(t *testing.T) {
 		{
 			name: "Empty string",
 			args: args{s: ""},
-			want: ".",
+			want: "",
 		},
 		{
 			name: "Dot string",
 			args: args{s: "."},
-			want: ".",
+			want: "",
 		},
 		{
 			name: "Unicode letter",

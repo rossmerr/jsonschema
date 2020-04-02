@@ -75,7 +75,7 @@ func title(s string) string {
 
 func ToTypename(s string) string {
 	if s == "" || s == "." {
-		return "."
+		return ""
 	}
 
 	name := strings.TrimSuffix(s, filepath.Ext(s))
