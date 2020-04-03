@@ -11,7 +11,7 @@ type Reference struct {
 	Type      string
 	name      string
 	comment   string
-	FieldTag  string
+	fieldTag  string
 	Reference string
 }
 
@@ -37,9 +37,14 @@ func (s *Reference) WithReference(ref bool) parser.Types {
 }
 
 func (s *Reference) WithFieldTag(tags string) parser.Types {
-	s.FieldTag = tags
+	s.fieldTag = tags
 	return s
 }
+
+func (s *Reference) FieldTag() string {
+	return s.fieldTag
+}
+
 func (s *Reference) Comment() string {
 	return s.comment
 }

@@ -22,6 +22,9 @@ func Template() (*template.Template, error) {
 		"isConst":              IsConst,
 		"isRoot":               IsRoot,
 		"isMethod":             IsMethod,
+		"isAllOf":              IsAllOf,
+		"isAnyOf":              IsAnyOf,
+		"isOneOf":              IsOneOf,
 		"mixedCase":            MixedCase,
 		"title":                strings.Title,
 	}).Parse(parser.DocumentTemplate)
@@ -78,6 +81,18 @@ func Template() (*template.Template, error) {
 		return nil, err
 	}
 	tmpl, err = tmpl.Parse(parser.MethodTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(AllOfTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(AnyOfTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(OneOfTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -147,6 +162,21 @@ func IsRoot(obj interface{}) bool {
 
 func IsMethod(obj interface{}) bool {
 	_, ok := obj.(*parser.Method)
+	return ok
+}
+
+func IsAllOf(obj interface{}) bool {
+	_, ok := obj.(*AllOf)
+	return ok
+}
+
+func IsAnyOf(obj interface{}) bool {
+	_, ok := obj.(*AnyOf)
+	return ok
+}
+
+func IsOneOf(obj interface{}) bool {
+	_, ok := obj.(*OneOf)
 	return ok
 }
 

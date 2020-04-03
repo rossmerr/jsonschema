@@ -22,7 +22,7 @@ func HandleOneOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 	for i, subschema := range schema.OneOf {
 		if subschema.Ref.IsNotEmpty() {
 			method := parser.NewMethod(subschema.Ref.ToKey(), typename)
-			ctx.AddMethods(subschema.Ref.ToKey(), method)
+			ctx.ImplementInterface(subschema.Ref.ToKey(), method)
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
@@ -36,11 +36,12 @@ func HandleOneOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 			return nil, fmt.Errorf("handleoneof: oneOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
 		}
 		method := parser.NewMethod(structname, typename)
-		ctx.AddMethods(structname, method)
+		ctx.ImplementInterface(structname, method)
 
 	}
 
 	doc.Globals[name] = templates.NewInterface(typename)
 
-	return templates.NewInterfaceReference(name, typename), nil
+	t:=  templates.NewInterfaceReference(name, typename)
+	return &templates.OneOf{t}, nil
 }

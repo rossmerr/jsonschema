@@ -17,7 +17,7 @@ func HandleAnyOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 	for i, subschema := range schema.AnyOf {
 		if subschema.Ref.IsNotEmpty() {
 			method := parser.NewMethod(subschema.Ref.ToTypename(), typename)
-			ctx.AddMethods(subschema.Ref.ToTypename(), method)
+			ctx.ImplementInterface(subschema.Ref.ToTypename(), method)
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
@@ -32,11 +32,12 @@ func HandleAnyOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 			return nil, fmt.Errorf("handleanyof: anyOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
 		}
 		method := parser.NewMethod(structname, typename)
-		ctx.AddMethods(structname, method)
+		ctx.ImplementInterface(structname, method)
 
 	}
 
 	doc.Globals[name] = templates.NewInterface(typename)
 
-	return templates.NewInterfaceReference(name, "[]"+typename), nil
+	t := templates.NewInterfaceReference(name, "[]"+typename)
+	return &templates.AnyOf{t}, nil
 }

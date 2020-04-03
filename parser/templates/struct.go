@@ -1,6 +1,9 @@
 package templates
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
@@ -11,10 +14,10 @@ type Struct struct {
 	comment  string
 	name     string
 	Fields   []parser.Types
-	FieldTag string
+	fieldTag string
 }
 
-func NewStruct(name, comment string, fields []parser.Types) parser.Types {
+func NewStruct(name, comment string, fields []parser.Types) *Struct {
 	return &Struct{
 		comment: comment,
 		name:    jsonschema.ToTypename(name),
@@ -31,8 +34,12 @@ func (s *Struct) WithReference(ref bool) parser.Types {
 }
 
 func (s *Struct) WithFieldTag(tags string) parser.Types {
-	s.FieldTag = tags
+	s.fieldTag = tags
 	return s
+}
+
+func (s *Struct) FieldTag() string {
+	return s.fieldTag
 }
 
 func (s *Struct) Comment() string {
@@ -45,6 +52,51 @@ func (s *Struct) Name() string {
 
 func (s *Struct) IsNotEmpty() bool {
 	return len(s.Fields) > 0
+}
+
+func (s *Struct) UnmarshalJSON() *parser.Method {
+
+	overrideFields := []string{}
+	for _, field := range s.Fields {
+		switch f := field.(type) {
+		case *OneOf:
+			name := f.InterfaceReference.Name()
+			tag := f.InterfaceReference.FieldTag()
+			typename := f.InterfaceReference.Type
+			overrideFields = append(overrideFields, name + " " + typename+ " " +tag)
+		case *AnyOf:
+			name := f.InterfaceReference.Name()
+			tag := f.InterfaceReference.FieldTag()
+			typename := f.InterfaceReference.Type
+
+			overrideFields = append(overrideFields, name + " " + typename+" " + tag)
+		case *AllOf:
+			name := f.Struct.Name()
+			tag := f.Struct.FieldTag()
+			typename := "struct"
+
+			overrideFields = append(overrideFields, name + " " + typename+" " + tag)
+		}
+	}
+
+	method := parser.NewMethod(s.Name(), "UnmarshalJSON")
+	method.WithInputs(parser.NewParameter("b", "[]byte"))
+	method.WithOutputs(parser.NewParameter("", "error"))
+	t := `type Alias %v
+	aux := &struct {
+		%v
+		*Alias
+	}{
+		
+		Alias: (*Alias)(s),
+	}
+	if err := json.Unmarshal(b, &aux); err != nil {
+		return err
+	}
+
+	return nil`
+	method.Body = fmt.Sprintf(t, s.Name(), strings.Join(overrideFields, "\n"))
+	return method
 }
 
 const StructTemplate = `

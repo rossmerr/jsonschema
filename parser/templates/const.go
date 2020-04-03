@@ -35,6 +35,10 @@ func (s *Const) WithFieldTag(tags string) parser.Types {
 	return s
 }
 
+func (s *Const) FieldTag() string {
+	return jsonschema.EmptyString
+}
+
 func (s *Const) Comment() string {
 	return jsonschema.EmptyString
 }

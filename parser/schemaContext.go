@@ -9,6 +9,7 @@ import (
 
 type Resolve func(name string, schema *jsonschema.Schema) HandleSchemaFunc
 
+// NewSchemaContext return's a SchemaContext
 func NewSchemaContext(resolve Resolve, references map[jsonschema.ID]*jsonschema.Schema) *SchemaContext {
 	return &SchemaContext{
 		implementations: map[string][]*Method{},
@@ -18,6 +19,7 @@ func NewSchemaContext(resolve Resolve, references map[jsonschema.ID]*jsonschema.
 	}
 }
 
+// SchemaContext is the collection of all schema's being processed
 type SchemaContext struct {
 	implementations map[string][]*Method
 	resolve         Resolve
@@ -26,6 +28,7 @@ type SchemaContext struct {
 	document        *Document
 }
 
+// NewDocument return's and process a Document from a schema
 func (s *SchemaContext) NewDocument(id, packageName, filename string, schema *jsonschema.Schema) (*Document, error) {
 	if schema.Key == "" {
 		schema.SetParent(schema.ID.ToTypename(), nil)
@@ -44,12 +47,12 @@ func (s *SchemaContext) NewDocument(id, packageName, filename string, schema *js
 		return nil, fmt.Errorf("schemacontext: %w", err)
 	}
 
-	s.document.Globals[""] = t
+	s.document.Globals[t.Name()] = t
 	s.documents[id] = s.document
 	return s.document, nil
 }
 
-// Dispose add's any methods that any struct might need to implement to for fill any interfaces
+// Dispose add's any methods that any struct might need to implement for any interfaces
 func (s *SchemaContext) Dispose() {
 	for _, doc := range s.documents {
 		for k, g := range doc.Globals {
@@ -61,7 +64,9 @@ func (s *SchemaContext) Dispose() {
 	}
 }
 
-func (s *SchemaContext) AddMethods(receiver string, methods ...*Method) {
+// ImplementInterface add's any methods onto the named receiver across the entire schema
+// so you can implement a interface from a reference etc
+func (s *SchemaContext) ImplementInterface(receiver string, methods ...*Method) {
 	if receiver != jsonschema.EmptyString {
 		switch arr, ok := s.implementations[receiver]; {
 		case !ok:
@@ -74,13 +79,7 @@ func (s *SchemaContext) AddMethods(receiver string, methods ...*Method) {
 	}
 }
 
-func (s *SchemaContext) GetMethods(receiver string) []*Method {
-	if arr, ok := s.implementations[receiver]; ok {
-		return arr
-	}
-	return []*Method{}
-}
-
+// Process a schema and return it as a tree of Types
 func (s *SchemaContext) Process(name string, schema *jsonschema.Schema) (Types, error) {
 	if s.document == nil {
 		panic(fmt.Errorf("schemacontext: document not set %v", s.document))
@@ -89,6 +88,7 @@ func (s *SchemaContext) Process(name string, schema *jsonschema.Schema) (Types, 
 	return handler(s, s.document, name, schema)
 }
 
+// ResolvePointer takes a Reference and uses it to walk the schema to find any types to reference
 func (s *SchemaContext) ResolvePointer(ref jsonschema.Reference) (string, error) {
 	path := ref.Path()
 	if fieldname := path.ToFieldname(); fieldname != "." {

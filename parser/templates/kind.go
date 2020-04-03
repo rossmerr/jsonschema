@@ -41,4 +41,13 @@ const KindTemplate = `
 	{{- if isMethod . -}}
 		{{- template "method" . -}}
 	{{end -}}
+	{{- if isAllOf . -}}
+		{{- template "allof" . -}}
+	{{end -}}
+	{{- if isAnyOf . -}}
+		{{- template "anyof" . -}}
+	{{end -}}
+	{{- if isOneOf . -}}
+		{{- template "oneof" . -}}
+	{{end -}}
 {{- end -}}`

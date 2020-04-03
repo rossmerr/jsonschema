@@ -4,8 +4,8 @@ type Method struct {
 	Comment  string
 	Receiver string
 	Name     string
-	Inputs   []string
-	Outputs  []string
+	Inputs   []*Parameter
+	Outputs  []*Parameter
 	Body     string
 }
 
@@ -14,20 +14,33 @@ func NewMethod(receiver, name string) *Method {
 		Comment:  "",
 		Receiver: receiver,
 		Name:     name,
-		Inputs:   []string{},
-		Outputs:  []string{},
+		Inputs:   []*Parameter{},
+		Outputs:  []*Parameter{},
 		Body:     "",
 	}
 }
 
-func (s *Method) WithInputs(inputs ...string) *Method {
+func (s *Method) WithInputs(inputs ...*Parameter) *Method {
 	s.Inputs = append(s.Inputs, inputs...)
 	return s
 }
 
-func (s *Method) WithOutputs(outputs ...string) *Method {
+func (s *Method) WithOutputs(outputs ...*Parameter) *Method {
 	s.Outputs = append(s.Outputs, outputs...)
 	return s
+}
+
+type Parameter struct {
+	Comment string
+	Name    string
+	Type    string
+}
+
+func NewParameter(name, typename string) *Parameter {
+	return &Parameter{
+		Name: name,
+		Type: typename,
+	}
 }
 
 const MethodTemplate = `
@@ -38,12 +51,17 @@ const MethodTemplate = `
 func (s *{{ .Receiver }}) {{ .Name -}}
 (
 {{- range $key, $input := .Inputs -}}
-	{{ $input }}
-{{end -}}
+	{{ $input.Name }} {{ $input.Type }}
+{{- end -}}
 )
+{{- if .Outputs -}}
+(
 {{- range $key, $output := .Outputs -}}
-	{{ $output }}
-{{end -}}
-{ {{- .Body -}} }
+	{{ $output.Name }} {{ $output.Type }}
+{{- end -}}
+)
+{{- end -}}{ 
+{{ .Body }} 
+}
 {{- end -}}
 `

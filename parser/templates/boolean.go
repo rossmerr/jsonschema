@@ -10,7 +10,7 @@ var _ parser.Types = (*Boolean)(nil)
 type Boolean struct {
 	comment   string
 	name      string
-	FieldTag  string
+	fieldTag  string
 	Reference string
 }
 
@@ -35,9 +35,14 @@ func (s *Boolean) WithReference(ref bool) parser.Types {
 }
 
 func (s *Boolean) WithFieldTag(tags string) parser.Types {
-	s.FieldTag = tags
+	s.fieldTag = tags
 	return s
 }
+
+func (s *Boolean) FieldTag() string {
+	return s.fieldTag
+}
+
 
 func (s *Boolean) Comment() string {
 	return s.comment

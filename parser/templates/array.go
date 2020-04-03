@@ -11,7 +11,7 @@ type Array struct {
 	comment  string
 	name     string
 	Type     string
-	FieldTag string
+	fieldTag string
 }
 
 func NewArray(name, comment, arrType string) *Array {
@@ -32,9 +32,14 @@ func (s *Array) WithReference(ref bool) parser.Types {
 }
 
 func (s *Array) WithFieldTag(tags string) parser.Types {
-	s.FieldTag = tags
+	s.fieldTag = tags
 	return s
 }
+
+func (s *Array) FieldTag() string {
+	return s.fieldTag
+}
+
 
 func (s *Array) Comment() string {
 	return s.comment

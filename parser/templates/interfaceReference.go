@@ -10,7 +10,7 @@ var _ parser.Types = (*InterfaceReference)(nil)
 type InterfaceReference struct {
 	Type     string
 	name     string
-	FieldTag string
+	fieldTag string
 }
 
 func NewInterfaceReference(name, typename string) *InterfaceReference {
@@ -28,9 +28,14 @@ func (s *InterfaceReference) WithReference(ref bool) parser.Types {
 }
 
 func (s *InterfaceReference) WithFieldTag(tags string) parser.Types {
-	s.FieldTag = tags
+	s.fieldTag = tags
 	return s
 }
+
+func (s *InterfaceReference) FieldTag() string {
+	return s.fieldTag
+}
+
 
 func (s *InterfaceReference) Comment() string {
 	return jsonschema.EmptyString

@@ -10,7 +10,7 @@ var _ parser.Types = (*String)(nil)
 type String struct {
 	comment   string
 	name      string
-	FieldTag  string
+	fieldTag  string
 	Methods   []string
 	Reference string
 }
@@ -36,9 +36,14 @@ func (s *String) WithReference(ref bool) parser.Types {
 }
 
 func (s *String) WithFieldTag(tags string) parser.Types {
-	s.FieldTag = tags
+	s.fieldTag = tags
 	return s
 }
+
+func (s *String) FieldTag() string {
+	return s.fieldTag
+}
+
 
 func (s *String) Comment() string {
 	return s.comment

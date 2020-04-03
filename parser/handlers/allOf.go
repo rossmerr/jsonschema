@@ -1,8 +1,11 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
+	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
 func HandleAllOf(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
@@ -23,5 +26,15 @@ func HandleAllOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 
 	schema.Properties = properties
 
-	return HandleObject(ctx, doc, name, schema)
+	obj, err := HandleObject(ctx, doc, name, schema)
+	if err != nil {
+		return nil, err
+	}
+
+	s, ok := obj.(*templates.Struct)
+	if !ok {
+		return nil, fmt.Errorf("handleallof: obj not a *templates.Struct found '%v'", obj)
+	}
+
+	return &templates.AllOf{s}, nil
 }

@@ -11,7 +11,7 @@ type Enum struct {
 	name      string
 	Type      string
 	Values    []string
-	FieldTag  string
+	fieldTag  string
 	Reference string
 	items     []*ConstItem
 }
@@ -34,9 +34,14 @@ func (s *Enum) WithReference(ref bool) parser.Types {
 }
 
 func (s *Enum) WithFieldTag(tags string) parser.Types {
-	s.FieldTag = tags
+	s.fieldTag = tags
 	return s
 }
+
+func (s *Enum) FieldTag() string {
+	return s.fieldTag
+}
+
 
 func (s *Enum) Comment() string {
 	return s.comment

@@ -14,5 +14,6 @@ func HandleRoot(ctx *parser.SchemaContext, doc *parser.Document, name string, sc
 	if err != nil {
 		return nil, err
 	}
+
 	return templates.NewRoot(schema.Description, t), nil
 }

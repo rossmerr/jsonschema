@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
@@ -28,6 +29,10 @@ func (s *Interface) WithReference(ref bool) parser.Types {
 
 func (s *Interface) WithFieldTag(tags string) parser.Types {
 	return s
+}
+
+func (s *Interface) FieldTag() string {
+	return jsonschema.EmptyString
 }
 
 func (s *Interface) Comment() string {

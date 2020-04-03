@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
@@ -13,10 +14,16 @@ type Root struct {
 }
 
 func NewRoot(comment string, t parser.Types) parser.Types {
+	 methods := []*parser.Method{}
+	switch s := t.(type) {
+	case *Struct:
+		methods = append(methods, s.UnmarshalJSON())
+	}
+
 	return &Root{
 		comment: comment,
 		Type:    t,
-		Methods: []*parser.Method{},
+		Methods: methods,
 	}
 }
 
@@ -31,6 +38,11 @@ func (s *Root) WithReference(ref bool) parser.Types {
 func (s *Root) WithFieldTag(tags string) parser.Types {
 	return s
 }
+
+func (s *Root) FieldTag() string {
+	return jsonschema.EmptyString
+}
+
 
 func (s *Root) Comment() string {
 	return s.comment
