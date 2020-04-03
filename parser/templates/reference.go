@@ -23,7 +23,7 @@ func NewReference(name, comment, typename string) *Reference {
 	}
 }
 
-func (s *Reference)	WithMethods(methods ...string) parser.Types {
+func (s *Reference) WithMethods(methods ...*parser.Method) parser.Types {
 	return s
 }
 

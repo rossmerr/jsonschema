@@ -9,18 +9,18 @@ var _ parser.Types = (*Root)(nil)
 type Root struct {
 	comment string
 	Type    parser.Types
-	Methods []string
+	Methods []*parser.Method
 }
 
-func NewRoot(comment string, t parser.Types, methods ...string) parser.Types {
+func NewRoot(comment string, t parser.Types) parser.Types {
 	return &Root{
 		comment: comment,
 		Type:    t,
-		Methods: methods,
+		Methods: []*parser.Method{},
 	}
 }
 
-func (s *Root) WithMethods(methods ...string) parser.Types {
+func (s *Root) WithMethods(methods ...*parser.Method) parser.Types {
 	s.Methods = append(s.Methods, methods...)
 	return s
 }
@@ -48,7 +48,7 @@ const RootTemplate = `
 type {{template "kind" .Type }}
 
 {{range $key, $method := .Methods -}}
-func (s {{ $.Name }}) {{$method}}(){}
+	{{template "method" $method }}
 {{end }}
 {{- end -}}
 `

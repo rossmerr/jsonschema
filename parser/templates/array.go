@@ -23,7 +23,7 @@ func NewArray(name, comment, arrType string) *Array {
 
 }
 
-func (s *Array)	WithMethods(methods ...string) parser.Types {
+func (s *Array) WithMethods(methods ...*parser.Method) parser.Types {
 	return s
 }
 

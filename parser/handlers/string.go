@@ -6,6 +6,6 @@ import (
 	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
-func HandleString(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
+func HandleString(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	return templates.NewString(name, schema.Description), nil
 }

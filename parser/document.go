@@ -1,95 +1,22 @@
 package parser
 
 import (
-	"fmt"
-
 	"github.com/RossMerr/jsonschema"
-	"github.com/RossMerr/jsonschema/traversal/traverse"
 )
 
 type Process func(name string, schema *jsonschema.Schema) (Types, error)
-type HandleSchemaFunc func(*Document, string, *jsonschema.Schema) (Types, error)
-type Resolve func(name string, schema *jsonschema.Schema) HandleSchemaFunc
+type HandleSchemaFunc func(*SchemaContext, *Document, string, *jsonschema.Schema) (Types, error)
 
 type Document struct {
-	ID       string
-	Package  string
-	Globals  map[string]Types
-	Filename string
-
-	references      map[jsonschema.ID]*jsonschema.Schema
-	implementations map[string][]string
-	rootSchema      *jsonschema.Schema
-	resolve         Resolve
+	ID         string
+	Package    string
+	Globals    map[string]Types
+	Filename   string
+	rootSchema *jsonschema.Schema
 }
 
-func NewDocument(id, packageName, filename string, root *jsonschema.Schema, resolve Resolve, references map[jsonschema.ID]*jsonschema.Schema) *Document {
-	return &Document{
-		ID:              id,
-		Package:         packageName,
-		Globals:         map[string]Types{},
-		Filename:        filename,
-		references:      references,
-		implementations: map[string][]string{},
-		rootSchema:      root,
-		resolve:         resolve,
-	}
-}
-
-func (ctx *Document) WithType(t Types) *Document {
-	ctx.Globals[""] = t
-	return ctx
-}
-func (ctx *Document) Root() *jsonschema.Schema {
-	return ctx.rootSchema
-}
-
-func (ctx *Document) AddMethods(structname string, methods ...string) {
-	if structname != jsonschema.EmptyString {
-		switch arr, ok := ctx.implementations[structname]; {
-		case !ok:
-			arr = []string{}
-			fallthrough
-		default:
-			arr = append(arr, methods...)
-			ctx.implementations[structname] = jsonschema.Unique(arr)
-		}
-	}
-}
-
-func (ctx *Document) GetMethods(structname string) []string {
-	if arr, ok := ctx.implementations[structname]; ok {
-		return arr
-	}
-	return []string{}
-}
-
-func (ctx *Document) Process(name string, schema *jsonschema.Schema) (Types, error) {
-	handler := ctx.resolve(name, schema)
-	return handler(ctx, name, schema)
-}
-
-func (ctx *Document) ResolvePointer(ref jsonschema.Reference) (string, error) {
-	path := ref.Path()
-	if fieldname := path.ToFieldname(); fieldname != "." {
-		return fieldname, nil
-	}
-
-	var base *jsonschema.Schema
-	base = ctx.Root()
-	if id, err := ref.ID(); err == nil {
-		if err != nil {
-			return ".", fmt.Errorf("resolvepointer: %w", err)
-
-		}
-		base = ctx.references[id]
-	}
-
-	def := traverse.Walk(base, path)
-	if def == nil {
-		return ".", fmt.Errorf("resolvepointer: path not found %v", path)
-	}
-	return def.ID.ToTypename(), nil
+func (s *Document) Root() *jsonschema.Schema {
+	return s.rootSchema
 }
 
 const DocumentTemplate = `

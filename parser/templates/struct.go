@@ -22,10 +22,9 @@ func NewStruct(name, comment string, fields []parser.Types) parser.Types {
 	}
 }
 
-func (s *Struct)	WithMethods(methods ...string) parser.Types {
+func (s *Struct) WithMethods(methods ...*parser.Method) parser.Types {
 	return s
 }
-
 
 func (s *Struct) WithReference(ref bool) parser.Types {
 	return s

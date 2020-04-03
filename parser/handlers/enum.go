@@ -20,7 +20,7 @@ import (
 // ignored in the calling code of HandleStruct, because it will try and add the returned Reference
 // to the global level but as it's name/key will match on the already added Enum name/key bellow it will
 // get ignored
-func HandleEnum(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
+func HandleEnum(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	constItems := []*templates.ConstItem{}
 
 	if schema.Parent != nil {

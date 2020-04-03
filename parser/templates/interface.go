@@ -18,7 +18,7 @@ func NewInterface(typename string) *Interface {
 	}
 }
 
-func (s *Interface)	WithMethods(methods ...string) parser.Types {
+func (s *Interface) WithMethods(methods ...*parser.Method) parser.Types {
 	return s
 }
 

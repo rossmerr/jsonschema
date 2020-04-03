@@ -19,7 +19,7 @@ func NewInterfaceReference(name, typename string) *InterfaceReference {
 		Type: typename,
 	}
 }
-func (s *InterfaceReference)	WithMethods(methods ...string) parser.Types {
+func (s *InterfaceReference) WithMethods(methods ...*parser.Method) parser.Types {
 	return s
 }
 

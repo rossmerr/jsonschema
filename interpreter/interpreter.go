@@ -60,8 +60,6 @@ func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 		} else {
 			i++
 		}
-		schema.SetParent(schema.ID.ToTypename(), nil)
-
 		log.Infof("Found schema %v", schema.ID)
 
 		schemas[schema.ID] = &schema

@@ -6,6 +6,6 @@ import (
 	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
-func HandleBoolean(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
+func HandleBoolean(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	return templates.NewBoolean(name, schema.Description), nil
 }

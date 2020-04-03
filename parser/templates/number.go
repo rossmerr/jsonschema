@@ -21,7 +21,7 @@ func NewNumber(name, comment string) *Number {
 	}
 }
 
-func (s *Number)	WithMethods(methods ...string) parser.Types {
+func (s *Number) WithMethods(methods ...*parser.Method) parser.Types {
 	return s
 }
 

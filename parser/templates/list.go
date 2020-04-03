@@ -10,7 +10,7 @@ type List struct {
 	Items []parser.Types
 }
 
-func (s *List)	WithMethods(methods ...string) parser.Types {
+func (s *List) WithMethods(methods ...*parser.Method) parser.Types {
 	return s
 }
 

@@ -22,10 +22,9 @@ func NewString(name, comment string) *String {
 	}
 }
 
-func (s *String)	WithMethods(methods ...string) parser.Types {
+func (s *String) WithMethods(methods ...*parser.Method) parser.Types {
 	return s
 }
-
 
 func (s *String) WithReference(ref bool) parser.Types {
 	if ref {

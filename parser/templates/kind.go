@@ -38,4 +38,7 @@ const KindTemplate = `
 	{{- if isRoot . -}}
 		{{- template "root" . -}}
 	{{end -}}
+	{{- if isMethod . -}}
+		{{- template "method" . -}}
+	{{end -}}
 {{- end -}}`

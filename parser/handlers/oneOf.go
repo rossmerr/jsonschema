@@ -10,7 +10,7 @@ import (
 	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
-func HandleOneOf(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
+func HandleOneOf(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	parent := doc.Root()
 
 	typename := name
@@ -21,11 +21,12 @@ func HandleOneOf(doc *parser.Document, name string, schema *jsonschema.Schema) (
 
 	for i, subschema := range schema.OneOf {
 		if subschema.Ref.IsNotEmpty() {
-			doc.AddMethods(subschema.Ref.ToKey(), typename)
+			method := parser.NewMethod(subschema.Ref.ToKey(), typename)
+			ctx.AddMethods(subschema.Ref.ToKey(), method)
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
-		t, err := doc.Process(structname, subschema)
+		t, err := ctx.Process(structname, subschema)
 		if err != nil {
 			return nil, err
 		}
@@ -34,7 +35,8 @@ func HandleOneOf(doc *parser.Document, name string, schema *jsonschema.Schema) (
 		} else {
 			return nil, fmt.Errorf("handleoneof: oneOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
 		}
-		doc.AddMethods(structname, typename)
+		method := parser.NewMethod(structname, typename)
+		ctx.AddMethods(structname, method)
 
 	}
 

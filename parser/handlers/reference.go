@@ -8,8 +8,8 @@ import (
 	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
-func HandleReference(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
-	typename, err := doc.ResolvePointer(schema.Ref)
+func HandleReference(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
+	typename, err := ctx.ResolvePointer(schema.Ref)
 
 	if err != nil {
 		fmt.Printf("handlereference: reference not found %v\n", schema.Ref)

@@ -11,11 +11,11 @@ import (
 	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
-func HandleObject(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
+func HandleObject(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 
 	fields := []parser.Types{}
 	for key, propertie := range schema.Properties {
-		s, err := doc.Process(key, propertie)
+		s, err := ctx.Process(key, propertie)
 		if err != nil {
 			return nil, err
 		}
@@ -35,7 +35,7 @@ func HandleObject(doc *parser.Document, name string, schema *jsonschema.Schema) 
 	}
 
 	for key, def := range schema.AllDefinitions() {
-		t, err := doc.Process(key, def)
+		t, err := ctx.Process(key, def)
 		if err != nil {
 			return nil, err
 		}

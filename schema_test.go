@@ -95,8 +95,6 @@ func TestSchemas_Generate(t *testing.T) {
 					panic(err)
 				}
 
-				schema.SetParent(schema.ID.ToTypename(), nil)
-
 				refs := jsonschema.ResolveIDs(data)
 
 				documents[schema.ID] = &schema

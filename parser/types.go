@@ -5,5 +5,5 @@ type Types interface {
 	Name() string
 	WithFieldTag(string) Types
 	WithReference(bool) Types
-	WithMethods(methods ...string) Types
+	WithMethods(methods ...*Method) Types
 }

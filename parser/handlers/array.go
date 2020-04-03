@@ -6,7 +6,7 @@ import (
 	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
-func HandleArray(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
+func HandleArray(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	arrType := string(schema.Items.Type)
 	if schema.Items.Ref.IsNotEmpty() {
 		arrType = schema.Items.Ref.ToTypename()

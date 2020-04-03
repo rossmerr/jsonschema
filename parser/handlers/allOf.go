@@ -5,7 +5,7 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-func HandleAllOf(doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
+func HandleAllOf(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	properties := map[string]*jsonschema.Schema{}
 
 	for _, subschema := range schema.AllOf {
@@ -23,5 +23,5 @@ func HandleAllOf(doc *parser.Document, name string, schema *jsonschema.Schema) (
 
 	schema.Properties = properties
 
-	return HandleObject(doc, name, schema)
+	return HandleObject(ctx, doc, name, schema)
 }

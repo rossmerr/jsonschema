@@ -21,7 +21,7 @@ func NewInteger(name, comment string) *Integer {
 	}
 }
 
-func (s *Integer)	WithMethods(methods ...string) parser.Types {
+func (s *Integer) WithMethods(methods ...*parser.Method) parser.Types {
 	return s
 }
 

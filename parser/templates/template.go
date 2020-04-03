@@ -21,6 +21,7 @@ func Template() (*template.Template, error) {
 		"isEnum":               IsEnum,
 		"isConst":              IsConst,
 		"isRoot":               IsRoot,
+		"isMethod":             IsMethod,
 		"mixedCase":            MixedCase,
 		"title":                strings.Title,
 	}).Parse(parser.DocumentTemplate)
@@ -73,6 +74,10 @@ func Template() (*template.Template, error) {
 		return nil, err
 	}
 	tmpl, err = tmpl.Parse(RootTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(parser.MethodTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -137,6 +142,11 @@ func IsConst(obj interface{}) bool {
 
 func IsRoot(obj interface{}) bool {
 	_, ok := obj.(*Root)
+	return ok
+}
+
+func IsMethod(obj interface{}) bool {
+	_, ok := obj.(*parser.Method)
 	return ok
 }
 

@@ -27,41 +27,19 @@ func NewParser(packageName string) Parser {
 
 func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]*Document, error) {
 	documents := map[jsonschema.ID]*Document{}
+	schemaContext := NewSchemaContext(s.Process, references)
+	defer schemaContext.Dispose()
 
 	for _, schema := range schemas {
 		switch schema.Type {
 		case jsonschema.Object:
-			doc := NewDocument(schema.ID.String(), s.packageName, toFilename(schema.ID), schema, s.Process, references)
 
-			s, err := doc.Process(schema.ID.ToTypename(), schema)
+			doc, err := schemaContext.NewDocument(schema.ID.String(), s.packageName, toFilename(schema.ID), schema)
 			if err != nil {
 				return nil, fmt.Errorf("parse: %w", err)
 			}
 
-			doc.WithType(s)
-
 			documents[schema.ID] = doc
-		}
-	}
-
-	methods := map[string][]string{}
-
-	// find all methods to implement
-	for _, doc := range documents {
-		for k, v := range doc.implementations {
-			if arr, ok := methods[k]; ok {
-				methods[k] = append(arr, v...)
-			} else {
-				methods[k] = v
-			}
-		}
-	}
-	for _, doc := range documents {
-		for k, g := range doc.Globals {
-			arr := methods[k]
-			if len(arr) > 0 {
-				g.WithMethods(arr...)
-			}
 		}
 	}
 
