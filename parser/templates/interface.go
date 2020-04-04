@@ -11,12 +11,18 @@ type Interface struct {
 	comment                string
 	CommentImplementations string
 	name                   string
+	MethodSignatures       []*parser.MethodSignature
 }
 
 func NewInterface(typename string) *Interface {
 	return &Interface{
 		name: typename,
 	}
+}
+
+func (s *Interface) WithMethodSignature(methodSignature ...*parser.MethodSignature) parser.Types {
+	s.MethodSignatures = append(s.MethodSignatures, methodSignature...)
+	return s
 }
 
 func (s *Interface) WithMethods(methods ...*parser.Method) parser.Types {
@@ -54,8 +60,10 @@ const InterfaceTemplate = `
 {{if .CommentImplementations -}}
 // {{ .CommentImplementations}}
 {{end -}}
-type {{ .Name }} interface {
-	{{ .Name}}()
+type {{ .Name }} interface {	
+	{{range $key, $method := .MethodSignatures -}}
+		{{template "methodsignature" $method }}
+	{{end }}
 }
 {{end -}}
 `

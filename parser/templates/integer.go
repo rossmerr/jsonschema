@@ -43,7 +43,6 @@ func (s *Integer) FieldTag() string {
 	return s.fieldTag
 }
 
-
 func (s *Integer) Comment() string {
 	return s.comment
 }

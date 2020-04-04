@@ -3,20 +3,20 @@ package parser
 type Method struct {
 	Comment  string
 	Receiver string
-	Name     string
-	Inputs   []*Parameter
-	Outputs  []*Parameter
-	Body     string
+	*MethodSignature
+	Body string
 }
 
 func NewMethod(receiver, name string) *Method {
+	return NewMethodFromSignature(receiver, NewMethodSignature(name))
+}
+
+func NewMethodFromSignature(receiver string, methodSignature *MethodSignature) *Method {
 	return &Method{
-		Comment:  "",
-		Receiver: receiver,
-		Name:     name,
-		Inputs:   []*Parameter{},
-		Outputs:  []*Parameter{},
-		Body:     "",
+		Comment:         "",
+		Receiver:        receiver,
+		MethodSignature: methodSignature,
+		Body:            "",
 	}
 }
 
@@ -30,38 +30,13 @@ func (s *Method) WithOutputs(outputs ...*Parameter) *Method {
 	return s
 }
 
-type Parameter struct {
-	Comment string
-	Name    string
-	Type    string
-}
-
-func NewParameter(name, typename string) *Parameter {
-	return &Parameter{
-		Name: name,
-		Type: typename,
-	}
-}
-
 const MethodTemplate = `
 {{- define "method" -}}
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-func (s *{{ .Receiver }}) {{ .Name -}}
-(
-{{- range $key, $input := .Inputs -}}
-	{{ $input.Name }} {{ $input.Type }}
-{{- end -}}
-)
-{{- if .Outputs -}}
-(
-{{- range $key, $output := .Outputs -}}
-	{{ $output.Name }} {{ $output.Type }}
-{{- end -}}
-)
-{{- end -}}{ 
-{{ .Body }} 
+{{ if .Receiver }}func (s *{{ .Receiver }}){{end}} {{template "methodsignature" .MethodSignature }} { 
+{{- .Body -}} 
 }
 {{- end -}}
 `

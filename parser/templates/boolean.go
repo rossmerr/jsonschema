@@ -43,7 +43,6 @@ func (s *Boolean) FieldTag() string {
 	return s.fieldTag
 }
 
-
 func (s *Boolean) Comment() string {
 	return s.comment
 }

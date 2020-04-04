@@ -9,24 +9,23 @@ import (
 
 func Template() (*template.Template, error) {
 	tmpl, err := template.New("document").Funcs(template.FuncMap{
-		"isStruct":             IsStruct,
-		"isArray":              IsArray,
-		"isString":             IsString,
-		"isNumber":             IsNumber,
-		"isInteger":            IsInteger,
-		"isInterface":          IsInterface,
-		"isBoolean":            IsBoolean,
-		"isReference":          IsReference,
-		"isInterfaceReference": IsInterfaceReference,
-		"isEnum":               IsEnum,
-		"isConst":              IsConst,
-		"isRoot":               IsRoot,
-		"isMethod":             IsMethod,
-		"isAllOf":              IsAllOf,
-		"isAnyOf":              IsAnyOf,
-		"isOneOf":              IsOneOf,
-		"mixedCase":            MixedCase,
-		"title":                strings.Title,
+		"isStruct":    IsStruct,
+		"isArray":     IsArray,
+		"isString":    IsString,
+		"isNumber":    IsNumber,
+		"isInteger":   IsInteger,
+		"isInterface": IsInterface,
+		"isBoolean":   IsBoolean,
+		"isReference": IsReference,
+		"isEnum":      IsEnum,
+		"isConst":     IsConst,
+		"isRoot":      IsRoot,
+		"isMethod":    IsMethod,
+		"isAllOf":     IsAllOf,
+		"isAnyOf":     IsAnyOf,
+		"isOneOf":     IsOneOf,
+		"mixedCase":   MixedCase,
+		"title":       strings.Title,
 	}).Parse(parser.DocumentTemplate)
 	tmpl, err = tmpl.Parse(StructTemplate)
 	if err != nil {
@@ -64,10 +63,6 @@ func Template() (*template.Template, error) {
 	if err != nil {
 		return nil, err
 	}
-	tmpl, err = tmpl.Parse(InterfaceReferenceTemplate)
-	if err != nil {
-		return nil, err
-	}
 	tmpl, err = tmpl.Parse(KindTemplate)
 	if err != nil {
 		return nil, err
@@ -93,6 +88,10 @@ func Template() (*template.Template, error) {
 		return nil, err
 	}
 	tmpl, err = tmpl.Parse(OneOfTemplate)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err = tmpl.Parse(parser.MethodSignatureTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -137,11 +136,6 @@ func IsBoolean(obj interface{}) bool {
 
 func IsReference(obj interface{}) bool {
 	_, ok := obj.(*Reference)
-	return ok
-}
-
-func IsInterfaceReference(obj interface{}) bool {
-	_, ok := obj.(*InterfaceReference)
 	return ok
 }
 

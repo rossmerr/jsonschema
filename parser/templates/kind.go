@@ -5,9 +5,6 @@ const KindTemplate = `
 	{{- if isReference . -}}
 		{{- template "reference" . -}}
 	{{end -}}
-	{{- if isInterfaceReference . -}}
-		{{- template "interfacereference" . -}}
-	{{end -}}
 	{{- if isInterface . -}}
 		{{- template "interface" . -}}
 	{{end -}}

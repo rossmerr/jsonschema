@@ -42,7 +42,6 @@ func (s *Enum) FieldTag() string {
 	return s.fieldTag
 }
 
-
 func (s *Enum) Comment() string {
 	return s.comment
 }

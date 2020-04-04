@@ -19,10 +19,11 @@ func HandleOneOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 		typename = strings.TrimLeft(typename, "_")
 	}
 
+	methodSignature := parser.NewMethodSignature(typename)
+
 	for i, subschema := range schema.OneOf {
 		if subschema.Ref.IsNotEmpty() {
-			method := parser.NewMethod(subschema.Ref.ToKey(), typename)
-			ctx.ImplementInterface(subschema.Ref.ToKey(), method)
+			ctx.ImplementMethodSignature(subschema.Ref.ToKey(), methodSignature)
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
@@ -35,13 +36,12 @@ func HandleOneOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 		} else {
 			return nil, fmt.Errorf("handleoneof: oneOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
 		}
-		method := parser.NewMethod(structname, typename)
-		ctx.ImplementInterface(structname, method)
+		ctx.ImplementMethodSignature(structname, methodSignature)
 
 	}
 
 	doc.Globals[name] = templates.NewInterface(typename)
+	r := templates.NewReference(name, "", typename)
 
-	t:=  templates.NewInterfaceReference(name, typename)
-	return &templates.OneOf{t}, nil
+	return &templates.OneOf{r}, nil
 }

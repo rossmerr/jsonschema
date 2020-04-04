@@ -14,11 +14,13 @@ type Root struct {
 }
 
 func NewRoot(comment string, t parser.Types) parser.Types {
-	 methods := []*parser.Method{}
-	switch s := t.(type) {
-	case *Struct:
-		methods = append(methods, s.UnmarshalJSON())
-	}
+	methods := []*parser.Method{}
+	// switch s := t.(type) {
+	// case *Struct:
+	// 	if method := s.UnmarshalJSON(); method != nil {
+	// 		methods = append(methods, method)
+	// 	}
+	// }
 
 	return &Root{
 		comment: comment,
@@ -42,7 +44,6 @@ func (s *Root) WithFieldTag(tags string) parser.Types {
 func (s *Root) FieldTag() string {
 	return jsonschema.EmptyString
 }
-
 
 func (s *Root) Comment() string {
 	return s.comment

@@ -27,7 +27,6 @@ func (s *List) FieldTag() string {
 	return jsonschema.EmptyString
 }
 
-
 func (s *List) Comment() string {
 	return ""
 }

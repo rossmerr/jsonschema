@@ -60,23 +60,27 @@ func (s *Struct) UnmarshalJSON() *parser.Method {
 	for _, field := range s.Fields {
 		switch f := field.(type) {
 		case *OneOf:
-			name := f.InterfaceReference.Name()
-			tag := f.InterfaceReference.FieldTag()
-			typename := f.InterfaceReference.Type
-			overrideFields = append(overrideFields, name + " " + typename+ " " +tag)
+			name := f.Reference.Name()
+			tag := f.Reference.FieldTag()
+			typename := f.Reference.Type
+			overrideFields = append(overrideFields, name+" "+typename+" "+tag)
 		case *AnyOf:
-			name := f.InterfaceReference.Name()
-			tag := f.InterfaceReference.FieldTag()
-			typename := f.InterfaceReference.Type
+			name := f.Reference.Name()
+			tag := f.Reference.FieldTag()
+			typename := f.Reference.Type
 
-			overrideFields = append(overrideFields, name + " " + typename+" " + tag)
+			overrideFields = append(overrideFields, name+" "+typename+" "+tag)
 		case *AllOf:
 			name := f.Struct.Name()
 			tag := f.Struct.FieldTag()
 			typename := "struct"
 
-			overrideFields = append(overrideFields, name + " " + typename+" " + tag)
+			overrideFields = append(overrideFields, name+" "+typename+" "+tag)
 		}
+	}
+
+	if len(overrideFields) == 0 {
+		return nil
 	}
 
 	method := parser.NewMethod(s.Name(), "UnmarshalJSON")

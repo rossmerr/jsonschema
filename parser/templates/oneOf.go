@@ -7,35 +7,34 @@ import (
 var _ parser.Types = (*OneOf)(nil)
 
 type OneOf struct {
-	*InterfaceReference
+	*Reference
 }
 
 func (s *OneOf) WithMethods(methods ...*parser.Method) parser.Types {
-	return s.InterfaceReference.WithMethods(methods...)
+	return s.Reference.WithMethods(methods...)
 }
 
 func (s *OneOf) WithReference(ref bool) parser.Types {
-	return s.InterfaceReference.WithReference(ref)
+	return s.Reference.WithReference(ref)
 }
 
 func (s *OneOf) WithFieldTag(tags string) parser.Types {
-	return s.InterfaceReference.WithFieldTag(tags)
+	return s.Reference.WithFieldTag(tags)
 }
 
 func (s *OneOf) FieldTag() string {
-	return s.InterfaceReference.FieldTag()
+	return s.Reference.FieldTag()
 }
 
-
 func (s *OneOf) Comment() string {
-	return s.InterfaceReference.Comment()
+	return s.Reference.Comment()
 }
 
 func (s *OneOf) Name() string {
-	return s.InterfaceReference.Name()
+	return s.Reference.Name()
 }
 
 const OneOfTemplate = `
 {{- define "oneof" -}}
-{{template "kind" .InterfaceReference }}
+{{template "kind" .Reference }}
 {{- end -}}`

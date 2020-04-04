@@ -12,7 +12,7 @@ type Resolve func(name string, schema *jsonschema.Schema) HandleSchemaFunc
 // NewSchemaContext return's a SchemaContext
 func NewSchemaContext(resolve Resolve, references map[jsonschema.ID]*jsonschema.Schema) *SchemaContext {
 	return &SchemaContext{
-		implementations: map[string][]*Method{},
+		implementations: map[string][]*MethodSignature{},
 		documents:       map[string]*Document{},
 		resolve:         resolve,
 		references:      references,
@@ -21,7 +21,7 @@ func NewSchemaContext(resolve Resolve, references map[jsonschema.ID]*jsonschema.
 
 // SchemaContext is the collection of all schema's being processed
 type SchemaContext struct {
-	implementations map[string][]*Method
+	implementations map[string][]*MethodSignature
 	resolve         Resolve
 	references      map[jsonschema.ID]*jsonschema.Schema
 	documents       map[string]*Document
@@ -56,21 +56,22 @@ func (s *SchemaContext) NewDocument(id, packageName, filename string, schema *js
 func (s *SchemaContext) Dispose() {
 	for _, doc := range s.documents {
 		for k, g := range doc.Globals {
-			arr := s.implementations[k]
-			if len(arr) > 0 {
-				g.WithMethods(arr...)
+			methodSignatures := s.implementations[k]
+			for _, methodSignature := range methodSignatures {
+				method := NewMethodFromSignature(k, methodSignature)
+				g.WithMethods(method)
 			}
 		}
 	}
 }
 
-// ImplementInterface add's any methods onto the named receiver across the entire schema
+// ImplementMethodSignature add's any methods onto the named receiver across the entire schema
 // so you can implement a interface from a reference etc
-func (s *SchemaContext) ImplementInterface(receiver string, methods ...*Method) {
+func (s *SchemaContext) ImplementMethodSignature(receiver string, methods ...*MethodSignature) {
 	if receiver != jsonschema.EmptyString {
 		switch arr, ok := s.implementations[receiver]; {
 		case !ok:
-			arr = []*Method{}
+			arr = []*MethodSignature{}
 			fallthrough
 		default:
 			arr = append(arr, methods...)

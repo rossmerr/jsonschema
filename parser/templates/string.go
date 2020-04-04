@@ -44,7 +44,6 @@ func (s *String) FieldTag() string {
 	return s.fieldTag
 }
 
-
 func (s *String) Comment() string {
 	return s.comment
 }

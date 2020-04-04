@@ -4,7 +4,7 @@ type Types interface {
 	Comment() string
 	Name() string
 	WithFieldTag(string) Types
-	FieldTag()string
+	FieldTag() string
 	WithReference(bool) Types
 	WithMethods(methods ...*Method) Types
 }

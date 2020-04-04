@@ -40,7 +40,6 @@ func (s *Array) FieldTag() string {
 	return s.fieldTag
 }
 
-
 func (s *Array) Comment() string {
 	return s.comment
 }

@@ -16,11 +16,9 @@ func HandleAllOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 		if subschema.Ref.IsNotEmpty() {
 			properties[subschema.Ref.ToTypename()] = subschema
 			continue
-
 		}
 		for key, prop := range subschema.Properties {
 			properties[key] = prop
-
 		}
 	}
 
