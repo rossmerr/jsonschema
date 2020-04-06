@@ -1,9 +1,6 @@
 package templates
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
@@ -52,55 +49,6 @@ func (s *Struct) Name() string {
 
 func (s *Struct) IsNotEmpty() bool {
 	return len(s.Fields) > 0
-}
-
-func (s *Struct) UnmarshalJSON() *parser.Method {
-
-	overrideFields := []string{}
-	for _, field := range s.Fields {
-		switch f := field.(type) {
-		case *OneOf:
-			name := f.Reference.Name()
-			tag := f.Reference.FieldTag()
-			typename := f.Reference.Type
-			overrideFields = append(overrideFields, name+" "+typename+" "+tag)
-		case *AnyOf:
-			name := f.Reference.Name()
-			tag := f.Reference.FieldTag()
-			typename := f.Reference.Type
-
-			overrideFields = append(overrideFields, name+" "+typename+" "+tag)
-		case *AllOf:
-			name := f.Struct.Name()
-			tag := f.Struct.FieldTag()
-			typename := "struct"
-
-			overrideFields = append(overrideFields, name+" "+typename+" "+tag)
-		}
-	}
-
-	if len(overrideFields) == 0 {
-		return nil
-	}
-
-	method := parser.NewMethod(s.Name(), "UnmarshalJSON")
-	method.WithInputs(parser.NewParameter("b", "[]byte"))
-	method.WithOutputs(parser.NewParameter("", "error"))
-	t := `type Alias %v
-	aux := &struct {
-		%v
-		*Alias
-	}{
-		
-		Alias: (*Alias)(s),
-	}
-	if err := json.Unmarshal(b, &aux); err != nil {
-		return err
-	}
-
-	return nil`
-	method.Body = fmt.Sprintf(t, s.Name(), strings.Join(overrideFields, "\n"))
-	return method
 }
 
 const StructTemplate = `

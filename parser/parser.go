@@ -28,7 +28,7 @@ func NewParser(packageName string) Parser {
 func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]*Document, error) {
 	documents := map[jsonschema.ID]*Document{}
 	schemaContext := NewSchemaContext(s.Process, references)
-	defer schemaContext.Dispose()
+	defer schemaContext.ImplementMethods()
 
 	for _, schema := range schemas {
 		switch schema.Type {

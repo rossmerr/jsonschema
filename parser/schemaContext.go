@@ -52,8 +52,8 @@ func (s *SchemaContext) NewDocument(id, packageName, filename string, schema *js
 	return s.document, nil
 }
 
-// Dispose add's any methods that any struct might need to implement for any interfaces
-func (s *SchemaContext) Dispose() {
+// ImplementMethods add's any methods that any struct might need to implement for any interfaces
+func (s *SchemaContext) ImplementMethods() {
 	for _, doc := range s.documents {
 		for k, g := range doc.Globals {
 			methodSignatures := s.implementations[k]
@@ -65,9 +65,9 @@ func (s *SchemaContext) Dispose() {
 	}
 }
 
-// ImplementMethodSignature add's any methods onto the named receiver across the entire schema
+// RegisterMethodSignature add's any methods onto the named receiver across all schemas
 // so you can implement a interface from a reference etc
-func (s *SchemaContext) ImplementMethodSignature(receiver string, methods ...*MethodSignature) {
+func (s *SchemaContext) RegisterMethodSignature(receiver string, methods ...*MethodSignature) {
 	if receiver != jsonschema.EmptyString {
 		switch arr, ok := s.implementations[receiver]; {
 		case !ok:

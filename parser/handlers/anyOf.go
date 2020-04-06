@@ -12,12 +12,12 @@ import (
 func HandleAnyOf(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	parent := doc.Root()
 
-	typename := parent.ID.ToTypename() + jsonschema.ToTypename(name)
+	typename := jsonschema.ToTypename(schema.Parent.Key + " " + name)
 	methodSignature := parser.NewMethodSignature(typename)
 
 	for i, subschema := range schema.AnyOf {
 		if subschema.Ref.IsNotEmpty() {
-			ctx.ImplementMethodSignature(subschema.Ref.ToTypename(), methodSignature)
+			ctx.RegisterMethodSignature(subschema.Ref.ToTypename(), methodSignature)
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
@@ -30,7 +30,7 @@ func HandleAnyOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 		} else {
 			return nil, fmt.Errorf("handleanyof: anyOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
 		}
-		ctx.ImplementMethodSignature(structname, methodSignature)
+		ctx.RegisterMethodSignature(structname, methodSignature)
 	}
 
 	doc.Globals[name] = templates.NewInterface(typename).WithMethodSignature(methodSignature)

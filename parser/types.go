@@ -8,3 +8,7 @@ type Types interface {
 	WithReference(bool) Types
 	WithMethods(methods ...*Method) Types
 }
+
+type Component interface {
+	Name() string
+}

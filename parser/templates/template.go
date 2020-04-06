@@ -7,26 +7,33 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
+var SchemaFuncMap = template.FuncMap{
+	"isStruct":    IsStruct,
+	"isArray":     IsArray,
+	"isString":    IsString,
+	"isNumber":    IsNumber,
+	"isInteger":   IsInteger,
+	"isInterface": IsInterface,
+	"isBoolean":   IsBoolean,
+	"isReference": IsReference,
+	"isEnum":      IsEnum,
+	"isConst":     IsConst,
+	"isRoot":      IsRoot,
+	"isMethod":    IsMethod,
+	"isAllOf":     IsAllOf,
+	"isAnyOf":     IsAnyOf,
+	"isOneOf":     IsOneOf,
+	"mixedCase":   MixedCase,
+	"title":       strings.Title,
+}
+
 func Template() (*template.Template, error) {
-	tmpl, err := template.New("document").Funcs(template.FuncMap{
-		"isStruct":    IsStruct,
-		"isArray":     IsArray,
-		"isString":    IsString,
-		"isNumber":    IsNumber,
-		"isInteger":   IsInteger,
-		"isInterface": IsInterface,
-		"isBoolean":   IsBoolean,
-		"isReference": IsReference,
-		"isEnum":      IsEnum,
-		"isConst":     IsConst,
-		"isRoot":      IsRoot,
-		"isMethod":    IsMethod,
-		"isAllOf":     IsAllOf,
-		"isAnyOf":     IsAnyOf,
-		"isOneOf":     IsOneOf,
-		"mixedCase":   MixedCase,
-		"title":       strings.Title,
-	}).Parse(parser.DocumentTemplate)
+	tmpl, err := template.New("document").Funcs(SchemaFuncMap).Parse(parser.DocumentTemplate)
+	return AddTemplates(tmpl, err)
+
+}
+
+func AddTemplates(tmpl *template.Template, err error) (*template.Template, error) {
 	tmpl, err = tmpl.Parse(StructTemplate)
 	if err != nil {
 		return nil, err
@@ -96,7 +103,6 @@ func Template() (*template.Template, error) {
 		return nil, err
 	}
 	return tmpl, nil
-
 }
 
 func IsStruct(obj interface{}) bool {

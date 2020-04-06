@@ -24,7 +24,9 @@ func HandleAllOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 
 	schema.Properties = properties
 
-	obj, err := HandleObject(ctx, doc, name, schema)
+	typename := jsonschema.ToTypename(schema.Parent.Key + " " + name)
+
+	obj, err := HandleObject(ctx, doc, typename, schema)
 	if err != nil {
 		return nil, err
 	}
@@ -34,5 +36,8 @@ func HandleAllOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 		return nil, fmt.Errorf("handleallof: obj not a *templates.Struct found '%v'", obj)
 	}
 
-	return &templates.AllOf{s}, nil
+	doc.Globals[typename] = templates.NewRoot(schema.Description, s)
+	r := templates.NewReference(name, "", typename)
+
+	return &templates.AllOf{r}, nil
 }
