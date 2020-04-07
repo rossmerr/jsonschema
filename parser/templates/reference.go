@@ -8,18 +8,20 @@ import (
 var _ parser.Types = (*Reference)(nil)
 
 type Reference struct {
-	Type      string
+	Types     []string
+	Type      *parser.Type
 	name      string
 	comment   string
 	fieldTag  string
 	Reference string
 }
 
-func NewReference(name, comment, typename string) *Reference {
+func NewReference(name, comment string, t *parser.Type, typenames ...string) *Reference {
 	return &Reference{
 		name:    jsonschema.ToTypename(name),
 		comment: comment,
-		Type:    typename,
+		Type:    t,
+		Types:   typenames,
 	}
 }
 
@@ -55,6 +57,7 @@ func (s *Reference) Name() string {
 
 const ReferenceTemplate = `
 {{- define "reference" -}}
-{{ .Name}} {{ .Reference}}{{ .Type}} {{ .FieldTag }}
+{{- $length := len .Types -}}
+{{ .Name}} {{ .Reference}} {{ if eq .Type.Kind.String "array" }}[]{{end}}{{.Type.Name}}  {{ .FieldTag }}
 {{- end -}}
 `

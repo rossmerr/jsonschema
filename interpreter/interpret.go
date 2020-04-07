@@ -31,7 +31,7 @@ func NewInterpret(documents map[jsonschema.ID]*parser.Document, templateStruct T
 }
 
 func NewInterpretDefaults(documents map[jsonschema.ID]*parser.Document) (Interpret, error) {
-	templates, err := templates.Template()
+	templates, err := templates.DefaultSchemaTemplate()
 	if err != nil {
 		return nil, err
 	}

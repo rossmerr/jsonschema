@@ -20,10 +20,13 @@ func HandleOneOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 	}
 
 	methodSignature := parser.NewMethodSignature(typename)
+	types := make([]string, 0)
 
 	for i, subschema := range schema.OneOf {
 		if subschema.Ref.IsNotEmpty() {
-			ctx.RegisterMethodSignature(subschema.Ref.ToKey(), methodSignature)
+			receiver := subschema.Ref.ToKey()
+			types = append(types, jsonschema.ToTypename(receiver))
+			ctx.RegisterMethodSignature(receiver, methodSignature)
 			continue
 		}
 		structname := typename + strconv.Itoa(i)
@@ -36,12 +39,14 @@ func HandleOneOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 		} else {
 			return nil, fmt.Errorf("handleoneof: oneOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
 		}
+		types = append(types, jsonschema.ToTypename(structname))
 		ctx.RegisterMethodSignature(structname, methodSignature)
 
 	}
 
-	doc.Globals[name] = templates.NewInterface(typename)
-	r := templates.NewReference(name, "", typename)
+	doc.AddImport("encoding/json")
+	doc.Globals[name] = templates.NewInterface(typename).WithMethodSignature(methodSignature)
+	r := templates.NewReference(name, "", parser.NewType(typename, parser.Object), types...)
 
 	return &templates.OneOf{r}, nil
 }

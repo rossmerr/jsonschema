@@ -20,38 +20,11 @@ func NewRoot(comment string, t parser.Types) parser.Types {
 		Methods: []*parser.Method{},
 	}
 
-	switch s := t.(type) {
-	case *Struct:
-		root.unmarshalStructJSON(s)
+	if s, ok := t.(*Struct); ok {
+		root.Methods = append(root.Methods, s.unmarshalStructJSON())
 	}
 
 	return root
-}
-
-func (s *Root) unmarshalStructJSON(str *Struct) {
-	references := []*Reference{}
-	for _, field := range str.Fields {
-		switch f := field.(type) {
-		case *OneOf:
-			references = append(references, f.Reference)
-		case *AnyOf:
-			references = append(references, f.Reference)
-		case *AllOf:
-			references = append(references, f.Reference)
-		}
-	}
-
-	if len(references) == 0 {
-		return
-	}
-
-	unmarshal, err := MethodUnmarshalJSON(str.Name(), references)
-	if err != nil {
-		panic(err)
-	}
-	if unmarshal != nil {
-		s.Methods = append(s.Methods, unmarshal)
-	}
 }
 
 func (s *Root) WithMethods(methods ...*parser.Method) parser.Types {
@@ -87,7 +60,9 @@ const RootTemplate = `
 type {{template "kind" .Type }}
 
 {{range $key, $method := .Methods -}}
-	{{template "method" $method }}
+	{{ if $method }}
+		{{template "method" $method }}
+	{{ end}}
 {{end }}
 {{- end -}}
 `

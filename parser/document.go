@@ -13,10 +13,16 @@ type Document struct {
 	Globals    map[string]Types
 	Filename   string
 	rootSchema *jsonschema.Schema
+	Imports    []string
 }
 
 func (s *Document) Root() *jsonschema.Schema {
 	return s.rootSchema
+}
+
+func (s *Document) AddImport(value string) {
+	s.Imports = append(s.Imports, value)
+	s.Imports = jsonschema.Unique(s.Imports)
 }
 
 const DocumentTemplate = `
@@ -27,6 +33,10 @@ package {{.Package}}
 {{else}}
 package main
 {{- end}}
+
+{{range $key, $import := .Imports -}}
+import "{{$import}}"
+{{end}}
 
 {{ if .ID -}}
 // ID: {{.ID}}

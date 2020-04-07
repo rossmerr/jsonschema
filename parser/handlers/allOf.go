@@ -14,7 +14,7 @@ func HandleAllOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 	for _, subschema := range schema.AllOf {
 
 		if subschema.Ref.IsNotEmpty() {
-			properties[subschema.Ref.ToTypename()] = subschema
+			properties[subschema.Ref.ToKey()] = subschema
 			continue
 		}
 		for key, prop := range subschema.Properties {
@@ -37,7 +37,7 @@ func HandleAllOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 	}
 
 	doc.Globals[typename] = templates.NewRoot(schema.Description, s)
-	r := templates.NewReference(name, "", typename)
+	r := templates.NewReference(name, "", parser.NewType(typename, parser.Object))
 
 	return &templates.AllOf{r}, nil
 }

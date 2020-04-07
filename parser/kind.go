@@ -1,5 +1,7 @@
 package parser
 
+import "strconv"
+
 type Kind int
 
 const (
@@ -15,4 +17,37 @@ const (
 	AllOf
 	Object
 	RootObject
+	Invalid
 )
+
+func (s Kind) String() string {
+	for v, k := range kindNames {
+		if k == s {
+			return v
+		}
+	}
+	return "kind" + strconv.Itoa(int(s))
+}
+
+func Parse(s string) Kind {
+	if v, ok := kindNames[s]; ok {
+		return v
+	}
+	return Invalid
+}
+
+var kindNames = map[string]Kind{
+	"boolean":    Boolean,
+	"enum":       Enum,
+	"string":     String,
+	"interger":   Interger,
+	"number":     Number,
+	"array":      Array,
+	"reference":  Reference,
+	"oneof":      OneOf,
+	"anyof":      AnyOf,
+	"allof":      AllOf,
+	"object":     Object,
+	"rootobject": RootObject,
+	"invalid":    Invalid,
+}

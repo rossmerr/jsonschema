@@ -1,5 +1,7 @@
 package parser
 
+import "github.com/RossMerr/jsonschema"
+
 type Method struct {
 	Comment  string
 	Receiver string
@@ -14,7 +16,7 @@ func NewMethod(receiver, name string) *Method {
 func NewMethodFromSignature(receiver string, methodSignature *MethodSignature) *Method {
 	return &Method{
 		Comment:         "",
-		Receiver:        receiver,
+		Receiver:        jsonschema.ToTypename(receiver),
 		MethodSignature: methodSignature,
 		Body:            "",
 	}

@@ -27,81 +27,44 @@ var SchemaFuncMap = template.FuncMap{
 	"title":       strings.Title,
 }
 
-func Template() (*template.Template, error) {
+func DefaultSchemaTemplate() (*template.Template, error) {
 	tmpl, err := template.New("document").Funcs(SchemaFuncMap).Parse(parser.DocumentTemplate)
-	return AddTemplates(tmpl, err)
+	if err != nil {
+		return nil, err
+	}
+	return AddTemplates(tmpl)
 
 }
 
-func AddTemplates(tmpl *template.Template, err error) (*template.Template, error) {
-	tmpl, err = tmpl.Parse(StructTemplate)
-	if err != nil {
-		return nil, err
+var TemplateArray = []string{
+	StructTemplate,
+	ArrayTemplate,
+	NumberTemplate,
+	IntegerTemplate,
+	StringTemplate,
+	BooleanTemplate,
+	InterfaceTemplate,
+	EnumTemplate,
+	ReferenceTemplate,
+	KindTemplate,
+	ConstTemplate,
+	RootTemplate,
+	parser.MethodTemplate,
+	AllOfTemplate,
+	AnyOfTemplate,
+	OneOfTemplate,
+	parser.MethodSignatureTemplate,
+}
+
+func AddTemplates(tmpl *template.Template) (*template.Template, error) {
+	var err error
+	for _, template := range TemplateArray {
+		tmpl, err = tmpl.Parse(template)
+		if err != nil {
+			return nil, err
+		}
 	}
-	tmpl, err = tmpl.Parse(ArrayTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(NumberTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(IntegerTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(StringTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(BooleanTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(InterfaceTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(EnumTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(ReferenceTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(KindTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(ConstTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(RootTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(parser.MethodTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(AllOfTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(AnyOfTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(OneOfTemplate)
-	if err != nil {
-		return nil, err
-	}
-	tmpl, err = tmpl.Parse(parser.MethodSignatureTemplate)
-	if err != nil {
-		return nil, err
-	}
+
 	return tmpl, nil
 }
 

@@ -22,6 +22,29 @@ func NewStruct(name, comment string, fields []parser.Types) *Struct {
 	}
 }
 
+func (s *Struct) unmarshalStructJSON() *parser.Method {
+	var references []*Reference
+	for _, field := range s.Fields {
+		switch f := field.(type) {
+		case *OneOf:
+			references = append(references, f.Reference)
+		case *AnyOf:
+			references = append(references, f.Reference)
+		}
+	}
+
+	if len(references) == 0 {
+		return nil
+	}
+
+	unmarshal, err := MethodUnmarshalJSON(s.Name(), references)
+	if err != nil {
+		panic(err)
+	}
+
+	return unmarshal
+}
+
 func (s *Struct) WithMethods(methods ...*parser.Method) parser.Types {
 	return s
 }

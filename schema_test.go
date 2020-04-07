@@ -2,6 +2,7 @@ package jsonschema_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -118,7 +119,7 @@ func TestSchemas_Generate(t *testing.T) {
 
 			t.Cleanup(func() {
 				for _, file := range files {
-					//fmt.Printf("%v", file)
+					fmt.Printf("%v", file)
 					if err := os.Remove(file); err != nil {
 						t.Error("error resetting:", err)
 					}

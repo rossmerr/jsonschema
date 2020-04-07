@@ -51,7 +51,6 @@ func (s *Interface) Name() string {
 
 const InterfaceTemplate = `
 {{- define "interface" -}}
-
 {{if .Comment -}}
 // {{ .Comment}}
 {{ else -}}

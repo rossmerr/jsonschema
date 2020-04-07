@@ -50,5 +50,5 @@ func HandleEnum(ctx *parser.SchemaContext, doc *parser.Document, name string, sc
 	// The above check for the 'typenameEnum' in the global should already cover this, so no need for a second check
 	doc.Globals[name] = templates.NewRoot(schema.Description, enum)
 
-	return templates.NewReference(name, "", enum.Name()), nil
+	return templates.NewReference(name, "", parser.NewType(enum.Name(), parser.Enum)), nil
 }
