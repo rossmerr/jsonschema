@@ -12,9 +12,10 @@ type Struct struct {
 	name     string
 	Fields   []parser.Types
 	fieldTag string
+	Methods []*parser.Method
 }
 
-func NewStruct(name, comment string, fields []parser.Types) *Struct {
+func NewStruct(name, comment string, fields ...parser.Types) *Struct {
 	return &Struct{
 		comment: comment,
 		name:    jsonschema.ToTypename(name),
@@ -46,6 +47,7 @@ func (s *Struct) unmarshalStructJSON() *parser.Method {
 }
 
 func (s *Struct) WithMethods(methods ...*parser.Method) parser.Types {
+	s.Methods = append(s.Methods, methods...)
 	return s
 }
 
@@ -76,9 +78,18 @@ func (s *Struct) IsNotEmpty() bool {
 
 const StructTemplate = `
 {{- define "struct" -}}
+{{ if .Comment -}}
+// {{.Comment}}
+{{end -}}
 {{ .Name }} struct {
 {{range $key, $propertie := .Fields -}}
 	{{template "kind" $propertie }}
 {{end -}}
 } {{ .FieldTag }}
+
+{{range $key, $method := .Methods -}}
+	{{ if $method }}
+		{{template "method" $method }}
+	{{ end}}
+{{end }}
 {{- end -}}`

@@ -4,10 +4,14 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
 var SchemaFuncMap = template.FuncMap{
+	"mixedCase":   MixedCase,
+	"typename":   Typename,
+	"title":       strings.Title,
 	"isStruct":    IsStruct,
 	"isArray":     IsArray,
 	"isString":    IsString,
@@ -18,13 +22,13 @@ var SchemaFuncMap = template.FuncMap{
 	"isReference": IsReference,
 	"isEnum":      IsEnum,
 	"isConst":     IsConst,
-	"isRoot":      IsRoot,
 	"isMethod":    IsMethod,
 	"isAllOf":     IsAllOf,
 	"isAnyOf":     IsAnyOf,
 	"isOneOf":     IsOneOf,
-	"mixedCase":   MixedCase,
-	"title":       strings.Title,
+	"isType":     IsType,
+
+
 }
 
 func DefaultSchemaTemplate() (*template.Template, error) {
@@ -48,12 +52,12 @@ var TemplateArray = []string{
 	ReferenceTemplate,
 	KindTemplate,
 	ConstTemplate,
-	RootTemplate,
 	parser.MethodTemplate,
 	AllOfTemplate,
 	AnyOfTemplate,
 	OneOfTemplate,
 	parser.MethodSignatureTemplate,
+	TypeTemplate,
 }
 
 func AddTemplates(tmpl *template.Template) (*template.Template, error) {
@@ -66,6 +70,26 @@ func AddTemplates(tmpl *template.Template) (*template.Template, error) {
 	}
 
 	return tmpl, nil
+}
+
+func MixedCase(raw string) string {
+	if len(raw) < 1 {
+		return raw
+	}
+	s := strings.Title(raw)
+	return strings.ToLower(s[0:1]) + s[1:]
+}
+
+func Typename(raw string) string {
+	if len(raw) < 1 {
+		return raw
+	}
+	return jsonschema.ToTypename(raw)
+}
+
+func IsType(obj interface{}) bool {
+	_, ok := obj.(*Type)
+	return ok
 }
 
 func IsStruct(obj interface{}) bool {
@@ -118,11 +142,6 @@ func IsConst(obj interface{}) bool {
 	return ok
 }
 
-func IsRoot(obj interface{}) bool {
-	_, ok := obj.(*Root)
-	return ok
-}
-
 func IsMethod(obj interface{}) bool {
 	_, ok := obj.(*parser.Method)
 	return ok
@@ -143,10 +162,3 @@ func IsOneOf(obj interface{}) bool {
 	return ok
 }
 
-func MixedCase(raw string) string {
-	if len(raw) < 1 {
-		return raw
-	}
-	s := strings.Title(raw)
-	return strings.ToLower(s[0:1]) + s[1:]
-}

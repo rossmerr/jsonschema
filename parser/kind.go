@@ -16,7 +16,7 @@ const (
 	AnyOf
 	AllOf
 	Object
-	RootObject
+	Root
 	Invalid
 )
 
@@ -48,6 +48,6 @@ var kindNames = map[string]Kind{
 	"anyof":      AnyOf,
 	"allof":      AllOf,
 	"object":     Object,
-	"rootobject": RootObject,
+	"root": Root,
 	"invalid":    Invalid,
 }

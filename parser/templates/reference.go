@@ -1,7 +1,6 @@
 package templates
 
 import (
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
@@ -18,7 +17,7 @@ type Reference struct {
 
 func NewReference(name, comment string, t *parser.Type, typenames ...string) *Reference {
 	return &Reference{
-		name:    jsonschema.ToTypename(name),
+		name:    name,
 		comment: comment,
 		Type:    t,
 		Types:   typenames,
@@ -30,6 +29,9 @@ func (s *Reference) WithMethods(methods ...*parser.Method) parser.Types {
 }
 
 func (s *Reference) WithReference(ref bool) parser.Types {
+	if s.Type.Kind == parser.Reference || s.Type.Kind == parser.Array {
+		return s
+	}
 	if ref {
 		s.Reference = "*"
 	} else {
@@ -58,6 +60,6 @@ func (s *Reference) Name() string {
 const ReferenceTemplate = `
 {{- define "reference" -}}
 {{- $length := len .Types -}}
-{{ .Name}} {{ .Reference}} {{ if eq .Type.Kind.String "array" }}[]{{end}}{{.Type.Name}}  {{ .FieldTag }}
+{{ typename .Name}} {{ .Reference}} {{ if eq .Type.Kind.String "array" }}[]{{end}}{{typename .Type.Name}}  {{ .FieldTag }}
 {{- end -}}
 `

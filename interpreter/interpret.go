@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"unicode"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
@@ -21,6 +22,7 @@ type Interpret interface {
 type interpret struct {
 	documents      map[jsonschema.ID]*parser.Document
 	templateStruct Template
+	packagename string
 }
 
 func NewInterpret(documents map[jsonschema.ID]*parser.Document, templateStruct Template) Interpret {
@@ -44,7 +46,9 @@ func (s *interpret) ToFile(output string) ([]string, error) {
 	red := color.FgRed.Render
 
 	for _, obj := range s.documents {
-		filename := path.Join(output, obj.Filename+".go")
+		obj.WithPackageName(s.packagename)
+
+		filename := path.Join(output, toFilename(obj.ID)+".go")
 
 		_, err := os.Stat(filename)
 		if !os.IsNotExist(err) {
@@ -91,4 +95,15 @@ func (s *interpret) ToFile(output string) ([]string, error) {
 	fmt.Printf(green("✓")+" Create %v files\n", len(s.documents))
 
 	return files, nil
+}
+
+// toFilename returns the file name from the ID.
+func toFilename(s string) string {
+	id := jsonschema.ID(s)
+	name := id.ToTypename()
+
+	if len(name) > 0 {
+		return string(unicode.ToLower(rune(name[0]))) + name[1:]
+	}
+	return name
 }

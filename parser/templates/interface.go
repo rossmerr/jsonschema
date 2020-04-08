@@ -16,7 +16,7 @@ type Interface struct {
 
 func NewInterface(typename string) *Interface {
 	return &Interface{
-		name: typename,
+		name: jsonschema.ToTypename(typename),
 	}
 }
 

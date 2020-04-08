@@ -9,7 +9,7 @@ import (
 )
 
 func HandleReference(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
-	typename, err := ctx.ResolvePointer(schema.Ref)
+	typename, err := ctx.ResolvePointer(schema.Ref, doc)
 
 	if err != nil {
 		fmt.Printf("handlereference: reference not found %v\n", schema.Ref)

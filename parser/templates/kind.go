@@ -5,6 +5,9 @@ const KindTemplate = `
 	{{- if isReference . -}}
 		{{- template "reference" . -}}
 	{{end -}}
+	{{- if isType . -}}
+		{{- template "type" . -}}
+	{{end -}}
 	{{- if isInterface . -}}
 		{{- template "interface" . -}}
 	{{end -}}
@@ -31,9 +34,6 @@ const KindTemplate = `
 	{{end -}}
 	{{- if isConst . -}}
 		{{- template "const" . -}}
-	{{end -}}
-	{{- if isRoot . -}}
-		{{- template "root" . -}}
 	{{end -}}
 	{{- if isMethod . -}}
 		{{- template "method" . -}}

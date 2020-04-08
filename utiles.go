@@ -1,6 +1,7 @@
 package jsonschema
 
 import (
+	"go/token"
 	"log"
 	"path/filepath"
 	"regexp"
@@ -82,7 +83,12 @@ func ToTypename(s string) string {
 
 	// Valid field names must start with a unicode letter
 	if !unicode.IsLetter(rune(name[0])) {
-		name = "No" + name
+		name = "No " + name
+	}
+
+	// Valid field names must not be a reserved word
+	if token.IsKeyword(name) {
+		name = "Key " + name
 	}
 
 	return title(name)

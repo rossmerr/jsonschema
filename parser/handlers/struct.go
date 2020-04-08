@@ -15,7 +15,7 @@ func HandleObject(ctx *parser.SchemaContext, doc *parser.Document, name string, 
 
 	fields := []parser.Types{}
 	for key, propertie := range schema.Properties {
-		s, err := ctx.Process(key, propertie)
+		s, err := ctx.Process(doc, key, propertie)
 		if err != nil {
 			return nil, err
 		}
@@ -27,7 +27,7 @@ func HandleObject(ctx *parser.SchemaContext, doc *parser.Document, name string, 
 
 		s.WithFieldTag(fieldTag).WithReference(ref)
 
-		if _, ok := s.(*templates.Root); ok {
+		if _, ok := s.(*templates.Enum); ok {
 			continue
 		}
 
@@ -35,15 +35,21 @@ func HandleObject(ctx *parser.SchemaContext, doc *parser.Document, name string, 
 	}
 
 	for key, def := range schema.AllDefinitions() {
-		t, err := ctx.Process(key, def)
+		t, err := ctx.Process(doc, key, def)
 		if err != nil {
 			return nil, err
 		}
 
-		if _, contains := doc.Globals[key]; !contains {
-			doc.Globals[key] = templates.NewRoot(schema.Description, t)
+
+		if _, ok := t.(*templates.OneOf); ! ok {
+			t = templates.NewType(key, schema.Description, t)
+
+			if _, contains := doc.Globals[key]; !contains {
+				doc.Globals[key] = t
+			}
 		}
+
 	}
 
-	return templates.NewStruct(name, schema.Description, fields), nil
+	return templates.NewStruct(name, schema.Description, fields...), nil
 }

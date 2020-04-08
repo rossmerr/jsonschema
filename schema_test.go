@@ -15,7 +15,7 @@ import (
 
 func TestSchemas_Generate(t *testing.T) {
 
-	os.MkdirAll("output/", 0755)
+	os.MkdirAll("sample_schemas/output/", 0755)
 
 	type fields struct {
 		documents map[jsonschema.ID]*jsonschema.Schema
@@ -29,49 +29,49 @@ func TestSchemas_Generate(t *testing.T) {
 		{
 			name: "Basic",
 			fields: fields{
-				paths: []string{"samples/basic.json"},
+				paths: []string{"sample_schemas/basic.json"},
 			},
 		},
 		{
 			name: "Enum",
 			fields: fields{
-				paths: []string{"samples/enum.json"},
+				paths: []string{"sample_schemas/enum.json"},
 			},
 		},
 		{
 			name: "Nesting data structures",
 			fields: fields{
-				paths: []string{"samples/nesting.json"},
+				paths: []string{"sample_schemas/nesting.json"},
 			},
 		},
 		{
 			name: "References inside the schema",
 			fields: fields{
-				paths: []string{"samples/reference.json"},
+				paths: []string{"sample_schemas/reference.json"},
 			},
 		},
 		{
 			name: "References outside the schema",
 			fields: fields{
-				paths: []string{"samples/reference-outside.schema.json", "samples/reference-outside.json"},
+				paths: []string{"sample_schemas/reference-outside.schema.json", "sample_schemas/reference-outside.json"},
 			},
 		},
 		{
 			name: "Oneof",
 			fields: fields{
-				paths: []string{"samples/oneof.json"},
+				paths: []string{"sample_schemas/oneof.json"},
 			},
 		},
 		{
 			name: "AnyOf",
 			fields: fields{
-				paths: []string{"samples/anyof.json"},
+				paths: []string{"sample_schemas/anyof.json"},
 			},
 		},
 		{
 			name: "AllOf",
 			fields: fields{
-				paths: []string{"samples/allof.json"},
+				paths: []string{"sample_schemas/allof.json"},
 			},
 		},
 	}
@@ -112,7 +112,7 @@ func TestSchemas_Generate(t *testing.T) {
 			if err != nil {
 				t.Error(err)
 			}
-			if files, err = interpret.ToFile("output/"); (err != nil) != tt.wantErr {
+			if files, err = interpret.ToFile("sample_schemas/output/"); (err != nil) != tt.wantErr {
 				t.Errorf("Schemas.Generate() error = %v, wantErr %v", err, tt.wantErr)
 				files = []string{}
 			}
@@ -120,17 +120,17 @@ func TestSchemas_Generate(t *testing.T) {
 			t.Cleanup(func() {
 				for _, file := range files {
 					fmt.Printf("%v", file)
-					if err := os.Remove(file); err != nil {
-						t.Error("error resetting:", err)
-					}
+					// if err := os.Remove(file); err != nil {
+					// 	t.Error("error resetting:", err)
+					// }
 				}
 			})
 		})
 	}
 
-	t.Cleanup(func() {
-		if !t.Failed() {
-			os.RemoveAll("output/")
-		}
-	})
+	// t.Cleanup(func() {
+	// 	if !t.Failed() {
+	// 		os.RemoveAll("sample_schemas/output/")
+	// 	}
+	// })
 }

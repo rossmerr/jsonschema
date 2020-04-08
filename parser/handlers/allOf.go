@@ -36,7 +36,7 @@ func HandleAllOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 		return nil, fmt.Errorf("handleallof: obj not a *templates.Struct found '%v'", obj)
 	}
 
-	doc.Globals[typename] = templates.NewRoot(schema.Description, s)
+	doc.Globals[typename] = templates.NewType(name, schema.Description, s)
 	r := templates.NewReference(name, "", parser.NewType(typename, parser.Object))
 
 	return &templates.AllOf{r}, nil

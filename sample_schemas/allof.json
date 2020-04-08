@@ -1,0 +1,38 @@
+{
+  "$id": "http://example.com/allof.json",
+  "$schema": "https://json-schema.org/2019-09/schema",
+  "type": "object",
+  "required": [
+    "storage"
+  ],
+  "properties": {
+    "allof": {
+      "properties": {
+        "storage": {
+          "type": "object",
+          "allof": [
+            {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "speed": {
+                  "type": "number"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/test2"
+            }
+          ]
+        }
+      },
+      "definitions": {
+        "test2": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

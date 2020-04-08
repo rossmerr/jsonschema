@@ -2,7 +2,6 @@ package parser
 
 import (
 	"fmt"
-	"unicode"
 
 	"github.com/RossMerr/jsonschema"
 )
@@ -28,21 +27,21 @@ func NewParser(packageName string) Parser {
 func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]*Document, error) {
 	documents := map[jsonschema.ID]*Document{}
 	schemaContext := NewSchemaContext(s.Process, references)
-	defer schemaContext.ImplementMethods()
-
 	for _, schema := range schemas {
 		switch schema.Type {
 		case jsonschema.Object:
 
-			doc, err := schemaContext.NewDocument(schema.ID.String(), s.packageName, toFilename(schema.ID), schema)
+			t, err := schemaContext.Process(nil,"", schema)
 			if err != nil {
-				return nil, fmt.Errorf("parse: %w", err)
+				return nil, fmt.Errorf("schemacontext: %w", err)
 			}
 
-			documents[schema.ID] = doc
+			if doc, ok := t.(*Document); ok {
+				documents[schema.ID] = doc
+			}
 		}
 	}
-
+	schemaContext.ImplementMethods(documents)
 	return documents, nil
 }
 
@@ -54,9 +53,13 @@ func (s *parser) HandlerFunc(kind Kind, handler HandleSchemaFunc) {
 	}
 }
 
-func (s *parser) Process(name string, schema *jsonschema.Schema) HandleSchemaFunc {
+func (s *parser) Process(name string, schema *jsonschema.Schema, document *Document,) HandleSchemaFunc {
+	if document == nil {
+		return s.handlers[Root]
+	}
+
 	var handler HandleSchemaFunc
-	switch kind, ref, oneOf, anyOf, allOf, enum, isParent := schema.Stat(); {
+	switch kind, ref, oneOf, anyOf, allOf, enum := schema.Stat(); {
 	case kind == jsonschema.Boolean:
 		handler = s.handlers[Boolean]
 	case len(enum) > 0:
@@ -77,8 +80,6 @@ func (s *parser) Process(name string, schema *jsonschema.Schema) HandleSchemaFun
 		handler = s.handlers[AnyOf]
 	case len(allOf) > 0:
 		handler = s.handlers[AllOf]
-	case isParent:
-		handler = s.handlers[RootObject]
 	default:
 		handler = s.handlers[Object]
 	}
@@ -90,12 +91,3 @@ func (s *parser) Process(name string, schema *jsonschema.Schema) HandleSchemaFun
 	return handler
 }
 
-// toFilename returns the file name from the ID.
-func toFilename(s jsonschema.ID) string {
-	name := s.ToTypename()
-
-	if len(name) > 0 {
-		return string(unicode.ToLower(rune(name[0]))) + name[1:]
-	}
-	return name
-}

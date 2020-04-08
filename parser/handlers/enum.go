@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
@@ -23,15 +22,10 @@ import (
 func HandleEnum(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
 	constItems := []*templates.ConstItem{}
 
-	if schema.Parent != nil {
-		name = strings.Join([]string{jsonschema.ToTypename(schema.Parent.Key), jsonschema.ToTypename(name)}, "_")
-		name = strings.TrimLeft(name, "_")
-	}
-
 	for _, value := range schema.Enum {
 		c := templates.ConstItem{
 			Name:  jsonschema.ToTypename(value),
-			Type:  name,
+			Type:  jsonschema.ToTypename(name),
 			Value: value,
 		}
 		constItems = append(constItems, &c)
@@ -48,7 +42,7 @@ func HandleEnum(ctx *parser.SchemaContext, doc *parser.Document, name string, sc
 	enum := templates.NewEnum(name, schema.Description, schema.Type.String(), schema.Enum, constItems)
 
 	// The above check for the 'typenameEnum' in the global should already cover this, so no need for a second check
-	doc.Globals[name] = templates.NewRoot(schema.Description, enum)
+	doc.Globals[name] = enum
 
 	return templates.NewReference(name, "", parser.NewType(enum.Name(), parser.Enum)), nil
 }

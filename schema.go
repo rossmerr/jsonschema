@@ -90,6 +90,6 @@ func (s *Schema) AllDefinitions() map[string]*Schema {
 	return definitions
 }
 
-func (s *Schema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string, bool) {
-	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf, s.Enum, s.Parent == nil
+func (s *Schema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string) {
+	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf, s.Enum
 }

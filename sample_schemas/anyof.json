@@ -1,0 +1,26 @@
+{
+  "$id": "http://example.com/anyof.json",
+  "$schema": "https://json-schema.org/2019-09/schema",
+  "type": "object",
+  "required": [ "storage" ],
+  "properties": {
+    "anyof": {
+      "properties": {
+        "storage": {
+          "type": "object",
+          "anyof": [
+            {
+              "$ref": "#/definitions/test"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "definitions": {
+    "test" :  { "type": "string" }
+  }
+}
