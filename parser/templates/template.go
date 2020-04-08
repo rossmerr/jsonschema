@@ -34,7 +34,7 @@ var SchemaFuncMap = template.FuncMap{
 }
 
 func DefaultSchemaTemplate() (*template.Template, error) {
-	tmpl, err := template.New("document").Funcs(SchemaFuncMap).Parse(parser.DocumentTemplate)
+	tmpl, err := template.New("document").Funcs(SchemaFuncMap).Parse(DocumentTemplate)
 	if err != nil {
 		return nil, err
 	}

@@ -1,18 +1,17 @@
-package parser
+package templates
 
 import (
 	"github.com/RossMerr/jsonschema"
+	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ Types = (*Document)(nil)
-
-type Process func(name string, schema *jsonschema.Schema) (Types, error)
-type HandleSchemaFunc func(*SchemaContext, *Document, string, *jsonschema.Schema) (Types, error)
+var _ parser.Component = (*Document)(nil)
+var _ parser.Root = (*Document)(nil)
 
 type Document struct {
 	ID         string
 	Package    string
-	Globals    map[string]Types
+	globals    map[string]parser.Component
 	rootSchema *jsonschema.Schema
 	Imports    []string
 }
@@ -22,7 +21,7 @@ func NewDocument(schema *jsonschema.Schema) *Document {
 
 	document := &Document{
 		ID:         schema.ID.String(),
-		Globals:    map[string]Types{},
+		globals:    map[string]parser.Component{},
 		rootSchema: schema,
 	}
 
@@ -38,33 +37,16 @@ func (s *Document) Root() *jsonschema.Schema {
 	return s.rootSchema
 }
 
-func (s *Document) WithMethods(methods ...*Method) Types {
-	return s
-}
-
-func (s *Document) WithReference(ref bool) Types {
-	return s
-}
-
-func (s *Document) WithFieldTag(tags string) Types {
-	return s
-}
-
-func (s *Document) FieldTag() string {
-	return EmptyString
-}
-
-func (s *Document) Comment() string {
-	return EmptyString
+func (s *Document) Globals() map[string]parser.Component {
+	return s.globals
 }
 
 func (s *Document) Name() string {
 	return EmptyString
 }
 
-func (s *Document) WithPackageName(packagename string) Types {
+func (s *Document) WithPackageName(packagename string)  {
 	s.Package = packagename
-	return s
 }
 
 func unique(slice []string) []string {

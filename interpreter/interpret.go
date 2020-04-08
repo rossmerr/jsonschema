@@ -23,19 +23,19 @@ type Interpret interface {
 }
 
 type interpret struct {
-	documents      map[jsonschema.ID]parser.Types
+	documents      map[jsonschema.ID]parser.Component
 	templateStruct Template
 	packagename    string
 }
 
-func NewInterpret(documents map[jsonschema.ID]parser.Types, templateStruct Template) Interpret {
+func NewInterpret(documents map[jsonschema.ID]parser.Component, templateStruct Template) Interpret {
 	return &interpret{
 		documents:      documents,
 		templateStruct: templateStruct,
 	}
 }
 
-func NewInterpretDefaults(documents map[jsonschema.ID]parser.Types) (Interpret, error) {
+func NewInterpretDefaults(documents map[jsonschema.ID]parser.Component) (Interpret, error) {
 	templates, err := templates.DefaultSchemaTemplate()
 	if err != nil {
 		return nil, err

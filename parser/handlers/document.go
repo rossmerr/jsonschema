@@ -6,8 +6,8 @@ import (
 	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
-func HandleDocument(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
-	document := parser.NewDocument(schema)
+func HandleDocument(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
+	document := templates.NewDocument(schema)
 	for key, propertie := range schema.Properties {
 		t, err := ctx.Process(document, key, propertie)
 		if err != nil {
@@ -19,8 +19,8 @@ func HandleDocument(ctx *parser.SchemaContext, doc *parser.Document, name string
 			continue
 		default:
 			t = templates.NewType(schema.Description, t)
-			if _, contains := document.Globals[key]; !contains {
-				document.Globals[key] = t
+			if _, contains := document.Globals()[key]; !contains {
+				document.Globals()[key] = t
 			}
 		}
 
@@ -33,8 +33,8 @@ func HandleDocument(ctx *parser.SchemaContext, doc *parser.Document, name string
 		if _, ok := t.(*templates.OneOf); !ok {
 			t = templates.NewType(schema.Description, t)
 
-			if _, contains := document.Globals[key]; !contains {
-				document.Globals[key] = t
+			if _, contains := document.Globals()[key]; !contains {
+				document.Globals()[key] = t
 			}
 		}
 	}

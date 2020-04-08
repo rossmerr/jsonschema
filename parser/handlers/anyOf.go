@@ -9,8 +9,7 @@ import (
 	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
-func HandleAnyOf(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
-	parent := doc.Root()
+func HandleAnyOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
 
 	methodSignature := parser.NewMethodSignature(name)
 
@@ -27,16 +26,16 @@ func HandleAnyOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 		if err != nil {
 			return nil, err
 		}
-		if _, ok := doc.Globals[structname]; !ok {
-			doc.Globals[structname] = templates.NewType(schema.Description, t)
+		if _, ok := doc.Globals()[structname]; !ok {
+			doc.Globals()[structname] = templates.NewType(schema.Description, t)
 		} else {
-			return nil, fmt.Errorf("handleanyof: anyOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
+			return nil, fmt.Errorf("handleanyof: anyOf, global keys need to be unique found %v more than once", structname)
 		}
 		types = append(types, structname)
 		ctx.RegisterMethodSignature(structname, methodSignature)
 	}
 	doc.AddImport("encoding/json")
-	doc.Globals[name] = templates.NewInterface(name).WithMethodSignature(methodSignature)
+	doc.Globals()[name] = templates.NewInterface(name).WithMethodSignature(methodSignature)
 	r := templates.NewReference(name, "", parser.NewType(name, parser.Array), types...)
 	return &templates.AnyOf{r}, nil
 }

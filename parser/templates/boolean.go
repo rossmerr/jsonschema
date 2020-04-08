@@ -4,7 +4,8 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Types = (*Boolean)(nil)
+var _ parser.Component = (*Boolean)(nil)
+var _ parser.Field = (*Boolean)(nil)
 
 type Boolean struct {
 	comment   string
@@ -20,11 +21,9 @@ func NewBoolean(name, comment string) *Boolean {
 	}
 }
 
-func (s *Boolean) WithMethods(methods ...*parser.Method) parser.Types {
-	return s
-}
 
-func (s *Boolean) WithReference(ref bool) parser.Types {
+
+func (s *Boolean) WithReference(ref bool) parser.Field {
 	if ref {
 		s.Reference = "*"
 	} else {
@@ -33,7 +32,7 @@ func (s *Boolean) WithReference(ref bool) parser.Types {
 	return s
 }
 
-func (s *Boolean) WithFieldTag(tags string) parser.Types {
+func (s *Boolean) WithFieldTag(tags string) parser.Field {
 	s.fieldTag = tags
 	return s
 }

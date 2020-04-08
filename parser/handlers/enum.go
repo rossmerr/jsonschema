@@ -19,7 +19,7 @@ import (
 // ignored in the calling code of HandleStruct, because it will try and add the returned Reference
 // to the global level but as it's name/key will match on the already added Enum name/key bellow it will
 // get ignored
-func HandleEnum(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
+func HandleEnum(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
 	constItems := []*templates.ConstItem{}
 
 	for _, value := range schema.Enum {
@@ -33,8 +33,8 @@ func HandleEnum(ctx *parser.SchemaContext, doc *parser.Document, name string, sc
 	c := templates.NewConst(constItems...)
 
 	typenameEnum := name + " Items"
-	if _, contains := doc.Globals[typenameEnum]; !contains {
-		doc.Globals[typenameEnum] = c
+	if _, contains := doc.Globals()[typenameEnum]; !contains {
+		doc.Globals()[typenameEnum] = c
 	} else {
 		return nil, fmt.Errorf("handleenum: enum, global keys need to be unique found %v more than once, in %v", name, schema.Parent.ID)
 	}
@@ -42,7 +42,7 @@ func HandleEnum(ctx *parser.SchemaContext, doc *parser.Document, name string, sc
 	enum := templates.NewEnum(name, schema.Description, schema.Type.String(), schema.Enum, constItems)
 
 	// The above check for the 'typenameEnum' in the global should already cover this, so no need for a second check
-	doc.Globals[name] = enum
+	doc.Globals()[name] = enum
 
 	return templates.NewReference(name, "", parser.NewType(enum.Name(), parser.Enum)), nil
 }

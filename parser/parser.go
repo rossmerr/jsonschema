@@ -7,7 +7,7 @@ import (
 )
 
 type Parser interface {
-	Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]Types, error)
+	Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]Component, error)
 	HandlerFunc(kind Kind, handler HandleSchemaFunc)
 }
 
@@ -24,8 +24,8 @@ func NewParser(packageName string) Parser {
 	return parser
 }
 
-func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]Types, error) {
-	documents := map[jsonschema.ID]Types{}
+func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]Component, error) {
+	documents := map[jsonschema.ID]Component{}
 	schemaContext := NewSchemaContext(s.packageName, s.Process, references)
 	for _, schema := range schemas {
 		switch schema.Type {
@@ -50,7 +50,7 @@ func (s *parser) HandlerFunc(kind Kind, handler HandleSchemaFunc) {
 	}
 }
 
-func (s *parser) Process(name string, schema *jsonschema.Schema, document *Document) HandleSchemaFunc {
+func (s *parser) Process(schema *jsonschema.Schema, document Root) HandleSchemaFunc {
 
 	var handler HandleSchemaFunc
 	switch kind, ref, oneOf, anyOf, allOf, enum := schema.Stat(); {

@@ -4,30 +4,10 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Types = (*List)(nil)
+var _ parser.Component = (*List)(nil)
 
 type List struct {
-	Items []parser.Types
-}
-
-func (s *List) WithMethods(methods ...*parser.Method) parser.Types {
-	return s
-}
-
-func (s *List) WithReference(ref bool) parser.Types {
-	return s
-}
-
-func (s *List) WithFieldTag(tags string) parser.Types {
-	return s
-}
-
-func (s *List) FieldTag() string {
-	return EmptyString
-}
-
-func (s *List) Comment() string {
-	return ""
+	Items []parser.Component
 }
 
 func (s *List) Name() string {

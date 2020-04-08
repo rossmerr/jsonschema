@@ -4,7 +4,8 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Types = (*Enum)(nil)
+var _ parser.Component = (*Enum)(nil)
+var _ parser.Field = (*Enum)(nil)
 
 type Enum struct {
 	comment   string
@@ -16,7 +17,7 @@ type Enum struct {
 	items     []*ConstItem
 }
 
-func NewEnum(name, comment, typename string, values []string, items []*ConstItem) parser.Types {
+func NewEnum(name, comment, typename string, values []string, items []*ConstItem) *Enum {
 	return &Enum{
 		comment: comment,
 		name:    name,
@@ -25,15 +26,12 @@ func NewEnum(name, comment, typename string, values []string, items []*ConstItem
 		items:   items,
 	}
 }
-func (s *Enum) WithMethods(methods ...*parser.Method) parser.Types {
+
+func (s *Enum) WithReference(ref bool) parser.Field {
 	return s
 }
 
-func (s *Enum) WithReference(ref bool) parser.Types {
-	return s
-}
-
-func (s *Enum) WithFieldTag(tags string) parser.Types {
+func (s *Enum) WithFieldTag(tags string) parser.Field {
 	s.fieldTag = tags
 	return s
 }
@@ -52,6 +50,9 @@ func (s *Enum) Name() string {
 
 const EnumTemplate = `
 {{- define "enum" -}}
+{{ if .Comment -}}
+// {{.Comment}}
+{{end -}}
 type {{ typename .Name}} {{ .Type }} 
 {{end -}}
 `

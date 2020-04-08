@@ -4,7 +4,7 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Types = (*Interface)(nil)
+var _ parser.Component = (*Interface)(nil)
 
 type Interface struct {
 	comment                string
@@ -19,25 +19,9 @@ func NewInterface(typename string) *Interface {
 	}
 }
 
-func (s *Interface) WithMethodSignature(methodSignature ...*parser.MethodSignature) parser.Types {
+func (s *Interface) WithMethodSignature(methodSignature ...*parser.MethodSignature) *Interface {
 	s.MethodSignatures = append(s.MethodSignatures, methodSignature...)
 	return s
-}
-
-func (s *Interface) WithMethods(methods ...*parser.Method) parser.Types {
-	return s
-}
-
-func (s *Interface) WithReference(ref bool) parser.Types {
-	return s
-}
-
-func (s *Interface) WithFieldTag(tags string) parser.Types {
-	return s
-}
-
-func (s *Interface) FieldTag() string {
-	return EmptyString
 }
 
 func (s *Interface) Comment() string {

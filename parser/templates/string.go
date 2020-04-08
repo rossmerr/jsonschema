@@ -4,7 +4,8 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Types = (*String)(nil)
+var _ parser.Component = (*String)(nil)
+var _ parser.Field = (*String)(nil)
 
 type String struct {
 	comment   string
@@ -21,11 +22,7 @@ func NewString(name, comment string) *String {
 	}
 }
 
-func (s *String) WithMethods(methods ...*parser.Method) parser.Types {
-	return s
-}
-
-func (s *String) WithReference(ref bool) parser.Types {
+func (s *String) WithReference(ref bool) parser.Field {
 	if ref {
 		s.Reference = "*"
 	} else {
@@ -34,7 +31,7 @@ func (s *String) WithReference(ref bool) parser.Types {
 	return s
 }
 
-func (s *String) WithFieldTag(tags string) parser.Types {
+func (s *String) WithFieldTag(tags string) parser.Field {
 	s.fieldTag = tags
 	return s
 }
@@ -47,9 +44,9 @@ func (s *String) Comment() string {
 	return s.comment
 }
 
-func (s *String) AppendMethods(methods []string) {
-	s.Methods = append(s.Methods, methods...)
-}
+// func (s *String) AppendMethods(methods []string) {
+// 	s.Methods = append(s.Methods, methods...)
+// }
 
 func (s *String) Name() string {
 	return s.name
@@ -62,8 +59,10 @@ const StringTemplate = `
 {{end -}}
 {{ typename .Name}} {{ .Reference}}string {{ .FieldTag }}
 
-{{- range $key, $method := .Methods -}}
-	func (s *{{ $.Name }}) {{$method}}(){}
-{{end -}}
+
 {{- end -}}
 `
+
+// {{- range $key, $method := .Methods -}}
+// func (s *{{ $.Name }}) {{$method}}(){}
+// {{end -}}

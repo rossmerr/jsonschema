@@ -4,7 +4,8 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Types = (*Integer)(nil)
+var _ parser.Component = (*Integer)(nil)
+var _ parser.Field = (*Integer)(nil)
 
 type Integer struct {
 	comment   string
@@ -20,11 +21,7 @@ func NewInteger(name, comment string) *Integer {
 	}
 }
 
-func (s *Integer) WithMethods(methods ...*parser.Method) parser.Types {
-	return s
-}
-
-func (s *Integer) WithReference(ref bool) parser.Types {
+func (s *Integer) WithReference(ref bool) parser.Field {
 	if ref {
 		s.Reference = "*"
 	} else {
@@ -33,7 +30,7 @@ func (s *Integer) WithReference(ref bool) parser.Types {
 	return s
 }
 
-func (s *Integer) WithFieldTag(tags string) parser.Types {
+func (s *Integer) WithFieldTag(tags string) parser.Field {
 	s.fieldTag = tags
 	return s
 }

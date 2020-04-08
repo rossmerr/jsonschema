@@ -4,7 +4,8 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Types = (*Reference)(nil)
+var _ parser.Component = (*Reference)(nil)
+var _ parser.Field = (*Reference)(nil)
 
 type Reference struct {
 	Types     []string
@@ -24,11 +25,8 @@ func NewReference(name, comment string, t *parser.Type, typenames ...string) *Re
 	}
 }
 
-func (s *Reference) WithMethods(methods ...*parser.Method) parser.Types {
-	return s
-}
 
-func (s *Reference) WithReference(ref bool) parser.Types {
+func (s *Reference) WithReference(ref bool) parser.Field {
 	if s.Type.Kind == parser.Reference || s.Type.Kind == parser.Array {
 		return s
 	}
@@ -40,7 +38,7 @@ func (s *Reference) WithReference(ref bool) parser.Types {
 	return s
 }
 
-func (s *Reference) WithFieldTag(tags string) parser.Types {
+func (s *Reference) WithFieldTag(tags string) parser.Field {
 	s.fieldTag = tags
 	return s
 }
@@ -60,6 +58,9 @@ func (s *Reference) Name() string {
 const ReferenceTemplate = `
 {{- define "reference" -}}
 {{- $length := len .Types -}}
+{{ if .Comment -}}
+// {{.Comment}}
+{{end -}}
 {{ typename .Name}} {{ .Reference}} {{ if eq .Type.Kind.String "array" }}[]{{end}}{{typename .Type.Name}}  {{ .FieldTag }}
 {{- end -}}
 `

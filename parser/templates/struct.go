@@ -4,17 +4,19 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Types = (*Struct)(nil)
+var _ parser.Component = (*Struct)(nil)
+var _ parser.Field = (*Struct)(nil)
+var _ parser.Receiver = (*Struct)(nil)
 
 type Struct struct {
 	comment  string
 	name     string
-	Fields   []parser.Types
+	Fields   []parser.Component
 	fieldTag string
 	Methods  []*parser.Method
 }
 
-func NewStruct(name, comment string, fields ...parser.Types) *Struct {
+func NewStruct(name, comment string, fields ...parser.Component) *Struct {
 	return &Struct{
 		comment: comment,
 		name:    name,
@@ -45,16 +47,15 @@ func (s *Struct) unmarshalStructJSON() *parser.Method {
 	return unmarshal
 }
 
-func (s *Struct) WithMethods(methods ...*parser.Method) parser.Types {
+func (s *Struct) WithMethods(methods ...*parser.Method)  {
 	s.Methods = append(s.Methods, methods...)
+}
+
+func (s *Struct) WithReference(ref bool) parser.Field {
 	return s
 }
 
-func (s *Struct) WithReference(ref bool) parser.Types {
-	return s
-}
-
-func (s *Struct) WithFieldTag(tags string) parser.Types {
+func (s *Struct) WithFieldTag(tags string) parser.Field {
 	s.fieldTag = tags
 	return s
 }
@@ -71,6 +72,7 @@ func (s *Struct) Name() string {
 	return s.name
 }
 
+// TODO delete
 func (s *Struct) IsNotEmpty() bool {
 	return len(s.Fields) > 0
 }

@@ -8,7 +8,7 @@ const (
 	EmptyString = ""
 )
 
-var _ parser.Types = (*Const)(nil)
+var _ parser.Component = (*Const)(nil)
 
 type Const struct {
 	List []*ConstItem
@@ -24,26 +24,6 @@ func NewConst(list ...*ConstItem) *Const {
 	return &Const{
 		List: list,
 	}
-}
-
-func (s *Const) WithMethods(methods ...*parser.Method) parser.Types {
-	return s
-}
-
-func (s *Const) WithReference(ref bool) parser.Types {
-	return s
-}
-
-func (s *Const) WithFieldTag(tags string) parser.Types {
-	return s
-}
-
-func (s *Const) FieldTag() string {
-	return EmptyString
-}
-
-func (s *Const) Comment() string {
-	return EmptyString
 }
 
 func (s *Const) Name() string {

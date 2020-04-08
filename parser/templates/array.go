@@ -4,7 +4,8 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Types = (*Array)(nil)
+var _ parser.Component = (*Array)(nil)
+var _ parser.Field = (*Array)(nil)
 
 type Array struct {
 	comment  string
@@ -19,18 +20,13 @@ func NewArray(name, comment, arrType string) *Array {
 		name:    name,
 		Type:    arrType,
 	}
-
 }
 
-func (s *Array) WithMethods(methods ...*parser.Method) parser.Types {
+func (s *Array) WithReference(bool) parser.Field {
 	return s
 }
 
-func (s *Array) WithReference(ref bool) parser.Types {
-	return s
-}
-
-func (s *Array) WithFieldTag(tags string) parser.Types {
+func (s *Array) WithFieldTag(tags string) parser.Field {
 	s.fieldTag = tags
 	return s
 }

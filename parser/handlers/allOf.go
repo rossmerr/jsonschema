@@ -8,7 +8,7 @@ import (
 	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
-func HandleAllOf(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
+func HandleAllOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
 	properties := map[string]*jsonschema.Schema{}
 
 	for _, subschema := range schema.AllOf {
@@ -36,7 +36,7 @@ func HandleAllOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 		return nil, fmt.Errorf("handleallof: obj not a *templates.Struct found '%v'", obj)
 	}
 
-	doc.Globals[typename] = templates.NewType(schema.Description, s)
+	doc.Globals()[typename] = templates.NewType(schema.Description, s)
 	r := templates.NewReference(name, "", parser.NewType(typename, parser.Object))
 
 	return &templates.AllOf{r}, nil

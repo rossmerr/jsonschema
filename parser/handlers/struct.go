@@ -11,24 +11,21 @@ import (
 	"github.com/RossMerr/jsonschema/parser/templates"
 )
 
-func HandleObject(ctx *parser.SchemaContext, doc *parser.Document, name string, schema *jsonschema.Schema) (parser.Types, error) {
+var fieldTags = tags.NewFieldTag([]tags.StructTag{json.NewJSONTags(), validate.NewValidateTags()})
 
-	fields := []parser.Types{}
+func HandleObject(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
+
+	fields := []parser.Component{}
 	for key, propertie := range schema.Properties {
 		s, err := ctx.Process(doc, key, propertie)
 		if err != nil {
 			return nil, err
 		}
 
-		tags := tags.NewFieldTag([]tags.StructTag{json.NewJSONTags(), validate.NewValidateTags()})
-		fieldTag := tags.ToFieldTag(key, propertie, schema.Required)
-
-		ref := !jsonschema.Contains(schema.Required, strings.ToLower(key))
-
-		s.WithFieldTag(fieldTag).WithReference(ref)
-
-		if _, ok := s.(*templates.Enum); ok {
-			continue
+		if f, ok :=  s.(parser.Field); ok {
+			fieldTag := fieldTags.ToFieldTag(key, propertie, schema.Required)
+			ref := !jsonschema.Contains(schema.Required, strings.ToLower(key))
+			f.WithFieldTag(fieldTag).WithReference(ref)
 		}
 
 		fields = append(fields, s)
@@ -43,11 +40,10 @@ func HandleObject(ctx *parser.SchemaContext, doc *parser.Document, name string, 
 		if _, ok := t.(*templates.OneOf); !ok {
 			t = templates.NewType(schema.Description, t)
 
-			if _, contains := doc.Globals[key]; !contains {
-				doc.Globals[key] = t
+			if _, contains := doc.Globals()[key]; !contains {
+				doc.Globals()[key] = t
 			}
 		}
-
 	}
 
 	return templates.NewStruct(name, schema.Description, fields...), nil
