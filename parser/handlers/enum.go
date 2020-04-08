@@ -24,15 +24,15 @@ func HandleEnum(ctx *parser.SchemaContext, doc *parser.Document, name string, sc
 
 	for _, value := range schema.Enum {
 		c := templates.ConstItem{
-			Name:  jsonschema.ToTypename(value),
-			Type:  jsonschema.ToTypename(name),
+			Name:  value,
+			Type:  name,
 			Value: value,
 		}
 		constItems = append(constItems, &c)
 	}
 	c := templates.NewConst(constItems...)
 
-	typenameEnum := name + "Items"
+	typenameEnum := name + " Items"
 	if _, contains := doc.Globals[typenameEnum]; !contains {
 		doc.Globals[typenameEnum] = c
 	} else {

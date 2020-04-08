@@ -49,7 +49,7 @@ func fieldFunc(structField reflect.StructField, field, val reflect.Value, record
 	}
 
 	tagFields := strings.Split(v, ",")
-	list := jsonschema.ForEach(tagFields, func(v string) string { return strings.ToLower(v) })
+	list := ForEach(tagFields, func(v string) string { return strings.ToLower(v) })
 	if !jsonschema.Contains(list, fragment) {
 		return traversal.Continue
 	}
@@ -92,4 +92,14 @@ func mapKeyFunc(field, val reflect.Value, record traversal.Record) traversal.Sta
 		}
 	}
 	return traversal.MatchReturn
+}
+
+
+func ForEach(a []string, delegate func(string) string) []string {
+	list := []string{}
+	for _, v := range a {
+		list = append(list, delegate(v))
+	}
+
+	return list
 }

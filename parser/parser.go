@@ -7,7 +7,7 @@ import (
 )
 
 type Parser interface {
-	Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]*Document, error)
+	Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]Types, error)
 	HandlerFunc(kind Kind, handler HandleSchemaFunc)
 }
 
@@ -24,21 +24,18 @@ func NewParser(packageName string) Parser {
 	return parser
 }
 
-func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]*Document, error) {
-	documents := map[jsonschema.ID]*Document{}
-	schemaContext := NewSchemaContext(s.Process, references)
+func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]Types, error) {
+	documents := map[jsonschema.ID]Types{}
+	schemaContext := NewSchemaContext(s.packageName, s.Process, references)
 	for _, schema := range schemas {
 		switch schema.Type {
 		case jsonschema.Object:
 
-			t, err := schemaContext.Process(nil,"", schema)
+			t, err := schemaContext.Process(nil, "", schema)
 			if err != nil {
 				return nil, fmt.Errorf("schemacontext: %w", err)
 			}
-
-			if doc, ok := t.(*Document); ok {
-				documents[schema.ID] = doc
-			}
+			documents[schema.ID] = t
 		}
 	}
 	schemaContext.ImplementMethods(documents)
@@ -53,13 +50,12 @@ func (s *parser) HandlerFunc(kind Kind, handler HandleSchemaFunc) {
 	}
 }
 
-func (s *parser) Process(name string, schema *jsonschema.Schema, document *Document,) HandleSchemaFunc {
-	if document == nil {
-		return s.handlers[Root]
-	}
+func (s *parser) Process(name string, schema *jsonschema.Schema, document *Document) HandleSchemaFunc {
 
 	var handler HandleSchemaFunc
 	switch kind, ref, oneOf, anyOf, allOf, enum := schema.Stat(); {
+	case document == nil:
+		return s.handlers[RootDocument]
 	case kind == jsonschema.Boolean:
 		handler = s.handlers[Boolean]
 	case len(enum) > 0:
@@ -90,4 +86,3 @@ func (s *parser) Process(name string, schema *jsonschema.Schema, document *Docum
 
 	return handler
 }
-

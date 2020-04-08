@@ -8,6 +8,7 @@ import (
 	"github.com/RossMerr/jsonschema/tokens"
 )
 
+
 // ResolveIDs looks over the raw json and traverses over the schema looking for $id fields,
 func ResolveIDs(b json.RawMessage) map[ID]*Schema {
 	return resolveIDs(b, []string{}, map[ID]*Schema{})

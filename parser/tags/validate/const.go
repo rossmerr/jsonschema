@@ -1,0 +1,5 @@
+package validate
+
+const (
+	EmptyString = ""
+)

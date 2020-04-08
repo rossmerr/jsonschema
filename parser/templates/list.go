@@ -1,7 +1,6 @@
 package templates
 
 import (
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
@@ -24,7 +23,7 @@ func (s *List) WithFieldTag(tags string) parser.Types {
 }
 
 func (s *List) FieldTag() string {
-	return jsonschema.EmptyString
+	return EmptyString
 }
 
 func (s *List) Comment() string {

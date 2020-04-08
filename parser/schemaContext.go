@@ -10,11 +10,12 @@ import (
 type Resolve func(name string, schema *jsonschema.Schema, document *Document) HandleSchemaFunc
 
 // NewSchemaContext return's a SchemaContext
-func NewSchemaContext(resolve Resolve, references map[jsonschema.ID]*jsonschema.Schema) *SchemaContext {
+func NewSchemaContext(packageName string, resolve Resolve, references map[jsonschema.ID]*jsonschema.Schema) *SchemaContext {
 	return &SchemaContext{
 		implementations: map[string][]*MethodSignature{},
 		resolve:         resolve,
 		references:      references,
+		packageName:packageName,
 	}
 }
 
@@ -24,17 +25,20 @@ type SchemaContext struct {
 	resolve         Resolve
 	references      map[jsonschema.ID]*jsonschema.Schema
 	document        *Document
+	packageName string
 }
 
-
 // ImplementMethods add's any methods that any struct might need to implement for any interfaces
-func (s *SchemaContext) ImplementMethods(documents map[jsonschema.ID]*Document) {
+func (s *SchemaContext) ImplementMethods(documents map[jsonschema.ID]Types) {
 	for _, doc := range documents {
-		for k, g := range doc.Globals {
-			methodSignatures := s.implementations[k]
-			for _, methodSignature := range methodSignatures {
-				method := NewMethodFromSignature(k, methodSignature)
-				g.WithMethods(method)
+		if document, ok  := doc.(*Document); ok {
+			document.WithPackageName(s.packageName)
+			for k, g := range document.Globals {
+				methodSignatures := s.implementations[k]
+				for _, methodSignature := range methodSignatures {
+					method := NewMethodFromSignature(k, methodSignature)
+					g.WithMethods(method)
+				}
 			}
 		}
 	}
@@ -43,7 +47,7 @@ func (s *SchemaContext) ImplementMethods(documents map[jsonschema.ID]*Document) 
 // RegisterMethodSignature add's any methods onto the named receiver across all schemas
 // so you can implement a interface from a reference etc
 func (s *SchemaContext) RegisterMethodSignature(receiver string, methods ...*MethodSignature) {
-	if receiver != jsonschema.EmptyString {
+	if receiver != EmptyString {
 		switch arr, ok := s.implementations[receiver]; {
 		case !ok:
 			arr = []*MethodSignature{}
@@ -64,7 +68,7 @@ func (s *SchemaContext) Process(document *Document, name string, schema *jsonsch
 // ResolvePointer takes a Reference and uses it to walk the schema to find any types to reference
 func (s *SchemaContext) ResolvePointer(ref jsonschema.Reference, doc *Document) (string, error) {
 	path := ref.Path()
-	if fieldname := path.ToFieldname(); fieldname != "." {
+	if fieldname := path.ToKey(); fieldname != "." {
 		return fieldname, nil
 	}
 
@@ -82,6 +86,6 @@ func (s *SchemaContext) ResolvePointer(ref jsonschema.Reference, doc *Document) 
 	if def == nil {
 		return ".", fmt.Errorf("resolvepointer: path not found %v", path)
 	}
-	// todo should be key
-	return def.ID.ToTypename(), nil
+
+	return def.ID.ToKey(), nil
 }

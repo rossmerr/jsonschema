@@ -1,7 +1,6 @@
 package templates
 
 import (
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
@@ -17,7 +16,7 @@ type Array struct {
 func NewArray(name, comment, arrType string) *Array {
 	return &Array{
 		comment: comment,
-		name:    jsonschema.ToTypename(name),
+		name:    name,
 		Type:    arrType,
 	}
 
@@ -53,6 +52,6 @@ const ArrayTemplate = `
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-{{ .Name}} []{{ .Type }} {{ .FieldTag }}
+{{ typename .Name}} []{{ .Type }} {{ .FieldTag }}
 {{- end -}}
 `

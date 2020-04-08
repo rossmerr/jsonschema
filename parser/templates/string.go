@@ -1,7 +1,6 @@
 package templates
 
 import (
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
@@ -17,7 +16,7 @@ type String struct {
 
 func NewString(name, comment string) *String {
 	return &String{
-		name:    jsonschema.ToTypename(name),
+		name:    name,
 		comment: comment,
 	}
 }
@@ -61,7 +60,7 @@ const StringTemplate = `
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-{{ .Name}} {{ .Reference}}string {{ .FieldTag }}
+{{ typename .Name}} {{ .Reference}}string {{ .FieldTag }}
 
 {{- range $key, $method := .Methods -}}
 	func (s *{{ $.Name }}) {{$method}}(){}

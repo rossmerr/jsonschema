@@ -1,7 +1,6 @@
 package templates
 
 import (
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
@@ -9,10 +8,9 @@ var _ parser.Types = (*Type)(nil)
 
 type Type struct {
 	comment  string
-	name     string
-	Type   parser.Types
+	Type     parser.Types
 	fieldTag string
-	Methods []*parser.Method
+	Methods  []*parser.Method
 }
 
 func (s *Type) Comment() string {
@@ -20,7 +18,7 @@ func (s *Type) Comment() string {
 }
 
 func (s *Type) Name() string {
-	return s.name
+	return EmptyString
 }
 
 func (s *Type) WithFieldTag(fieldTag string) parser.Types {
@@ -41,11 +39,10 @@ func (s *Type) WithMethods(methods ...*parser.Method) parser.Types {
 	return s
 }
 
-func NewType(name, comment string, t parser.Types) *Type {
+func NewType(comment string, t parser.Types) *Type {
 	return &Type{
 		comment: comment,
-		name:    jsonschema.ToTypename(name),
-		Type:  t,
+		Type:    t,
 	}
 }
 

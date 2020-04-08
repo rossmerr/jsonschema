@@ -14,6 +14,6 @@ func DefaultHandlers(p parser.Parser) parser.Parser {
 	p.HandlerFunc(parser.Number, HandleNumber)
 	p.HandlerFunc(parser.Interger, HandleInteger)
 	p.HandlerFunc(parser.String, HandleString)
-	p.HandlerFunc(parser.Root, HandleDocument)
+	p.HandlerFunc(parser.RootDocument, HandleDocument)
 	return p
 }

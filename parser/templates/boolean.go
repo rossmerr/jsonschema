@@ -1,7 +1,6 @@
 package templates
 
 import (
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
@@ -17,7 +16,7 @@ type Boolean struct {
 func NewBoolean(name, comment string) *Boolean {
 	return &Boolean{
 		comment: comment,
-		name:    jsonschema.ToTypename(name),
+		name:    name,
 	}
 }
 
@@ -56,6 +55,6 @@ const BooleanTemplate = `
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-{{ .Name}} {{ .Reference}}bool {{ .FieldTag }}
+{{ typename .Name}} {{ .Reference}}bool {{ .FieldTag }}
 {{- end -}}
 `

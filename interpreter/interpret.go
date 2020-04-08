@@ -2,10 +2,13 @@ package interpreter
 
 import (
 	"fmt"
+	"go/token"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
+	"strings"
 	"unicode"
 
 	"github.com/RossMerr/jsonschema"
@@ -20,19 +23,19 @@ type Interpret interface {
 }
 
 type interpret struct {
-	documents      map[jsonschema.ID]*parser.Document
+	documents      map[jsonschema.ID]parser.Types
 	templateStruct Template
-	packagename string
+	packagename    string
 }
 
-func NewInterpret(documents map[jsonschema.ID]*parser.Document, templateStruct Template) Interpret {
+func NewInterpret(documents map[jsonschema.ID]parser.Types, templateStruct Template) Interpret {
 	return &interpret{
 		documents:      documents,
 		templateStruct: templateStruct,
 	}
 }
 
-func NewInterpretDefaults(documents map[jsonschema.ID]*parser.Document) (Interpret, error) {
+func NewInterpretDefaults(documents map[jsonschema.ID]parser.Types) (Interpret, error) {
 	templates, err := templates.DefaultSchemaTemplate()
 	if err != nil {
 		return nil, err
@@ -45,10 +48,8 @@ func (s *interpret) ToFile(output string) ([]string, error) {
 	green := color.FgCyan.Render
 	red := color.FgRed.Render
 
-	for _, obj := range s.documents {
-		obj.WithPackageName(s.packagename)
-
-		filename := path.Join(output, toFilename(obj.ID)+".go")
+	for id, obj := range s.documents {
+		filename := path.Join(output, toFilename(id.String())+".go")
 
 		_, err := os.Stat(filename)
 		if !os.IsNotExist(err) {
@@ -99,11 +100,41 @@ func (s *interpret) ToFile(output string) ([]string, error) {
 
 // toFilename returns the file name from the ID.
 func toFilename(s string) string {
-	id := jsonschema.ID(s)
-	name := id.ToTypename()
-
-	if len(name) > 0 {
-		return string(unicode.ToLower(rune(name[0]))) + name[1:]
+	if len(s) < 1 {
+		return "."
 	}
-	return name
+
+	index := strings.Index(s, "#")
+	var basename string
+	if index < 0 {
+		basename = filepath.Base(s)
+	} else {
+		basename = filepath.Base(s[:index])
+	}
+
+
+	name := strings.TrimSuffix(basename, filepath.Ext(basename))
+
+	// Valid field names must start with a unicode letter
+	if !unicode.IsLetter(rune(name[0])) {
+		name = "No " + name
+	}
+
+	// Valid field names must not be a reserved word
+	if token.IsKeyword(name) {
+		name = "Key " + name
+	}
+
+	reg, err := regexp.Compile(`[^a-zA-Z0-9]+`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	clean := reg.ReplaceAllString(name, " ")
+	filename := reg.ReplaceAllString(strings.Title(clean), "")
+
+	if len(filename) > 0 {
+		return string(unicode.ToLower(rune(filename[0]))) + filename[1:]
+	}
+	return filename
 }

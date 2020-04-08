@@ -16,7 +16,7 @@ const (
 	AnyOf
 	AllOf
 	Object
-	Root
+	RootDocument
 	Invalid
 )
 
@@ -29,25 +29,18 @@ func (s Kind) String() string {
 	return "kind" + strconv.Itoa(int(s))
 }
 
-func Parse(s string) Kind {
-	if v, ok := kindNames[s]; ok {
-		return v
-	}
-	return Invalid
-}
-
 var kindNames = map[string]Kind{
-	"boolean":    Boolean,
-	"enum":       Enum,
-	"string":     String,
-	"interger":   Interger,
-	"number":     Number,
-	"array":      Array,
-	"reference":  Reference,
-	"oneof":      OneOf,
-	"anyof":      AnyOf,
-	"allof":      AllOf,
-	"object":     Object,
-	"root": Root,
-	"invalid":    Invalid,
+	"boolean":   Boolean,
+	"enum":      Enum,
+	"string":    String,
+	"interger":  Interger,
+	"number":    Number,
+	"array":     Array,
+	"reference": Reference,
+	"oneof":     OneOf,
+	"anyof":     AnyOf,
+	"allof":     AllOf,
+	"object":    Object,
+	"rootdocument":      RootDocument,
+	"invalid":   Invalid,
 }

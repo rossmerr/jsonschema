@@ -1,16 +1,20 @@
 package templates
 
 import (
+	"go/token"
+	"log"
+	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
+	"unicode"
 
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
 var SchemaFuncMap = template.FuncMap{
 	"mixedCase":   MixedCase,
-	"typename":   Typename,
+	"typename":    Typename,
 	"title":       strings.Title,
 	"isStruct":    IsStruct,
 	"isArray":     IsArray,
@@ -26,9 +30,7 @@ var SchemaFuncMap = template.FuncMap{
 	"isAllOf":     IsAllOf,
 	"isAnyOf":     IsAnyOf,
 	"isOneOf":     IsOneOf,
-	"isType":     IsType,
-
-
+	"isType":      IsType,
 }
 
 func DefaultSchemaTemplate() (*template.Template, error) {
@@ -84,8 +86,28 @@ func Typename(raw string) string {
 	if len(raw) < 1 {
 		return raw
 	}
-	return jsonschema.ToTypename(raw)
+
+	name := strings.TrimSuffix(raw, filepath.Ext(raw))
+
+	// Valid field names must start with a unicode letter
+	if !unicode.IsLetter(rune(name[0])) {
+		name = "No " + name
+	}
+
+	// Valid field names must not be a reserved word
+	if token.IsKeyword(name) {
+		name = "Key " + name
+	}
+
+	reg, err := regexp.Compile(`[^a-zA-Z0-9]+`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	clean := reg.ReplaceAllString(name, " ")
+	return reg.ReplaceAllString(strings.Title(clean), "")
 }
+
 
 func IsType(obj interface{}) bool {
 	_, ok := obj.(*Type)
@@ -161,4 +183,3 @@ func IsOneOf(obj interface{}) bool {
 	_, ok := obj.(*OneOf)
 	return ok
 }
-

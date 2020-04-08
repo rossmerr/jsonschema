@@ -12,3 +12,7 @@ type Types interface {
 type Component interface {
 	Name() string
 }
+
+type Root interface {
+	WithPackageName(packagename string)
+}

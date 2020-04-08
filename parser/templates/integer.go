@@ -1,7 +1,6 @@
 package templates
 
 import (
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
@@ -16,7 +15,7 @@ type Integer struct {
 
 func NewInteger(name, comment string) *Integer {
 	return &Integer{
-		name:    jsonschema.ToTypename(name),
+		name:    name,
 		comment: comment,
 	}
 }
@@ -56,6 +55,6 @@ const IntegerTemplate = `
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-{{ .Name}} {{ .Reference}}int32 {{ .FieldTag }}
+{{ typename .Name}} {{ .Reference}}int32 {{ .FieldTag }}
 {{- end -}}
 `

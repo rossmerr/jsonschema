@@ -1,7 +1,6 @@
 package templates
 
 import (
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 )
 
@@ -16,7 +15,7 @@ type Interface struct {
 
 func NewInterface(typename string) *Interface {
 	return &Interface{
-		name: jsonschema.ToTypename(typename),
+		name: typename,
 	}
 }
 
@@ -38,7 +37,7 @@ func (s *Interface) WithFieldTag(tags string) parser.Types {
 }
 
 func (s *Interface) FieldTag() string {
-	return jsonschema.EmptyString
+	return EmptyString
 }
 
 func (s *Interface) Comment() string {
@@ -54,12 +53,12 @@ const InterfaceTemplate = `
 {{if .Comment -}}
 // {{ .Comment}}
 {{ else -}}
-// {{ .Name }}
+// {{ typename .Name }}
 {{end -}}
 {{if .CommentImplementations -}}
 // {{ .CommentImplementations}}
 {{end -}}
-type {{ .Name }} interface {	
+type {{ typename .Name }} interface {	
 	{{range $key, $method := .MethodSignatures -}}
 		{{template "methodsignature" $method }}
 	{{end }}

@@ -28,7 +28,7 @@ func HandleOneOf(ctx *parser.SchemaContext, doc *parser.Document, name string, s
 			return nil, err
 		}
 		if _, ok := doc.Globals[structname]; !ok {
-			doc.Globals[structname] = templates.NewType(structname, schema.Description, t)
+			doc.Globals[structname] = templates.NewType(schema.Description, t)
 		} else {
 			return nil, fmt.Errorf("handleoneof: oneOf, global keys need to be unique found %v more than once, in %v", structname, parent.ID)
 		}

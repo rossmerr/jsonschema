@@ -40,9 +40,8 @@ func HandleObject(ctx *parser.SchemaContext, doc *parser.Document, name string, 
 			return nil, err
 		}
 
-
-		if _, ok := t.(*templates.OneOf); ! ok {
-			t = templates.NewType(key, schema.Description, t)
+		if _, ok := t.(*templates.OneOf); !ok {
+			t = templates.NewType(schema.Description, t)
 
 			if _, contains := doc.Globals[key]; !contains {
 				doc.Globals[key] = t

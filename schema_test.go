@@ -120,17 +120,17 @@ func TestSchemas_Generate(t *testing.T) {
 			t.Cleanup(func() {
 				for _, file := range files {
 					fmt.Printf("%v", file)
-					// if err := os.Remove(file); err != nil {
-					// 	t.Error("error resetting:", err)
-					// }
+					if err := os.Remove(file); err != nil {
+						t.Error("error resetting:", err)
+					}
 				}
 			})
 		})
 	}
 
-	// t.Cleanup(func() {
-	// 	if !t.Failed() {
-	// 		os.RemoveAll("sample_schemas/output/")
-	// 	}
-	// })
+	t.Cleanup(func() {
+		if !t.Failed() {
+			os.RemoveAll("sample_schemas/output/")
+		}
+	})
 }

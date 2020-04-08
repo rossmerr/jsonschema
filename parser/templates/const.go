@@ -1,8 +1,11 @@
 package templates
 
 import (
-	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
+)
+
+const (
+	EmptyString = ""
 )
 
 var _ parser.Types = (*Const)(nil)
@@ -36,22 +39,22 @@ func (s *Const) WithFieldTag(tags string) parser.Types {
 }
 
 func (s *Const) FieldTag() string {
-	return jsonschema.EmptyString
+	return EmptyString
 }
 
 func (s *Const) Comment() string {
-	return jsonschema.EmptyString
+	return EmptyString
 }
 
 func (s *Const) Name() string {
-	return jsonschema.EmptyString
+	return EmptyString
 }
 
 const ConstTemplate = `
 {{- define "const" -}}
 const (
 {{range $key, $item := .List -}}
-	{{ $item.Type }}_{{ title $item.Name }} {{ $item.Type }} = {{printf "%q" $item.Value }}
+	{{ typename $item.Type }}_{{ typename $item.Name }} {{ typename $item.Type }} = {{printf "%q" $item.Value }}
 {{end -}}
 )
 {{end -}}

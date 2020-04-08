@@ -18,7 +18,7 @@ func HandleDocument(ctx *parser.SchemaContext, doc *parser.Document, name string
 		case *templates.OneOf, *templates.AnyOf:
 			continue
 		default:
-			t = templates.NewType(key, schema.Description, t)
+			t = templates.NewType(schema.Description, t)
 			if _, contains := document.Globals[key]; !contains {
 				document.Globals[key] = t
 			}
@@ -30,8 +30,8 @@ func HandleDocument(ctx *parser.SchemaContext, doc *parser.Document, name string
 		if err != nil {
 			return nil, err
 		}
-		if _, ok := t.(*templates.OneOf); ! ok {
-			t = templates.NewType(key, schema.Description, t)
+		if _, ok := t.(*templates.OneOf); !ok {
+			t = templates.NewType(schema.Description, t)
 
 			if _, contains := document.Globals[key]; !contains {
 				document.Globals[key] = t

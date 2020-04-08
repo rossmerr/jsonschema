@@ -19,7 +19,7 @@ func (s ID) String() string {
 	return string(s)
 }
 
-func (s ID) ToTypename() string {
+func (s ID) ToKey() string {
 	raw := string(s)
 	if len(raw) < 1 {
 		return "."
@@ -33,7 +33,7 @@ func (s ID) ToTypename() string {
 		basename = filepath.Base(raw[:index])
 	}
 
-	return ToTypename(basename)
+	return basename
 }
 
 func canonicalURI(s string) (string, error) {
@@ -56,10 +56,6 @@ func canonicalURI(s string) (string, error) {
 	}
 
 	return s, nil
-}
-
-func (s ID) IsNotEmpty() bool {
-	return s != EmptyString
 }
 
 func (s *ID) UnmarshalJSON(b []byte) error {

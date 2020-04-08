@@ -31,7 +31,7 @@ func NewDocument(schema *jsonschema.Schema) *Document {
 
 func (s *Document) AddImport(value string) {
 	s.Imports = append(s.Imports, value)
-	s.Imports = jsonschema.Unique(s.Imports)
+	s.Imports = unique(s.Imports)
 }
 
 func (s *Document) Root() *jsonschema.Schema {
@@ -51,20 +51,32 @@ func (s *Document) WithFieldTag(tags string) Types {
 }
 
 func (s *Document) FieldTag() string {
-	return jsonschema.EmptyString
+	return EmptyString
 }
 
 func (s *Document) Comment() string {
-	return jsonschema.EmptyString
+	return EmptyString
 }
 
 func (s *Document) Name() string {
-	return jsonschema.EmptyString
+	return EmptyString
 }
 
 func (s *Document) WithPackageName(packagename string) Types {
 	s.Package = packagename
 	return s
+}
+
+func unique(slice []string) []string {
+	keys := make(map[string]bool)
+	list := []string{}
+	for _, entry := range slice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
 }
 
 
