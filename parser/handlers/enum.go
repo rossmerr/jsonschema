@@ -36,7 +36,7 @@ func HandleEnum(ctx *parser.SchemaContext, doc parser.Root, name string, schema 
 	if _, contains := doc.Globals()[typenameEnum]; !contains {
 		doc.Globals()[typenameEnum] = c
 	} else {
-		return nil, fmt.Errorf("handleenum: enum, global keys need to be unique found %v more than once, in %v", name, schema.Parent.ID)
+		return nil, fmt.Errorf("handleenum: enum, global keys need to be unique found %v more than once", name)
 	}
 
 	enum := templates.NewEnum(name, schema.Description, schema.Type.String(), schema.Enum, constItems)

@@ -8,19 +8,19 @@ import (
 var _ parser.Root = (*Document)(nil)
 
 type Document struct {
-	ID         string
-	Package    string
-	globals    map[string]parser.Component
-	Imports    []string
+	ID      string
+	Package string
+	globals map[string]parser.Component
+	Imports []string
 }
 
 func NewDocument(packagename string, schema *jsonschema.Schema) *Document {
 	schema.SetParent("", nil)
 
 	document := &Document{
-		ID:         schema.ID.String(),
-		globals:    map[string]parser.Component{},
-		Package:packagename,
+		ID:      schema.ID.String(),
+		globals: map[string]parser.Component{},
+		Package: packagename,
 	}
 
 	return document
@@ -30,7 +30,6 @@ func (s *Document) AddImport(value string) {
 	s.Imports = append(s.Imports, value)
 	s.Imports = unique(s.Imports)
 }
-
 
 func (s *Document) Globals() map[string]parser.Component {
 	return s.globals

@@ -3,28 +3,42 @@ package jsonschema
 import "encoding/json"
 
 type Schema struct {
-	ID          ID                 `json:"$id,omitempty"`
-	Schema      MetaSchema         `json:"$schema,omitempty"`
-	Ref         Reference          `json:"$ref,omitempty"`
-	Defs        map[string]*Schema `json:"$defs,omitempty"`
-	Anchor      string             `json:"$anchor,omitempty"`
-	Description string             `json:"description,omitempty"`
-	Title       string             `json:"title,omitempty"`
-	Type        Kind               `json:"type,omitempty"`
-	Required    []string           `json:"required,omitempty"`
-	Properties  map[string]*Schema `json:"properties,omitempty"`
+	// Annotations
+	Description string `json:"description,omitempty"`
+	Title       string `json:"title,omitempty"`
+	Default     string `json:"default,omitempty"`
+	Examples    string `json:"examples,omitempty"`
+
+	ID     ID         `json:"$id,omitempty"`
+	Schema MetaSchema `json:"$schema,omitempty"`
+	Ref    Reference  `json:"$ref,omitempty"`
+
+	Defs map[string]*Schema `json:"$defs,omitempty"`
 	// Deprecated use Defs
-	Definitions          map[string]*Schema `json:"definitions,omitempty"`
-	Items                *Schema            `json:"items,omitempty"`
-	OneOf                []*Schema          `json:"oneof,omitempty"`
-	AnyOf                []*Schema          `json:"anyof,omitempty"`
-	AllOf                []*Schema          `json:"allof,omitempty"`
-	Enum                 []string           `json:"enum,omitempty"`
+	Definitions map[string]*Schema `json:"definitions,omitempty"`
+
+	Anchor string `json:"$anchor,omitempty"`
+
+	Type Kind `json:"type,omitempty"`
+
+	// Required Properties
+	Required []string `json:"required,omitempty"`
+
+	// Properties
+	Properties           map[string]*Schema `json:"properties,omitempty"`
 	AdditionalProperties *bool              `json:"additionalproperties,omitempty"`
 
+	Items *Schema   `json:"items,omitempty"`
+	OneOf []*Schema `json:"oneof,omitempty"`
+	AnyOf []*Schema `json:"anyof,omitempty"`
+	AllOf []*Schema `json:"allof,omitempty"`
+	Enum  []string  `json:"enum,omitempty"`
+
+	// Size
+	MaxProperties *uint32 `json:"maxproperties,omitempty"`
+	MinProperties *uint32 `json:"minproperties,omitempty"`
+
 	// Validation
-	MaxProperties    *uint32 `json:"maxproperties,omitempty"`
-	MinProperties    *uint32 `json:"minproperties,omitempty"`
 	MaxLength        *uint32 `json:"maxlength,omitempty"`
 	MinLength        *uint32 `json:"minlength,omitempty"`
 	MaxContains      *uint32 `json:"maxcontains,omitempty"`
@@ -64,17 +78,16 @@ func (s *Schema) SetParent(key string, parent *Schema) {
 	}
 }
 
-func (s *Schema) RootSchema()  *Schema {
+func (s *Schema) RootSchema() *Schema {
 	return root(s)
 }
 
-func root(s *Schema)  *Schema {
+func root(s *Schema) *Schema {
 	if s.Parent == nil {
 		return s
 	}
 	return root(s.Parent)
 }
-
 
 func (s *Schema) UnmarshalJSON(b []byte) error {
 	type Alias Schema

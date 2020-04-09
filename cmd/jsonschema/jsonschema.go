@@ -16,9 +16,9 @@ import (
 )
 
 var (
-	packagename = flag.StringP("package", "p", "main", "Go package name to use")
-	output      = flag.StringP("output", "o", ".", "Output folder")
-	loglevel    = flag.StringP("loglevel", "l", "warn", "Standard logger level")
+	packagename = flag.StringP("package", "p", "main", "go package name to use")
+	output      = flag.StringP("output", "o", ".", "output folder")
+	loglevel    = flag.StringP("loglevel", "l", "warn", "standard logger level")
 )
 
 var (

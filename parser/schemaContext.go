@@ -72,7 +72,7 @@ func (s *SchemaContext) ResolvePointer(ref jsonschema.Reference, base *jsonschem
 	if fieldname := path.ToKey(); fieldname != "." {
 		return fieldname, nil
 	}
-	
+
 	if id, err := ref.ID(); err == nil {
 		if err != nil {
 			return ".", fmt.Errorf("resolvepointer: %w", err)
