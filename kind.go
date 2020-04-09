@@ -15,4 +15,3 @@ const (
 func (s Kind) String() string {
 	return string(s)
 }
-

@@ -50,7 +50,6 @@ func (s Reference) Path() Path {
 	return query
 }
 
-
 func (s Reference) ToKey() string {
 	path := s.Path()
 
@@ -76,4 +75,3 @@ func (s *Reference) UnmarshalJSON(b []byte) error {
 	*s = Reference(v)
 	return nil
 }
-

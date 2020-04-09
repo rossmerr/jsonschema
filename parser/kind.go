@@ -16,7 +16,7 @@ const (
 	AnyOf
 	AllOf
 	Object
-	RootDocument
+	Document
 	Invalid
 )
 
@@ -30,17 +30,17 @@ func (s Kind) String() string {
 }
 
 var kindNames = map[string]Kind{
-	"boolean":   Boolean,
-	"enum":      Enum,
-	"string":    String,
-	"interger":  Interger,
-	"number":    Number,
-	"array":     Array,
-	"reference": Reference,
-	"oneof":     OneOf,
-	"anyof":     AnyOf,
-	"allof":     AllOf,
-	"object":    Object,
-	"rootdocument":      RootDocument,
-	"invalid":   Invalid,
+	"boolean":      Boolean,
+	"enum":         Enum,
+	"string":       String,
+	"interger":     Interger,
+	"number":       Number,
+	"array":        Array,
+	"reference":    Reference,
+	"oneof":        OneOf,
+	"anyof":        AnyOf,
+	"allof":        AllOf,
+	"object":       Object,
+	"document": Document,
+	"invalid":      Invalid,
 }

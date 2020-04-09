@@ -4,8 +4,6 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Component = (*Struct)(nil)
-var _ parser.Field = (*Struct)(nil)
 var _ parser.Receiver = (*Struct)(nil)
 
 type Struct struct {
@@ -47,7 +45,7 @@ func (s *Struct) unmarshalStructJSON() *parser.Method {
 	return unmarshal
 }
 
-func (s *Struct) WithMethods(methods ...*parser.Method)  {
+func (s *Struct) WithMethods(methods ...*parser.Method) {
 	s.Methods = append(s.Methods, methods...)
 }
 

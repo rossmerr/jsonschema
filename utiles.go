@@ -9,7 +9,6 @@ func Contains(a []string, b string) bool {
 	return false
 }
 
-
 func Filter(a []string, delegate func(string) bool) []string {
 	list := []string{}
 	for _, v := range a {
@@ -17,6 +16,5 @@ func Filter(a []string, delegate func(string) bool) []string {
 			list = append(list, v)
 		}
 	}
-
 	return list
 }

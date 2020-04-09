@@ -4,7 +4,6 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Component = (*Reference)(nil)
 var _ parser.Field = (*Reference)(nil)
 
 type Reference struct {
@@ -24,7 +23,6 @@ func NewReference(name, comment string, t *parser.Type, typenames ...string) *Re
 		Types:   typenames,
 	}
 }
-
 
 func (s *Reference) WithReference(ref bool) parser.Field {
 	if s.Type.Kind == parser.Reference || s.Type.Kind == parser.Array {

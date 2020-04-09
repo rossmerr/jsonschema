@@ -4,8 +4,6 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Component = (*Type)(nil)
-var _ parser.Field = (*Type)(nil)
 var _ parser.Receiver = (*Type)(nil)
 
 type Type struct {
@@ -35,7 +33,6 @@ func (s *Type) WithFieldTag(fieldTag string) parser.Field {
 func (s *Type) FieldTag() string {
 	return s.fieldTag
 }
-
 
 func (s *Type) WithMethods(methods ...*parser.Method) {
 	s.Methods = append(s.Methods, methods...)

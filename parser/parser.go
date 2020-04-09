@@ -30,7 +30,6 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references 
 	for _, schema := range schemas {
 		switch schema.Type {
 		case jsonschema.Object:
-
 			t, err := schemaContext.Process(nil, "", schema)
 			if err != nil {
 				return nil, fmt.Errorf("schemacontext: %w", err)
@@ -55,7 +54,7 @@ func (s *parser) Process(schema *jsonschema.Schema, document Root) HandleSchemaF
 	var handler HandleSchemaFunc
 	switch kind, ref, oneOf, anyOf, allOf, enum := schema.Stat(); {
 	case document == nil:
-		return s.handlers[RootDocument]
+		return s.handlers[Document]
 	case kind == jsonschema.Boolean:
 		handler = s.handlers[Boolean]
 	case len(enum) > 0:

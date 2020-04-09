@@ -21,19 +21,24 @@ func HandleAnyOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema
 			ctx.RegisterMethodSignature(receiver, methodSignature)
 			continue
 		}
+
 		structname := name + strconv.Itoa(i)
 		t, err := ctx.Process(doc, structname, subschema)
+
 		if err != nil {
 			return nil, err
 		}
-		if _, ok := doc.Globals()[structname]; !ok {
-			doc.Globals()[structname] = templates.NewType(schema.Description, t)
-		} else {
+
+		_, contains := doc.Globals()[structname]
+		if contains {
 			return nil, fmt.Errorf("handleanyof: anyOf, global keys need to be unique found %v more than once", structname)
 		}
+
+		doc.Globals()[structname] = templates.NewType(schema.Description, t)
 		types = append(types, structname)
 		ctx.RegisterMethodSignature(structname, methodSignature)
 	}
+
 	doc.AddImport("encoding/json")
 	doc.Globals()[name] = templates.NewInterface(name).WithMethodSignature(methodSignature)
 	r := templates.NewReference(name, "", parser.NewType(name, parser.Array), types...)

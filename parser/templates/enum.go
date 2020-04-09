@@ -4,7 +4,6 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Component = (*Enum)(nil)
 var _ parser.Field = (*Enum)(nil)
 
 type Enum struct {

@@ -4,7 +4,6 @@ import (
 	"github.com/RossMerr/jsonschema/parser"
 )
 
-var _ parser.Component = (*String)(nil)
 var _ parser.Field = (*String)(nil)
 
 type String struct {

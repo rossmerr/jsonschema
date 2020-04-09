@@ -22,6 +22,8 @@ type Interpret interface {
 	ToFile(output string) ([]string, error)
 }
 
+var _ Interpret = (*interpret)(nil)
+
 type interpret struct {
 	documents      map[jsonschema.ID]parser.Component
 	templateStruct Template
@@ -111,7 +113,6 @@ func toFilename(s string) string {
 	} else {
 		basename = filepath.Base(s[:index])
 	}
-
 
 	name := strings.TrimSuffix(basename, filepath.Ext(basename))
 

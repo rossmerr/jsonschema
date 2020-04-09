@@ -108,7 +108,6 @@ func Typename(raw string) string {
 	return reg.ReplaceAllString(strings.Title(clean), "")
 }
 
-
 func IsType(obj interface{}) bool {
 	_, ok := obj.(*Type)
 	return ok

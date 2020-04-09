@@ -13,5 +13,3 @@ func KeysString(m map[string]string) string {
 	}
 	return strings.Join(keys, ",")
 }
-
-

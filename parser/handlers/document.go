@@ -7,7 +7,7 @@ import (
 )
 
 func HandleDocument(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
-	document := templates.NewDocument(schema)
+	document := templates.NewDocument(ctx.PackageName, schema)
 	for key, propertie := range schema.Properties {
 		t, err := ctx.Process(document, key, propertie)
 		if err != nil {

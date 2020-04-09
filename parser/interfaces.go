@@ -1,24 +1,23 @@
 package parser
 
-import "github.com/RossMerr/jsonschema"
-
 type Component interface {
 	Name() string
 }
 
 type Root interface {
-	WithPackageName(packagename string)
-	Globals()    map[string]Component
+	Component
+	Globals() map[string]Component
 	AddImport(value string)
-	Root() *jsonschema.Schema
 }
 
 type Field interface {
+	Component
 	WithFieldTag(string) Field
 	FieldTag() string
 	WithReference(bool) Field
 }
 
 type Receiver interface {
+	Field
 	WithMethods(methods ...*Method)
 }

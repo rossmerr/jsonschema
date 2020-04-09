@@ -7,15 +7,13 @@ import (
 	"github.com/RossMerr/jsonschema/traversal/traverse"
 )
 
-
-
 // NewSchemaContext return's a SchemaContext
 func NewSchemaContext(packageName string, resolve Resolve, references map[jsonschema.ID]*jsonschema.Schema) *SchemaContext {
 	return &SchemaContext{
 		implementations: map[string][]*MethodSignature{},
 		resolve:         resolve,
 		references:      references,
-		packageName:packageName,
+		PackageName:     packageName,
 	}
 }
 
@@ -25,14 +23,13 @@ type SchemaContext struct {
 	resolve         Resolve
 	references      map[jsonschema.ID]*jsonschema.Schema
 	document        Root
-	packageName string
+	PackageName     string
 }
 
 // ImplementMethods add's any methods that any struct might need to implement for any interfaces
 func (s *SchemaContext) ImplementMethods(documents map[jsonschema.ID]Component) {
 	for _, doc := range documents {
-		if document, ok  := doc.(Root); ok {
-			document.WithPackageName(s.packageName)
+		if document, ok := doc.(Root); ok {
 			for k, g := range document.Globals() {
 				obj, ok := g.(Receiver)
 				if !ok {
@@ -70,14 +67,12 @@ func (s *SchemaContext) Process(document Root, name string, schema *jsonschema.S
 }
 
 // ResolvePointer takes a Reference and uses it to walk the schema to find any types to reference
-func (s *SchemaContext) ResolvePointer(ref jsonschema.Reference, doc Root) (string, error) {
+func (s *SchemaContext) ResolvePointer(ref jsonschema.Reference, base *jsonschema.Schema) (string, error) {
 	path := ref.Path()
 	if fieldname := path.ToKey(); fieldname != "." {
 		return fieldname, nil
 	}
-
-	var base *jsonschema.Schema
-	base = doc.Root()
+	
 	if id, err := ref.ID(); err == nil {
 		if err != nil {
 			return ".", fmt.Errorf("resolvepointer: %w", err)

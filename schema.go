@@ -64,6 +64,18 @@ func (s *Schema) SetParent(key string, parent *Schema) {
 	}
 }
 
+func (s *Schema) RootSchema()  *Schema {
+	return root(s)
+}
+
+func root(s *Schema)  *Schema {
+	if s.Parent == nil {
+		return s
+	}
+	return root(s.Parent)
+}
+
+
 func (s *Schema) UnmarshalJSON(b []byte) error {
 	type Alias Schema
 	aux := &struct {

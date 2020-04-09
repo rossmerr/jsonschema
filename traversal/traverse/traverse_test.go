@@ -48,7 +48,6 @@ func TestWalk(t *testing.T) {
 	}
 }
 
-
 func TestForEach(t *testing.T) {
 	type args struct {
 		a        []string

@@ -22,7 +22,7 @@ func HandleObject(ctx *parser.SchemaContext, doc parser.Root, name string, schem
 			return nil, err
 		}
 
-		if f, ok :=  s.(parser.Field); ok {
+		if f, ok := s.(parser.Field); ok {
 			fieldTag := fieldTags.ToFieldTag(key, propertie, schema.Required)
 			ref := !jsonschema.Contains(schema.Required, strings.ToLower(key))
 			f.WithFieldTag(fieldTag).WithReference(ref)

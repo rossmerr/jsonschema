@@ -2,7 +2,6 @@ package templates
 
 import "testing"
 
-
 func TestTypename(t *testing.T) {
 	type args struct {
 		s string

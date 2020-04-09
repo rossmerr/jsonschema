@@ -94,7 +94,6 @@ func mapKeyFunc(field, val reflect.Value, record traversal.Record) traversal.Sta
 	return traversal.MatchReturn
 }
 
-
 func ForEach(a []string, delegate func(string) string) []string {
 	list := []string{}
 	for _, v := range a {
