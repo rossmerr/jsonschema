@@ -36,7 +36,7 @@ func (s *Document) Globals() map[string]parser.Component {
 }
 
 func (s *Document) Name() string {
-	return EmptyString
+	return emptyString
 }
 
 func (s *Document) WithPackageName(packagename string) {

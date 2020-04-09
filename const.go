@@ -1,5 +1,5 @@
 package jsonschema
 
 const (
-	EmptyString = ""
+	emptyString = ""
 )

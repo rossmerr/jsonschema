@@ -18,7 +18,7 @@ func (s *Type) Comment() string {
 }
 
 func (s *Type) Name() string {
-	return EmptyString
+	return emptyString
 }
 
 func (s *Type) WithReference(ref bool) parser.Field {

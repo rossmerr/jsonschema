@@ -1,5 +1,5 @@
 package validate
 
 const (
-	EmptyString = ""
+	emptyString = ""
 )

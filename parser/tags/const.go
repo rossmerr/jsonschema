@@ -1,5 +1,5 @@
 package tags
 
 const (
-	EmptyString = ""
+	emptyString = ""
 )

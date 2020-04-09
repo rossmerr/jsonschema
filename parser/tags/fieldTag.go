@@ -22,13 +22,13 @@ func NewFieldTag(structTags []StructTag) FieldTag {
 
 func (s *fieldTag) ToFieldTag(key string, schema *jsonschema.Schema, required []string) string {
 	if len(s.structTags) == 0 {
-		return EmptyString
+		return emptyString
 	}
 
 	fieldTags := []string{}
 	for _, tag := range s.structTags {
 		tag := tag.ToStructTag(key, schema, required)
-		if tag != EmptyString {
+		if tag != emptyString {
 			fieldTags = append(fieldTags, tag)
 		}
 	}

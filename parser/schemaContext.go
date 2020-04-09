@@ -48,7 +48,7 @@ func (s *SchemaContext) ImplementMethods(documents map[jsonschema.ID]Component) 
 // RegisterMethodSignature add's any methods onto the named receiver across all schemas
 // so you can implement a interface from a reference etc
 func (s *SchemaContext) RegisterMethodSignature(receiver string, methods ...*MethodSignature) {
-	if receiver != EmptyString {
+	if receiver != emptyString {
 		switch arr, ok := s.implementations[receiver]; {
 		case !ok:
 			arr = []*MethodSignature{}
@@ -86,5 +86,5 @@ func (s *SchemaContext) ResolvePointer(ref jsonschema.Reference, base *jsonschem
 		return ".", fmt.Errorf("resolvepointer: path not found %v", path)
 	}
 
-	return def.ID.ToKey(), nil
+	return def.ID.Fragment(), nil
 }

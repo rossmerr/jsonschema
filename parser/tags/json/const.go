@@ -1,5 +1,5 @@
 package json
 
 const (
-	EmptyString = ""
+	emptyString = ""
 )

@@ -20,20 +20,20 @@ func (s *validate) ToStructTag(key string, schema *jsonschema.Schema, required [
 	dict := map[string]string{}
 
 	if jsonschema.Contains(required, strings.ToLower(key)) {
-		dict["required"] = EmptyString
+		dict["required"] = emptyString
 	}
 
 	if schema != nil {
 		if schema.AnyOf != nil {
-			dict["anyof"] = EmptyString
+			dict["anyof"] = emptyString
 		}
 
 		if schema.AllOf != nil {
-			dict["allof"] = EmptyString
+			dict["allof"] = emptyString
 		}
 
 		if schema.OneOf != nil {
-			dict["oneof"] = EmptyString
+			dict["oneof"] = emptyString
 		}
 
 		if schema.MaxLength != nil {
@@ -60,13 +60,13 @@ func (s *validate) ToStructTag(key string, schema *jsonschema.Schema, required [
 			dict["gt"] = fmt.Sprint(*schema.ExclusiveMinimum)
 		}
 
-		if schema.Pattern != EmptyString {
+		if schema.Pattern != emptyString {
 			dict["regex"] = fmt.Sprint(schema.Pattern)
 		}
 	}
 
 	if len(dict) == 0 {
-		return EmptyString
+		return emptyString
 	}
 
 	return fmt.Sprintf("validate:\"%v\"", tags.KeysString(dict))

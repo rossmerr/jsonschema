@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	EmptyString = ""
+	emptyString = ""
 )
 
 var _ parser.Component = (*Const)(nil)
@@ -27,7 +27,7 @@ func NewConst(list ...*ConstItem) *Const {
 }
 
 func (s *Const) Name() string {
-	return EmptyString
+	return emptyString
 }
 
 const ConstTemplate = `

@@ -22,8 +22,8 @@ func TestMetaSchemasToString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if !jsonschema.Contains(jsonschema.MetaSchemasToString(), tt.want) {
-				t.Errorf("MetaSchemasToString() =  want %v", tt.want)
+			if !jsonschema.Contains(jsonschema.MetaSchemaVersions(), tt.want) {
+				t.Errorf("MetaSchemaVersions() =  want %v", tt.want)
 			}
 		})
 	}

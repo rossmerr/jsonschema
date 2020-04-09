@@ -8,18 +8,24 @@ import (
 	"strings"
 )
 
+// ID ($id) property is a URI-reference that serves two purposes:
+//		It declares a unique identifier for the schema.
+//		It declares a base URI against which $ref URI-references are resolved.
 type ID string
 
+// NewID returns a new ID
 func NewID(s string) (ID, error) {
 	uri, err := canonicalURI(s)
 	return ID(uri), err
 }
 
+// String returns the underlying string representation
 func (s ID) String() string {
 	return string(s)
 }
 
-func (s ID) ToKey() string {
+// Fragment returns the fragment identifier from the ID, everything after the hash mark '#'
+func (s ID) Fragment() string {
 	raw := string(s)
 	if len(raw) < 1 {
 		return "."
@@ -36,6 +42,7 @@ func (s ID) ToKey() string {
 	return basename
 }
 
+// canonicalURI is a absolute path to a resource and must be a valid URI
 func canonicalURI(s string) (string, error) {
 	fragments := strings.Index(s, "#")
 	if fragments > 0 {

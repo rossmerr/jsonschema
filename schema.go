@@ -2,6 +2,7 @@ package jsonschema
 
 import "encoding/json"
 
+// Schema the base JSON Schema
 type Schema struct {
 	// Annotations
 	Description string `json:"description,omitempty"`
@@ -9,9 +10,9 @@ type Schema struct {
 	Default     string `json:"default,omitempty"`
 	Examples    string `json:"examples,omitempty"`
 
-	ID     ID         `json:"$id,omitempty"`
-	Schema MetaSchema `json:"$schema,omitempty"`
-	Ref    Reference  `json:"$ref,omitempty"`
+	ID     ID            `json:"$id,omitempty"`
+	Schema SchemaVersion `json:"$schema,omitempty"`
+	Ref    Reference     `json:"$ref,omitempty"`
 
 	Defs map[string]*Schema `json:"$defs,omitempty"`
 	// Deprecated use Defs
@@ -19,7 +20,7 @@ type Schema struct {
 
 	Anchor string `json:"$anchor,omitempty"`
 
-	Type Kind `json:"type,omitempty"`
+	Type DataType `json:"type,omitempty"`
 
 	// Required Properties
 	Required []string `json:"required,omitempty"`
@@ -55,6 +56,7 @@ type Schema struct {
 	Key    string  `json:"-"`
 }
 
+// SetParent recursively traverse the schema setting any parents and keys
 func (s *Schema) SetParent(key string, parent *Schema) {
 	s.Parent = parent
 	s.Key = key
@@ -78,7 +80,8 @@ func (s *Schema) SetParent(key string, parent *Schema) {
 	}
 }
 
-func (s *Schema) RootSchema() *Schema {
+// Base finds the root/base schema from any point in the schema hierarchy
+func (s *Schema) Base() *Schema {
 	return root(s)
 }
 
@@ -103,6 +106,7 @@ func (s *Schema) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// AllDefinitions returns a merged map of the definitions and $def fields, $def takes precedences
 func (s *Schema) AllDefinitions() map[string]*Schema {
 	definitions := map[string]*Schema{}
 	for key, def := range s.Definitions {
@@ -115,6 +119,7 @@ func (s *Schema) AllDefinitions() map[string]*Schema {
 	return definitions
 }
 
-func (s *Schema) Stat() (Kind, Reference, []*Schema, []*Schema, []*Schema, []string) {
+// Stat returns the main keywords of the schema to workout how to process it
+func (s *Schema) Stat() (DataType, Reference, []*Schema, []*Schema, []*Schema, []string) {
 	return s.Type, s.Ref, s.OneOf, s.AnyOf, s.AllOf, s.Enum
 }

@@ -19,13 +19,13 @@ func (s *json) ToStructTag(key string, schema *jsonschema.Schema, required []str
 
 	dict := map[string]string{}
 
-	dict[key] = EmptyString
+	dict[key] = emptyString
 	if !jsonschema.Contains(required, strings.ToLower(key)) {
-		dict["omitempty"] = EmptyString
+		dict["omitempty"] = emptyString
 	}
 
 	if len(dict) == 0 {
-		return EmptyString
+		return emptyString
 	}
 
 	return fmt.Sprintf("json:\"%v\"", tags.KeysString(dict))

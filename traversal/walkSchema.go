@@ -6,8 +6,10 @@ import (
 	"github.com/RossMerr/jsonschema"
 )
 
+// FieldFunc evaluate a struct field, value and its tags
 type FieldFunc func(structField reflect.StructField, field, val reflect.Value, record Record) State
 
+// MapKeyFunc evaluate a map key and value
 type MapKeyFunc func(field, val reflect.Value, record Record) State
 
 // WalkSchema, search down the entire schema looking for matching field or mapKey,

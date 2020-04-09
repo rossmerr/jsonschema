@@ -6,8 +6,10 @@ import (
 	"strings"
 )
 
+// Reference ($ref) is used to reference other schemas, used with allOf, anyOf and oneOf
 type Reference string
 
+// NewReference returns a Reference
 func NewReference(s string) (Reference, error) {
 	return Reference(s), nil
 }
@@ -16,11 +18,13 @@ func (s Reference) String() string {
 	return string(s)
 }
 
+// ID return's the ID of the Reference
 func (s Reference) ID() (ID, error) {
 	raw := string(s)
 	return NewID(raw)
 }
 
+// Path returns all segments of the relative path of the referenced schema
 func (s Reference) Path() Path {
 	raw := string(s)
 	if len(raw) < 1 {
@@ -32,7 +36,7 @@ func (s Reference) Path() Path {
 		return Path{}
 	}
 
-	if uri.Fragment == EmptyString {
+	if uri.Fragment == emptyString {
 		return Path{}
 	}
 	parts := uri.Fragment
@@ -54,7 +58,7 @@ func (s Reference) ToKey() string {
 	path := s.Path()
 
 	if len(path) == 0 {
-		return EmptyString
+		return emptyString
 	}
 	name := path[len(path)-1]
 
@@ -62,7 +66,7 @@ func (s Reference) ToKey() string {
 }
 
 func (s Reference) IsNotEmpty() bool {
-	return s != EmptyString
+	return s != emptyString
 }
 
 func (s *Reference) UnmarshalJSON(b []byte) error {
