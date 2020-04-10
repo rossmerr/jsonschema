@@ -14,8 +14,10 @@ import (
 )
 
 func TestSchemas_Generate(t *testing.T) {
-
-	os.MkdirAll("sample_schemas/output/", 0755)
+	// Redirect standard out to null
+	stdout := os.Stdout
+	defer func() { os.Stdout = stdout }()
+	os.Stdout = os.NewFile(0, os.DevNull)
 
 	type fields struct {
 		documents map[jsonschema.ID]*jsonschema.Schema

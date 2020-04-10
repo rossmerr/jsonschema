@@ -47,7 +47,7 @@ Additional values for the validate tag include:
 
 Which you can then use for any custom validators.
 
-## Not or partial supported
+## Not or partial support
 
 ##### String
    

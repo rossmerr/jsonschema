@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/RossMerr/jsonschema/hook"
 	"github.com/gookit/color"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
@@ -68,10 +69,28 @@ func main() {
 		DisableLevelTruncation: true,
 		PadLevelText:           true,
 	})
+	log.SetReportCaller(true)
+
+	log.AddHook(&hook.WriterHook{ // Send logs with level higher than warning to stderr
+		Writer: os.Stderr,
+		LogLevels: []log.Level{
+			log.PanicLevel,
+			log.FatalLevel,
+			log.ErrorLevel,
+			log.WarnLevel,
+		},
+	})
+	log.AddHook(&hook.WriterHook{ // Send info and debug logs to stdout
+		Writer: os.Stdout,
+		LogLevels: []log.Level{
+			log.InfoLevel,
+			log.DebugLevel,
+		},
+	})
 
 	level, err := log.ParseLevel(*loglevel)
 	if err != nil {
-		level = log.InfoLevel
+		level = log.WarnLevel
 	}
 	log.SetLevel(level)
 

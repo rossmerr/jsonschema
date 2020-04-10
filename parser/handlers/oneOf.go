@@ -27,7 +27,7 @@ func HandleOneOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema
 			return nil, err
 		}
 		_, contains := doc.Globals()[structname]
-		if !contains {
+		if contains {
 			return nil, fmt.Errorf("handleoneof: oneOf, global keys need to be unique found %v more than once", structname)
 		}
 
