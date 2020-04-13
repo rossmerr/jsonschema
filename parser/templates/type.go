@@ -39,10 +39,16 @@ func (s *Type) WithMethods(methods ...*parser.Method) {
 }
 
 func NewType(comment string, t parser.Component) *Type {
-	return &Type{
+	s := &Type{
 		comment: comment,
 		Type:    t,
 	}
+
+	if str, ok := t.(*Struct); ok {
+		s.WithMethods(str.unmarshalStructJSON())
+	}
+
+	return s
 }
 
 const TypeTemplate = `
