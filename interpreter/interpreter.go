@@ -22,8 +22,8 @@ func NewInterpreter(parser parser.Parser) *Interpreter {
 }
 
 func NewInterpreterDefaults(packagename string) *Interpreter {
-	p := parser.NewParser(packagename)
-	p = handlers.DefaultHandlers(p)
+	p := parser.NewParser(packagename, handlers.DefaultHandlers())
+	handlers.DefaultHandlers()
 	return NewInterpreter(p)
 }
 
@@ -52,7 +52,7 @@ func (s *Interpreter) Interpret(files []string) (Interpret, error) {
 	return NewInterpretDefaults(root)
 }
 
-func (s *Interpreter) references(rawFiles map[string][]byte, references map[jsonschema.ID]*jsonschema.Schema) (error) {
+func (s *Interpreter) references(rawFiles map[string][]byte, references map[jsonschema.ID]*jsonschema.Schema) error {
 	for _, data := range rawFiles {
 
 		refs := jsonschema.ResolveIDs(data)
@@ -73,7 +73,7 @@ func (s *Interpreter) references(rawFiles map[string][]byte, references map[json
 	return nil
 }
 
-func (s *Interpreter) unmarshall(rawFiles map[string][]byte) ( map[jsonschema.ID]*jsonschema.Schema, error) {
+func (s *Interpreter) unmarshall(rawFiles map[string][]byte) (map[jsonschema.ID]*jsonschema.Schema, error) {
 	schemas := map[jsonschema.ID]*jsonschema.Schema{}
 	i := 0
 	for _, data := range rawFiles {

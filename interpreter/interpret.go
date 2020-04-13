@@ -77,8 +77,7 @@ func (s *interpret) ToFile(output string) ([]string, error) {
 		}
 	}
 
-	log.Printf(green("✓")+" Create %v files\n", len(s.documents))
-	//fmt.Printf(green("✓")+" Create %v files\n", len(s.documents))
+	fmt.Printf(green("✓")+" Create %v files\n", len(s.documents))
 
 	return files, nil
 }

@@ -81,8 +81,8 @@ func TestSchemas_Generate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			files := []string{}
-			p := parser.NewParser("main")
-			p = handlers.DefaultHandlers(p)
+			p := parser.NewParser("main", handlers.DefaultHandlers())
+			handlers.DefaultHandlers()
 			documents := map[jsonschema.ID]*jsonschema.Schema{}
 			references := map[jsonschema.ID]*jsonschema.Schema{}
 			for _, path := range tt.fields.paths {

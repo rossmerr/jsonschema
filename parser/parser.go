@@ -8,18 +8,17 @@ import (
 
 type Parser interface {
 	Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references map[jsonschema.ID]*jsonschema.Schema) (map[jsonschema.ID]Component, error)
-	HandlerFunc(kind Kind, handler HandleSchemaFunc)
 }
 
 type parser struct {
-	handlers    map[Kind]HandleSchemaFunc
 	packageName string
+	registry    *HandlerRegistry
 }
 
-func NewParser(packageName string) Parser {
+func NewParser(packageName string, registry *HandlerRegistry) Parser {
 	parser := &parser{
 		packageName: packageName,
-		handlers:    map[Kind]HandleSchemaFunc{},
+		registry:    registry,
 	}
 	return parser
 }
@@ -41,42 +40,34 @@ func (s *parser) Parse(schemas map[jsonschema.ID]*jsonschema.Schema, references 
 	return documents, nil
 }
 
-func (s *parser) HandlerFunc(kind Kind, handler HandleSchemaFunc) {
-	if _, ok := s.handlers[kind]; ok {
-		panic(fmt.Sprintf("parser: multiple registrations for %v", kind))
-	} else {
-		s.handlers[kind] = handler
-	}
-}
-
 func (s *parser) Process(schema *jsonschema.Schema, document Root) HandleSchemaFunc {
 
 	var handler HandleSchemaFunc
 	switch kind, ref, oneOf, anyOf, allOf, enum := schema.Stat(); {
 	case document == nil:
-		return s.handlers[Document]
+		return s.registry.ResolveHandler(Document)
 	case kind == jsonschema.Boolean:
-		handler = s.handlers[Boolean]
+		handler = s.registry.ResolveHandler(Boolean)
 	case len(enum) > 0:
-		handler = s.handlers[Enum]
+		handler = s.registry.ResolveHandler(Enum)
 	case kind == jsonschema.String:
-		handler = s.handlers[String]
+		handler = s.registry.ResolveHandler(String)
 	case kind == jsonschema.Integer:
-		handler = s.handlers[Interger]
+		handler = s.registry.ResolveHandler(Interger)
 	case kind == jsonschema.Number:
-		handler = s.handlers[Number]
+		handler = s.registry.ResolveHandler(Number)
 	case kind == jsonschema.Array:
-		handler = s.handlers[Array]
+		handler = s.registry.ResolveHandler(Array)
 	case ref.IsNotEmpty():
-		handler = s.handlers[Reference]
+		handler = s.registry.ResolveHandler(Reference)
 	case len(oneOf) > 0:
-		handler = s.handlers[OneOf]
+		handler = s.registry.ResolveHandler(OneOf)
 	case len(anyOf) > 0:
-		handler = s.handlers[AnyOf]
+		handler = s.registry.ResolveHandler(AnyOf)
 	case len(allOf) > 0:
-		handler = s.handlers[AllOf]
+		handler = s.registry.ResolveHandler(AllOf)
 	default:
-		handler = s.handlers[Object]
+		handler = s.registry.ResolveHandler(Object)
 	}
 
 	if handler == nil {

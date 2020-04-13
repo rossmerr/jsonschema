@@ -2,18 +2,19 @@ package handlers
 
 import "github.com/RossMerr/jsonschema/parser"
 
-func DefaultHandlers(p parser.Parser) parser.Parser {
-	p.HandlerFunc(parser.Boolean, HandleBoolean)
-	p.HandlerFunc(parser.OneOf, HandleOneOf)
-	p.HandlerFunc(parser.AnyOf, HandleAnyOf)
-	p.HandlerFunc(parser.AllOf, HandleAllOf)
-	p.HandlerFunc(parser.Enum, HandleEnum)
-	p.HandlerFunc(parser.Array, HandleArray)
-	p.HandlerFunc(parser.Reference, HandleReference)
-	p.HandlerFunc(parser.Object, HandleObject)
-	p.HandlerFunc(parser.Number, HandleNumber)
-	p.HandlerFunc(parser.Interger, HandleInteger)
-	p.HandlerFunc(parser.String, HandleString)
-	p.HandlerFunc(parser.Document, HandleDocument)
-	return p
+func DefaultHandlers() *parser.HandlerRegistry {
+	registry := parser.NewHandlerRegistry()
+	registry.RegisterHandler(parser.Boolean, HandleBoolean)
+	registry.RegisterHandler(parser.OneOf, HandleOneOf)
+	registry.RegisterHandler(parser.AnyOf, HandleAnyOf)
+	registry.RegisterHandler(parser.AllOf, HandleAllOf)
+	registry.RegisterHandler(parser.Enum, HandleEnum)
+	registry.RegisterHandler(parser.Array, HandleArray)
+	registry.RegisterHandler(parser.Reference, HandleReference)
+	registry.RegisterHandler(parser.Object, HandleObject)
+	registry.RegisterHandler(parser.Number, HandleNumber)
+	registry.RegisterHandler(parser.Interger, HandleInteger)
+	registry.RegisterHandler(parser.String, HandleString)
+	registry.RegisterHandler(parser.Document, HandleDocument)
+	return registry
 }

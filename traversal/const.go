@@ -4,11 +4,11 @@ type State int
 
 const (
 	// Continue iterating with no evaluation of the current field or key
-	Continue    State = iota
+	Continue State = iota
 	// Return stop iterating and return up
-	Return      State = iota
+	Return State = iota
 	// Match evaluate any field or key, will continue iterating after
-	Match       State = iota
+	Match State = iota
 	// MatchReturn evaluate any field or key and then return up
 	MatchReturn State = iota
 )
