@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
 	"github.com/RossMerr/jsonschema/parser/templates"
+	log "github.com/sirupsen/logrus"
 )
 
 // Enum's always get moved up to the package level and as such always get added to the Global
@@ -35,17 +35,14 @@ func HandleEnum(ctx *parser.SchemaContext, doc parser.Root, name string, schema 
 	c := templates.NewConst(constItems...)
 
 	typenameEnum := name + " Items"
-	if _, contains := doc.Globals()[typenameEnum]; !contains {
-		doc.Globals()[typenameEnum] = c
-	} else {
-		return nil, fmt.Errorf("handleenum: enum, global keys need to be unique found %v more than once", name)
-	}
-
-	//
 	enum := templates.NewEnum(name, schema.Description, schema.Type.String(), schema.Enum, constItems)
 
-	// The above check for the 'typenameEnum' in the global should already cover this, so no need for a second check
-	doc.Globals()[name] = enum
+	if _, contains := doc.Globals()[typenameEnum]; !contains {
+		doc.Globals()[typenameEnum] = c
+		doc.Globals()[name] = enum
+	} else {
+		log.Infof("handleenum: enum, already found global key %v ignoring", name)
+	}
 
 	return templates.NewReference(name, "", parser.NewType(enum.Name(), parser.Enum)), nil
 }

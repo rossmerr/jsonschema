@@ -126,6 +126,10 @@ aux := &struct {
 	Alias: (*Alias)(s),
 }
 
+if err := json.Unmarshal(b, &aux); err != nil {
+	return err
+}
+
 {{range $key, $ref := .References -}}
 s.{{typename $ref.Type.Name }} = aux.{{typename $ref.Type.Name }}
 {{end}}
