@@ -66,25 +66,42 @@ func (s *SchemaContext) Process(document Root, name string, schema *jsonschema.S
 	return handler(s, document, name, schema)
 }
 
-// ResolvePointer takes a Reference and uses it to walk the schema to find any types to reference
-func (s *SchemaContext) ResolvePointer(ref jsonschema.Reference, base *jsonschema.Schema) (string, error) {
+// ResolveSchema takes a Reference and uses it to walk the schema to find the matching subschema
+func (s *SchemaContext) ResolveSchema(ref jsonschema.Reference, arr ...*jsonschema.Schema) (*jsonschema.Schema, error) {
+	path := ref.Path()
+
+	var base *jsonschema.Schema
+	if len(arr) > 0 {
+		base = arr[0]
+	}
+
+	if id, err := ref.ID(); err == nil {
+		base = s.references[id]
+	}
+
+	if base == nil {
+		return nil, fmt.Errorf("resolvepointer: base schema not provided or not found")
+	}
+
+	def := traverse.Walk(base, path)
+	if def == nil {
+		return nil, fmt.Errorf("resolvepointer: path not found %v", path)
+	}
+
+	return def, nil
+}
+
+// ResolveTypename takes a Reference and uses it to walk the schema to find the matching typename to reference
+func (s *SchemaContext) ResolveTypename(ref jsonschema.Reference, base *jsonschema.Schema) (string, error) {
 	path := ref.Path()
 	if fieldname := path.ToKey(); fieldname != "." {
 		return fieldname, nil
 	}
 
-	if id, err := ref.ID(); err == nil {
-		if err != nil {
-			return ".", fmt.Errorf("resolvepointer: %w", err)
-
-		}
-		base = s.references[id]
+	refSchema, err := s.ResolveSchema(ref, base)
+	if err != nil {
+		return ".", err
 	}
 
-	def := traverse.Walk(base, path)
-	if def == nil {
-		return ".", fmt.Errorf("resolvepointer: path not found %v", path)
-	}
-
-	return def.ID.Fragment(), nil
+	return refSchema.ID.Fragment(), nil
 }

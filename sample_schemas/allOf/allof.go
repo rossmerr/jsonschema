@@ -4,7 +4,7 @@ package allOf
 // ID: http://example.com/allof.json
 
 type Allof struct {
-	Storage *AllofStorage `json:"storage,omitempty", validate:"allof"`
+	Storage AllofStorage `json:"storage", validate:"required,allof"`
 }
 
 type AllofStorage struct {

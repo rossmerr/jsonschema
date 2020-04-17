@@ -13,6 +13,7 @@ import (
 
 	"github.com/RossMerr/jsonschema/interpreter"
 	"github.com/RossMerr/jsonschema/sample_schemas/allOf"
+	"github.com/RossMerr/jsonschema/sample_schemas/allOfObject"
 	"github.com/RossMerr/jsonschema/sample_schemas/anyOf"
 	"github.com/RossMerr/jsonschema/sample_schemas/basic"
 	"github.com/RossMerr/jsonschema/sample_schemas/enum"
@@ -117,6 +118,20 @@ func TestSchemas_Generate(t *testing.T) {
 					Product allOf.Allof `json:"allof"`
 				}{
 					Product: allOf.Allof{},
+				},
+			},
+		},
+		{
+			name: "All Of Object",
+			fields: fields{
+				paths:       []string{"allOfObject/schema.json"},
+				packagename: "allOfObject",
+				output:      "allOfObject/",
+				sample:      "allOfObject/sample.json",
+				str: &struct {
+					Product allOfObject.Allof `json:"allof"`
+				}{
+					Product: allOfObject.Allof{},
 				},
 			},
 		},

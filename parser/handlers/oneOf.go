@@ -11,7 +11,7 @@ import (
 )
 
 func HandleOneOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
-	interfaceName := strings.Trim(schema.Parent.Key + " " + name, " ")
+	interfaceName := strings.Trim(schema.Parent.Key+" "+name, " ")
 	methodSignature := parser.NewMethodSignature(interfaceName)
 	types := make([]string, 0)
 

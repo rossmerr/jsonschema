@@ -23,7 +23,7 @@ import (
 func HandleEnum(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
 	constItems := []*templates.ConstItem{}
 
-	name = strings.Trim(schema.Parent.Key + " " + name, " ")
+	name = strings.Trim(schema.Parent.Key+" "+name, " ")
 	for _, value := range schema.Enum {
 		c := templates.ConstItem{
 			Name:  value,

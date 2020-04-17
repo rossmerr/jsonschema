@@ -10,7 +10,7 @@ type Product struct {
 	// Name of the product
 	ProductName *string `json:"productName,omitempty"`
 	// The price of the product
-	Price float64 `json:"price", validate:"required,gt=0"`
+	Price float64 `json:"price", validate:"gt=0,required"`
 	// Tags for the product
 	Tags       []string `json:"tags,omitempty"`
 	Dimensions *struct {

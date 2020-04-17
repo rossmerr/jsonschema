@@ -1,0 +1,9 @@
+{
+  "allof": {
+    "storage": {
+      "name": "ABCDEFGH",
+      "speed":1234567.05,
+      "amount": 1234.05
+    }
+  }
+}

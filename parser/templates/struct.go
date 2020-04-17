@@ -7,12 +7,12 @@ import (
 var _ parser.Receiver = (*Struct)(nil)
 
 type Struct struct {
-	comment  string
-	name     string
-	Fields   []parser.Component
-	fieldTag string
+	comment   string
+	name      string
+	Fields    []parser.Component
+	fieldTag  string
 	Reference string
-	Methods  []*parser.Method
+	Methods   []*parser.Method
 }
 
 func NewStruct(name, comment string, fields ...parser.Component) *Struct {

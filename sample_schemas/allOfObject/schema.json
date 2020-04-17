@@ -2,6 +2,7 @@
   "$id": "http://example.com/allof.json",
   "$schema": "https://json-schema.org/2019-09/schema",
   "type": "object",
+
   "properties": {
     "allof": {
       "properties": {
@@ -32,7 +33,12 @@
   },
   "definitions": {
     "test2": {
-      "type": "string"
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "number"
+        }
+      }
     }
   }
 }

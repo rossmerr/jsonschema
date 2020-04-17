@@ -15,7 +15,7 @@ import (
 var SchemaFuncMap = template.FuncMap{
 	"mixedCase":   MixedCase,
 	"typename":    Typename,
-	"clean":   Clean,
+	"clean":       Clean,
 	"title":       strings.Title,
 	"isStruct":    IsStruct,
 	"isArray":     IsArray,
