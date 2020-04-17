@@ -6,5 +6,5 @@ package referenceOutside
 // A geographical coordinate on a planet (most commonly Earth).
 type Location struct {
 	Latitude  *float64 `json:"latitude,omitempty", validate:"lte=90,gte=-90"`
-	Longitude *float64 `json:"longitude,omitempty", validate:"gte=-180,lte=180"`
+	Longitude *float64 `json:"longitude,omitempty", validate:"lte=180,gte=-180"`
 }

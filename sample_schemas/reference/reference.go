@@ -4,9 +4,9 @@ package reference
 // ID: https://example.com/reference.json
 
 type Address struct {
+	StreetAddress string `json:"street_address", validate:"required"`
 	City          string `json:"city", validate:"required"`
 	State         string `json:"state", validate:"required"`
-	StreetAddress string `json:"street_address", validate:"required"`
 }
 
 type HomeAddress Address

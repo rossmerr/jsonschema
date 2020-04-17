@@ -15,5 +15,5 @@ func HandleReference(ctx *parser.SchemaContext, doc parser.Root, name string, sc
 		fmt.Printf("handlereference: reference not found %v\n", schema.Ref)
 	}
 
-	return templates.NewReference(typename, schema.Description, parser.NewType(name, parser.Reference)), nil
+	return templates.NewReference(typename, schema.Description, parser.NewType(name, parser.Object)), nil
 }

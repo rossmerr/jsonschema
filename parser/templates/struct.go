@@ -11,6 +11,7 @@ type Struct struct {
 	name     string
 	Fields   []parser.Component
 	fieldTag string
+	Reference string
 	Methods  []*parser.Method
 }
 
@@ -50,6 +51,11 @@ func (s *Struct) WithMethods(methods ...*parser.Method) {
 }
 
 func (s *Struct) WithReference(ref bool) parser.Field {
+	if ref {
+		s.Reference = "*"
+	} else {
+		s.Reference = ""
+	}
 	return s
 }
 
@@ -70,14 +76,9 @@ func (s *Struct) Name() string {
 	return s.name
 }
 
-// TODO delete
-func (s *Struct) IsNotEmpty() bool {
-	return len(s.Fields) > 0
-}
-
 const StructTemplate = `
 {{- define "struct" -}}
-{{ typename .Name }} struct {
+{{ typename .Name }} {{ .Reference}}struct {
 {{range $key, $propertie := .Fields -}}
 	{{template "kind" $propertie }}
 {{end -}}
