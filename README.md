@@ -7,7 +7,7 @@ Code generation from json schemas with basic support for 2019-09:
 
 ## Installation
 
-* `go get -u github.com/RossMerr/jsonschema/cmd/jsonschema`
+* `go install github.com/RossMerr/jsonschema/cmd/jsonschema`
 
 
 ### Notes for usage

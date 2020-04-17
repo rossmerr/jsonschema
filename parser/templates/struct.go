@@ -77,9 +77,6 @@ func (s *Struct) IsNotEmpty() bool {
 
 const StructTemplate = `
 {{- define "struct" -}}
-{{ if .Comment -}}
-// {{.Comment}}
-{{end -}}
 {{ typename .Name }} struct {
 {{range $key, $propertie := .Fields -}}
 	{{template "kind" $propertie }}

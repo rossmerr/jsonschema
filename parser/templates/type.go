@@ -56,6 +56,9 @@ const TypeTemplate = `
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
+{{ if .Type.Comment -}}
+// {{ .Type.Comment}}
+{{end -}}
 type {{template "kind" .Type }} {{ .FieldTag }}
 {{range $key, $method := .Methods -}}
 	{{ if $method }}
