@@ -63,9 +63,9 @@ const arrayTemplate = `
 
 	for _, item := range array {
 	{{- range $key, $type := .Types }}
-		var {{ mixedCase $type}} {{$type}}
+		var {{ mixedCase $type}} *{{typename $type}}
 		if err := json.Unmarshal(item, &{{ mixedCase $type}}); err == nil {
-			{{ mixedCase $.Name }} = append({{ mixedCase $.Name }}, &{{ mixedCase $type}})
+			{{ mixedCase $.Name }} = append({{ mixedCase $.Name }}, {{ mixedCase $type}})
 		}
 	{{end -}}
 	}
@@ -113,24 +113,20 @@ type Alias {{typename .Type}}
 aux := &struct {
 {{range $key, $ref := .References -}}
 	{{if eq $ref.Type.Kind.String "array"}}
-		{{ $ref.Name }} []{{typename $ref.Type.Name }}{{ $ref.FieldTag }}
+		{{typename $ref.Name }} []{{typename $ref.Type.Name }}{{ $ref.FieldTag }}
 	{{else}}
-		{{ $ref.Name }} {{typename $ref.Type.Name }}{{ $ref.FieldTag }}
+		{{typename $ref.Name }} {{typename $ref.Type.Name }}{{ $ref.FieldTag }}
 	{{end -}}
 {{end -}}
 *Alias
 }{
 	{{range $key, $ref := .References -}}
-		{{ $ref.Name }}: {{ mixedCase $ref.Name }}(),
+		{{typename $ref.Name }}: {{ mixedCase $ref.Name }}(),
 	{{end -}}
 	Alias: (*Alias)(s),
 }
 
-if err := json.Unmarshal(b, &aux); err != nil {
-	return err
-}
-
 {{range $key, $ref := .References -}}
-s.{{ $ref.Name }} = aux.{{ $ref.Name }}
+s.{{typename $ref.Name }} = aux.{{typename $ref.Name }}
 {{end}}
 return nil`

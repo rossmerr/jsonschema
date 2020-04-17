@@ -1,0 +1,17 @@
+{
+  "product": {
+    "productId": 123,
+    "productName": "ABCDEFG",
+    "price": 1234.05,
+    "tags": ["tag1", "tag2"],
+    "dimensions": {
+      "length": 123.05,
+      "width": 123456.05,
+      "height": 1234.05
+    },
+    "warehouseLocation": {
+      "latitude": 90.05,
+      "longitude": 150.05
+    }
+  }
+}

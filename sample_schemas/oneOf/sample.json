@@ -1,0 +1,8 @@
+{
+  "oneof": {
+    "storage": {
+      "name": "ABCDEFG",
+      "speed": 123456.05
+    }
+  }
+}

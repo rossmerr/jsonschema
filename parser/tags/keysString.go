@@ -1,9 +1,11 @@
 package tags
 
-import "strings"
+import (
+	"strings"
+)
 
 func KeysString(m map[string]string) string {
-	keys := make([]string, 0, len(m))
+	keys := []string{}
 	for k, v := range m {
 		if v != emptyString {
 			keys = append(keys, k+"="+v)
