@@ -41,7 +41,7 @@ func HandleAnyOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema
 	}
 
 	doc.AddImport("encoding/json")
-	doc.Globals()[name] = templates.NewInterface(interfaceName).WithMethodSignature(methodSignature)
+	doc.Globals()[interfaceName] = templates.NewInterface(interfaceName).WithMethodSignature(methodSignature)
 	r := templates.NewReference(interfaceName, "", parser.NewType(name, parser.Array), types...)
 	return &templates.AnyOf{r}, nil
 }
