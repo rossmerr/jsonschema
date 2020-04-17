@@ -9,7 +9,7 @@ type Anyof struct {
 	Storage []Storage `json:"storage,omitempty", validate:"anyof"`
 }
 
-func (s *Anyof) UnmarshalJSON(b []byte) error {
+func (s *Anyof) unmarshalJSON(b []byte) error {
 	m := map[string]json.RawMessage{}
 	if err := json.Unmarshal(b, &m); err != nil {
 		return nil

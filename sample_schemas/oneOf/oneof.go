@@ -9,40 +9,40 @@ import "encoding/json"
 type DiskDevice struct {
 }
 
-func (s *DiskDevice) storage() {}
+func (s *DiskDevice) oneofStorage() {}
 
 // JSON Schema for an fstab entry
 type DiskUUID struct {
 }
 
-func (s *DiskUUID) storage() {}
+func (s *DiskUUID) oneofStorage() {}
 
 // JSON Schema for an fstab entry
 type Nfs struct {
 }
 
-func (s *Nfs) storage() {}
+func (s *Nfs) oneofStorage() {}
 
 // JSON Schema for an fstab entry
 type Oneof struct {
-	Storage Storage `json:"storage,omitempty", validate:"oneof"`
+	OneofStorage OneofStorage `json:"storage,omitempty", validate:"oneof"`
 }
 
-func (s *Oneof) UnmarshalJSON(b []byte) error {
+func (s *Oneof) unmarshalJSON(b []byte) error {
 	m := map[string]json.RawMessage{}
 	if err := json.Unmarshal(b, &m); err != nil {
 		return nil
 	}
 
-	storage := func() Storage {
-		raw, ok := m["storage"]
+	oneofStorage := func() OneofStorage {
+		raw, ok := m["oneof storage"]
 		if !ok {
 			return nil
 		}
 
-		var storage0 Storage0
-		if err := json.Unmarshal(raw, &storage0); err == nil {
-			return &storage0
+		var oneofStorage0 OneofStorage0
+		if err := json.Unmarshal(raw, &oneofStorage0); err == nil {
+			return &oneofStorage0
 		}
 
 		var diskDevice DiskDevice
@@ -69,31 +69,31 @@ func (s *Oneof) UnmarshalJSON(b []byte) error {
 	}
 	type Alias Oneof
 	aux := &struct {
-		Storage Storage `json:"storage,omitempty", validate:"oneof"`
+		OneofStorage OneofStorage `json:"storage,omitempty", validate:"oneof"`
 		*Alias
 	}{
-		Storage: storage(),
-		Alias:   (*Alias)(s),
+		OneofStorage: oneofStorage(),
+		Alias:        (*Alias)(s),
 	}
 
-	s.Storage = aux.Storage
+	s.OneofStorage = aux.OneofStorage
 
 	return nil
 }
 
-// Storage
-type Storage interface {
-	storage()
+// OneofStorage
+type OneofStorage interface {
+	oneofStorage()
 }
-type Storage0 struct {
+type OneofStorage0 struct {
 	Name  *string  `json:"name,omitempty"`
 	Speed *float64 `json:"speed,omitempty"`
 }
 
-func (s *Storage0) storage() {}
+func (s *OneofStorage0) oneofStorage() {}
 
 // JSON Schema for an fstab entry
 type Tmpfs struct {
 }
 
-func (s *Tmpfs) storage() {}
+func (s *Tmpfs) oneofStorage() {}

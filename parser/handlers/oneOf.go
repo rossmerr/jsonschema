@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
@@ -10,6 +11,7 @@ import (
 )
 
 func HandleOneOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
+	name = strings.Trim(schema.Parent.Key + " " + name, " ")
 	methodSignature := parser.NewMethodSignature(name)
 	types := make([]string, 0)
 

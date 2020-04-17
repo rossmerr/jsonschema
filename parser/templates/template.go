@@ -78,7 +78,7 @@ func MixedCase(raw string) string {
 	if len(raw) < 1 {
 		return raw
 	}
-	s := strings.Title(raw)
+	s := Typename(raw)
 	return strings.ToLower(s[0:1]) + s[1:]
 }
 
