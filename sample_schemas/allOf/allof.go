@@ -8,8 +8,8 @@ type Allof struct {
 }
 
 type AllofStorage struct {
-	Speed *float64 `json:"speed,omitempty"`
 	Name  *string  `json:"name,omitempty"`
+	Speed *float64 `json:"speed,omitempty"`
 	Test2 Test2    `json:"test2,omitempty"`
 }
 

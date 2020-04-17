@@ -5,6 +5,8 @@ package referenceOutside
 
 // A product from Acme's catalog
 type Product struct {
+	// Coordinates of the warehouse where the product is located.
+	WarehouseLocation Location `json:"warehouseLocation,omitempty"`
 	// The unique identifier for a product
 	ProductId *int32 `json:"productId,omitempty"`
 	// Name of the product
@@ -14,12 +16,9 @@ type Product struct {
 	// Tags for the product
 	Tags       []string `json:"tags,omitempty"`
 	Dimensions struct {
+		Height float64 `json:"height", validate:"required"`
 		// length
 		Length float64 `json:"length", validate:"required"`
 		Width  float64 `json:"width", validate:"required"`
-		Height float64 `json:"height", validate:"required"`
 	} `json:"dimensions,omitempty"`
-
-	// Coordinates of the warehouse where the product is located.
-	WarehouseLocation Location `json:"warehouseLocation,omitempty"`
 }

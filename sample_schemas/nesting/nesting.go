@@ -5,8 +5,6 @@ package nesting
 
 // A product from Acme's catalog
 type Product struct {
-	// The unique identifier for a product
-	ProductId *int32 `json:"productId,omitempty"`
 	// Name of the product
 	ProductName *string `json:"productName,omitempty"`
 	// The price of the product
@@ -20,6 +18,8 @@ type Product struct {
 	} `json:"dimensions,omitempty"`
 
 	ProductType *ProductType `json:"type,omitempty"`
+	// The unique identifier for a product
+	ProductId *int32 `json:"productId,omitempty"`
 }
 
 type ProductType string

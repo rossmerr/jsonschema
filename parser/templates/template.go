@@ -15,6 +15,7 @@ import (
 var SchemaFuncMap = template.FuncMap{
 	"mixedCase":   MixedCase,
 	"typename":    Typename,
+	"clean":   Clean,
 	"title":       strings.Title,
 	"isStruct":    IsStruct,
 	"isArray":     IsArray,
@@ -106,6 +107,32 @@ func Typename(raw string) string {
 
 	clean := reg.ReplaceAllString(name, " ")
 	return reg.ReplaceAllString(strings.Title(clean), "")
+}
+
+func Clean(raw string) string {
+	if len(raw) < 1 {
+		return raw
+	}
+
+	name := strings.TrimSuffix(raw, filepath.Ext(raw))
+
+	// Valid field names must start with a unicode letter
+	if !unicode.IsLetter(rune(name[0])) {
+		name = "No " + name
+	}
+
+	// Valid field names must not be a reserved word
+	if token.IsKeyword(name) {
+		name = "Key " + name
+	}
+
+	reg, err := regexp.Compile(`[^a-zA-Z0-9]+`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	clean := reg.ReplaceAllString(name, " ")
+	return reg.ReplaceAllString(clean, "")
 }
 
 func IsType(obj interface{}) bool {

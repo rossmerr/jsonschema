@@ -26,7 +26,7 @@ func (s *MethodSignature) WithOutputs(outputs ...*Parameter) *MethodSignature {
 
 const MethodSignatureTemplate = `
 {{- define "methodsignature" -}}
-{{mixedCase .Name -}}(
+{{clean .Name -}}(
 {{- range $key, $input := .Inputs -}}
 {{ $input.Name }} {{ $input.Type }}
 {{- end -}}

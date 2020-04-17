@@ -6,47 +6,47 @@ import "encoding/json"
 // ID: http://example.com/anyof.json
 
 type Anyof struct {
-	Storage []Storage `json:"storage,omitempty", validate:"anyof"`
+	Storage []AnyofStorage `json:"storage,omitempty", validate:"anyof"`
 }
 
-func (s *Anyof) unmarshalJSON(b []byte) error {
+func (s *Anyof) UnmarshalJSON(b []byte) error {
 	m := map[string]json.RawMessage{}
 	if err := json.Unmarshal(b, &m); err != nil {
 		return nil
 	}
 
-	storage := func() []Storage {
-		var storage []Storage
+	anyofStorage := func() []AnyofStorage {
+		var anyofStorage []AnyofStorage
 		raw, ok := m["storage"]
 		if !ok {
-			return storage
+			return anyofStorage
 		}
 
 		var array []json.RawMessage
 		if err := json.Unmarshal(raw, &array); err != nil {
-			return storage
+			return anyofStorage
 		}
 
 		for _, item := range array {
 			var test *Test
 			if err := json.Unmarshal(item, &test); err == nil {
-				storage = append(storage, test)
+				anyofStorage = append(anyofStorage, test)
 			}
 
 			var storage1 *Storage1
 			if err := json.Unmarshal(item, &storage1); err == nil {
-				storage = append(storage, storage1)
+				anyofStorage = append(anyofStorage, storage1)
 			}
 		}
 
-		return storage
+		return anyofStorage
 	}
 	type Alias Anyof
 	aux := &struct {
-		Storage []Storage `json:"storage,omitempty", validate:"anyof"`
+		Storage []AnyofStorage `json:"storage,omitempty", validate:"anyof"`
 		*Alias
 	}{
-		Storage: storage(),
+		Storage: anyofStorage(),
 		Alias:   (*Alias)(s),
 	}
 
@@ -55,14 +55,14 @@ func (s *Anyof) unmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Storage
-type Storage interface {
-	storage()
+// AnyofStorage
+type AnyofStorage interface {
+	anyofstorage()
 }
 type Storage1 float64
 
-func (s *Storage1) storage() {}
+func (s *Storage1) anyofstorage() {}
 
 type Test string
 
-func (s *Test) storage() {}
+func (s *Test) anyofstorage() {}

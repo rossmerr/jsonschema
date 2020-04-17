@@ -11,8 +11,8 @@ import (
 )
 
 func HandleOneOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
-	name = strings.Trim(schema.Parent.Key + " " + name, " ")
-	methodSignature := parser.NewMethodSignature(name)
+	interfaceName := strings.Trim(schema.Parent.Key + " " + name, " ")
+	methodSignature := parser.NewMethodSignature(interfaceName)
 	types := make([]string, 0)
 
 	for i, subschema := range schema.OneOf {
@@ -39,7 +39,7 @@ func HandleOneOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema
 	}
 
 	doc.AddImport("encoding/json")
-	doc.Globals()[name] = templates.NewInterface(name).WithMethodSignature(methodSignature)
-	r := templates.NewReference(name, "", parser.NewType(name, parser.Reference), types...)
+	doc.Globals()[name] = templates.NewInterface(interfaceName).WithMethodSignature(methodSignature)
+	r := templates.NewReference(interfaceName, "", parser.NewType(name, parser.Reference), types...)
 	return &templates.OneOf{r}, nil
 }

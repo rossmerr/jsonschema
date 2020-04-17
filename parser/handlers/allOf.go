@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
@@ -9,6 +10,7 @@ import (
 )
 
 func HandleAllOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
+
 	properties := map[string]*jsonschema.Schema{}
 
 	for _, subschema := range schema.AllOf {
@@ -23,7 +25,7 @@ func HandleAllOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema
 	}
 
 	schema.Properties = properties
-	typename := schema.Parent.Key + " " + name
+	typename :=  strings.Trim(schema.Parent.Key + " " + name, " ")
 
 	obj, err := HandleObject(ctx, doc, typename, schema)
 	if err != nil {
@@ -36,6 +38,6 @@ func HandleAllOf(ctx *parser.SchemaContext, doc parser.Root, name string, schema
 	}
 
 	doc.Globals()[typename] = templates.NewType(schema.Description, s)
-	r := templates.NewReference(name, "", parser.NewType(typename, parser.Object))
+	r := templates.NewReference(typename, "", parser.NewType(name, parser.Object))
 	return &templates.AllOf{r}, nil
 }

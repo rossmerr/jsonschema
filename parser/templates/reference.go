@@ -59,6 +59,6 @@ const ReferenceTemplate = `
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-{{ typename .Name}} {{ .Reference}} {{ if eq .Type.Kind.String "array" }}[]{{end}}{{typename .Type.Name}}  {{ .FieldTag }}
+{{ typename .Type.Name}} {{ .Reference}} {{ if eq .Type.Kind.String "array" }}[]{{end}}{{typename .Name}}  {{ .FieldTag }}
 {{- end -}}
 `

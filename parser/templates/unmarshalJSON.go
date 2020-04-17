@@ -49,16 +49,16 @@ type Test struct{}
 
 const arrayTemplate = `
 {{- define "arrayunmarshaljson" -}}
-{{ mixedCase .Name }} := func() []{{typename .Type.Name }} {
-	var {{ mixedCase .Name }} []{{typename .Type.Name }}
-	raw, ok := m["{{ .Name }}"]
+{{ mixedCase .Name }} := func() []{{typename .Name }} {
+	var {{ mixedCase .Name }} []{{typename .Name }}
+	raw, ok := m["{{mixedCase .Type.Name }}"]
 	if !ok {
-		return storage
+		return {{ mixedCase .Name }}
 	}
 
 	var array []json.RawMessage
 	if err := json.Unmarshal(raw, &array); err != nil {
-		return storage
+		return {{ mixedCase .Name }}
 	}
 
 	for _, item := range array {
@@ -78,8 +78,8 @@ const arrayTemplate = `
 
 const objectTemplate = `
 {{- define "objectunmarshaljson" -}}
-{{ mixedCase .Name }} := func() {{typename .Type.Name }} {
-	raw, ok := m["{{ .Name }}"]
+{{ mixedCase .Name }} := func() {{typename .Name }} {
+	raw, ok := m["{{mixedCase .Type.Name }}"]
 	if !ok {
 	return nil
 	}
@@ -113,20 +113,20 @@ type Alias {{typename .Type}}
 aux := &struct {
 {{range $key, $ref := .References -}}
 	{{if eq $ref.Type.Kind.String "array"}}
-		{{typename $ref.Name }} []{{typename $ref.Type.Name }}{{ $ref.FieldTag }}
+		{{typename $ref.Type.Name }} []{{typename $ref.Name }}{{ $ref.FieldTag }}
 	{{else}}
-		{{typename $ref.Name }} {{typename $ref.Type.Name }}{{ $ref.FieldTag }}
+		{{typename $ref.Type.Name }} {{typename $ref.Name }}{{ $ref.FieldTag }}
 	{{end -}}
 {{end -}}
 *Alias
 }{
 	{{range $key, $ref := .References -}}
-		{{typename $ref.Name }}: {{ mixedCase $ref.Name }}(),
+		{{typename $ref.Type.Name }}: {{ mixedCase $ref.Name }}(),
 	{{end -}}
 	Alias: (*Alias)(s),
 }
 
 {{range $key, $ref := .References -}}
-s.{{typename $ref.Name }} = aux.{{typename $ref.Name }}
+s.{{typename $ref.Type.Name }} = aux.{{typename $ref.Type.Name }}
 {{end}}
 return nil`
