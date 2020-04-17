@@ -47,6 +47,14 @@
             "width",
             "height"
           ]
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "red",
+            "amber",
+            "green"
+          ]
         }
       }
     }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/RossMerr/jsonschema"
 	"github.com/RossMerr/jsonschema/parser"
@@ -22,6 +23,7 @@ import (
 func HandleEnum(ctx *parser.SchemaContext, doc parser.Root, name string, schema *jsonschema.Schema) (parser.Component, error) {
 	constItems := []*templates.ConstItem{}
 
+	name = strings.Trim(schema.Parent.Key + " " + name, " ")
 	for _, value := range schema.Enum {
 		c := templates.ConstItem{
 			Name:  value,
@@ -39,6 +41,7 @@ func HandleEnum(ctx *parser.SchemaContext, doc parser.Root, name string, schema 
 		return nil, fmt.Errorf("handleenum: enum, global keys need to be unique found %v more than once", name)
 	}
 
+	//
 	enum := templates.NewEnum(name, schema.Description, schema.Type.String(), schema.Enum, constItems)
 
 	// The above check for the 'typenameEnum' in the global should already cover this, so no need for a second check

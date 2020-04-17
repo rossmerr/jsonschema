@@ -13,6 +13,19 @@ type Type struct {
 	Methods  []*parser.Method
 }
 
+func NewType(comment string, t parser.Component) *Type {
+	s := &Type{
+		comment: comment,
+		Type:    t,
+	}
+
+	if str, ok := t.(*Struct); ok {
+		s.WithMethods(str.unmarshalStructJSON())
+	}
+
+	return s
+}
+
 func (s *Type) Comment() string {
 	return s.comment
 }
@@ -38,26 +51,15 @@ func (s *Type) WithMethods(methods ...*parser.Method) {
 	s.Methods = append(s.Methods, methods...)
 }
 
-func NewType(comment string, t parser.Component) *Type {
-	s := &Type{
-		comment: comment,
-		Type:    t,
-	}
-
-	if str, ok := t.(*Struct); ok {
-		s.WithMethods(str.unmarshalStructJSON())
-	}
-
-	return s
-}
-
 const TypeTemplate = `
 {{- define "type" -}}
+
+{{ if .Type.Comment -}}
+// {{ .Type.Comment}}
+{{else -}}
 {{ if .Comment -}}
 // {{.Comment}}
 {{end -}}
-{{ if .Type.Comment -}}
-// {{ .Type.Comment}}
 {{end -}}
 type {{template "kind" .Type }} {{ .FieldTag }}
 {{range $key, $method := .Methods -}}

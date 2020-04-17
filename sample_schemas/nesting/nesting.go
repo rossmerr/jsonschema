@@ -5,12 +5,6 @@ package nesting
 
 // A product from Acme's catalog
 type Product struct {
-	Dimensions struct {
-		Length float64 `json:"length", validate:"required"`
-		Width  float64 `json:"width", validate:"required"`
-		Height float64 `json:"height", validate:"required"`
-	} `json:"dimensions,omitempty"`
-
 	// The unique identifier for a product
 	ProductId *int32 `json:"productId,omitempty"`
 	// Name of the product
@@ -18,5 +12,20 @@ type Product struct {
 	// The price of the product
 	Price *float64 `json:"price,omitempty", validate:"gt=0"`
 	// Tags for the product
-	Tags []string `json:"tags,omitempty"`
+	Tags       []string `json:"tags,omitempty"`
+	Dimensions struct {
+		Length float64 `json:"length", validate:"required"`
+		Width  float64 `json:"width", validate:"required"`
+		Height float64 `json:"height", validate:"required"`
+	} `json:"dimensions,omitempty"`
+
+	ProductType *ProductType `json:"type,omitempty"`
 }
+
+type ProductType string
+
+const (
+	ProductType_Red   ProductType = "red"
+	ProductType_Amber ProductType = "amber"
+	ProductType_Green ProductType = "green"
+)
