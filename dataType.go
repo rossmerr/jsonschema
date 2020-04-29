@@ -25,3 +25,9 @@ const (
 func (s DataType) String() string {
 	return string(s)
 }
+
+func DataTypeValues() map[DataType]string {
+	m := map[DataType]string{}
+	m[String] = String.String()
+	return m
+}

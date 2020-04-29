@@ -44,5 +44,7 @@ func HandleEnum(ctx *parser.SchemaContext, doc parser.Root, name string, schema 
 		log.Infof("handleenum: enum, already found global key %v ignoring", name)
 	}
 
+	doc.AddImport("encoding/json")
+	doc.AddImport("fmt")
 	return templates.NewReference(name, "", parser.NewType(enum.Name(), parser.Enum)), nil
 }

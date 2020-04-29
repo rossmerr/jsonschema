@@ -20,7 +20,7 @@ func NewType(comment string, t parser.Component) *Type {
 	}
 
 	if str, ok := t.(*Struct); ok {
-		s.WithMethods(str.unmarshalStructJSON())
+		s.WithMethods(str.UnmarshalStructJSON())
 	}
 
 	return s
