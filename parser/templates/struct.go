@@ -23,7 +23,7 @@ func NewStruct(name, comment string, fields ...parser.Component) *Struct {
 	}
 }
 
-func (s *Struct) unmarshalStructJSON() *parser.Method {
+func (s *Struct) UnmarshalStructJSON() *parser.Method {
 	var references []*Reference
 	for _, field := range s.Fields {
 		switch f := field.(type) {
